@@ -1,0 +1,428 @@
+========================================
+Daily Update Started: 2026-01-22 16:27:45
+========================================
+
+Updating regional stations...
+
+================================================================================
+UPDATING RECENT DATA FOR REGIONAL STATIONS
+================================================================================
+Date: 2026-01-22 16:27:45
+Updating last 7 days to capture latest conditions
+================================================================================
+
+Updating Winnipeg, MB...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 1.4mm
+
+Updating Thunder Bay, ON...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 10.5mm
+     2026-01-22: 0.0mm
+
+Updating Marquette, MI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 1.4mm
+
+Updating Green Bay, WI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 3.5mm
+     2026-01-22: 2.8mm
+
+Updating Duluth, MN...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 0.0mm
+
+Updating Iron Mountain, MI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.9mm
+     2026-01-22: 0.0mm
+
+Updating Phelps, WI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 1.4mm
+
+Updating Land O Lakes, WI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 5.6mm
+     2026-01-22: 1.4mm
+
+================================================================================
+UPDATE COMPLETE
+================================================================================
+Successfully updated: 8/8 stations
+
+
+Updating global predictor stations...
+
+================================================================================
+UPDATING GLOBAL PREDICTOR STATIONS
+================================================================================
+
+Updating Sapporo, Japan...
+  ✅ Updated 15 records
+     2026-01-19: 16.1mm ❄️
+     2026-01-20: 16.1mm ❄️
+     2026-01-21: 67.9mm ❄️
+     2026-01-22: 32.2mm ❄️
+
+Updating Chamonix, France...
+  ✅ Updated 15 records
+
+Updating Irkutsk, Russia...
+  ✅ Updated 15 records
+
+Updating Zermatt, Switzerland...
+  ✅ Updated 15 records
+     2026-01-18: 9.1mm ❄️
+     2026-01-19: 13.3mm ❄️
+
+Updating Niigata, Japan...
+  ✅ Updated 15 records
+     2026-01-19: 18.9mm ❄️
+     2026-01-20: 6.3mm ❄️
+     2026-01-21: 58.1mm ❄️
+     2026-01-22: 35.0mm ❄️
+
+================================================================================
+Successfully updated: 5/5 global stations
+================================================================================
+
+
+Generating forecast...
+
+================================================================================
+DAILY AUTOMATED FORECAST RUNNER
+Wisconsin Snowfall Forecast System
+================================================================================
+
+
+================================================================================
+GENERATING 7-DAY FORECAST
+================================================================================
+Generated: 2026-01-22 16:27:59
+================================================================================
+
+Day 1: 2026-01-23 (Friday)
+  ☁️ 40% - QUIET - 5-20mm (trace-1 inch)
+Day 2: 2026-01-24 (Saturday)
+  ⚪ 10% - QUIET - 0-5mm (trace or none)
+Day 3: 2026-01-25 (Sunday)
+  ⚪ 10% - QUIET - 0-5mm (trace or none)
+Day 4: 2026-01-26 (Monday)
+  ⚪ 25% - QUIET - 0-10mm (trace-0.5 inch)
+Day 5: 2026-01-27 (Tuesday)
+  ⚪ 25% - QUIET - 0-10mm (trace-0.5 inch)
+Day 6: 2026-01-28 (Wednesday)
+  ⚪ 25% - QUIET - 0-10mm (trace-0.5 inch)
+Day 7: 2026-01-29 (Thursday)
+  ☁️ 40% - QUIET - 5-20mm (trace-1 inch)
+
+================================================================================
+
+Loading recent observations...
+✅ Loaded 8 recent observations
+
+
+7-DAY FORECAST SUMMARY for Northern Wisconsin
+Generated: January 22, 2026 at 04:27 PM
+
+OVERVIEW:
+  • 2 day(s) with snow potential (≥30% probability)
+  • Highest probability: 40% on Friday, 2026-01-23
+  • Primary patterns: Quiet conditions
+
+DETAILED OUTLOOK:
+
+Friday, 2026-01-23:
+  ☁️ 40% probability - QUIET
+  Expected: 5-20mm (trace-1 inch)
+  Confidence: MODERATE
+
+Saturday, 2026-01-24:
+  ⚪ 10% probability - QUIET
+  Expected: 0-5mm (trace or none)
+  Confidence: LOW
+
+Sunday, 2026-01-25:
+  ⚪ 10% probability - QUIET
+  Expected: 0-5mm (trace or none)
+  Confidence: LOW
+
+Monday, 2026-01-26:
+  ⚪ 25% probability - QUIET
+  Expected: 0-10mm (trace-0.5 inch)
+  Confidence: LOW-MODERATE
+
+Tuesday, 2026-01-27:
+  ⚪ 25% probability - QUIET
+  Expected: 0-10mm (trace-0.5 inch)
+  Confidence: LOW-MODERATE
+
+Wednesday, 2026-01-28:
+  ⚪ 25% probability - QUIET
+  Expected: 0-10mm (trace-0.5 inch)
+  Confidence: LOW-MODERATE
+
+Thursday, 2026-01-29:
+  ☁️ 40% probability - QUIET
+  Expected: 5-20mm (trace-1 inch)
+  Confidence: MODERATE
+
+ALERT LEVELS:
+  ❄️  HIGH (≥70%) - Major snow likely
+  🌨️  MODERATE (50-69%) - Significant snow possible
+  ☁️  LOW (30-49%) - Light snow possible
+  ⚪ MINIMAL (<30%) - Little to no snow expected
+
+Lead times:
+  • Short-range (12-48h): Alberta Clippers, Lake Effect
+  • Long-range (5-7d): Global atmospheric patterns
+
+✅ Forecast saved to: forecast_output/forecast_20260122_162759.json
+✅ Latest forecast saved to: forecast_output/latest_forecast.json
+
+================================================================================
+FORECAST GENERATION COMPLETE
+================================================================================
+
+Forecast files generated:
+  • Timestamped: forecast_output/forecast_20260122_162759.json
+  • Latest: forecast_output/latest_forecast.json
+
+Run web dashboard to view: python3 forecast_web_dashboard.py
+================================================================================
+
+
+========================================
+Daily Update Completed: 2026-01-22 16:27:59
+Regional Update: SUCCESS
+Global Update: SUCCESS
+Forecast Generation: SUCCESS
+========================================
+========================================
+Daily Update Started: 2026-01-22 17:30:00
+========================================
+
+Updating regional stations...
+
+================================================================================
+UPDATING RECENT DATA FOR REGIONAL STATIONS
+================================================================================
+Date: 2026-01-22 17:30:01
+Updating last 7 days to capture latest conditions
+================================================================================
+
+Updating Winnipeg, MB...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 1.4mm
+
+Updating Thunder Bay, ON...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 10.5mm
+     2026-01-22: 0.0mm
+
+Updating Marquette, MI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 1.4mm
+
+Updating Green Bay, WI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 3.5mm
+     2026-01-22: 2.8mm
+
+Updating Duluth, MN...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 0.0mm
+
+Updating Iron Mountain, MI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.9mm
+     2026-01-22: 0.0mm
+
+Updating Phelps, WI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 4.2mm
+     2026-01-22: 1.4mm
+
+Updating Land O Lakes, WI...
+  ✅ Updated 8 records
+     2026-01-20: 0.0mm
+     2026-01-21: 5.6mm
+     2026-01-22: 1.4mm
+
+================================================================================
+UPDATE COMPLETE
+================================================================================
+Successfully updated: 8/8 stations
+
+
+Updating global predictor stations...
+
+================================================================================
+UPDATING GLOBAL PREDICTOR STATIONS
+================================================================================
+
+Updating Sapporo, Japan...
+  ✅ Updated 15 records
+     2026-01-19: 16.1mm ❄️
+     2026-01-20: 16.1mm ❄️
+     2026-01-21: 67.9mm ❄️
+     2026-01-22: 32.2mm ❄️
+
+Updating Chamonix, France...
+  ✅ Updated 15 records
+
+Updating Irkutsk, Russia...
+  ✅ Updated 15 records
+
+Updating Zermatt, Switzerland...
+  ✅ Updated 15 records
+     2026-01-18: 9.1mm ❄️
+     2026-01-19: 13.3mm ❄️
+
+Updating Niigata, Japan...
+  ✅ Updated 15 records
+     2026-01-19: 18.9mm ❄️
+     2026-01-20: 6.3mm ❄️
+     2026-01-21: 58.1mm ❄️
+     2026-01-22: 35.0mm ❄️
+
+================================================================================
+Successfully updated: 5/5 global stations
+================================================================================
+
+
+Generating forecast...
+
+================================================================================
+DAILY AUTOMATED FORECAST RUNNER
+Wisconsin Snowfall Forecast System
+================================================================================
+
+
+================================================================================
+GENERATING 7-DAY FORECAST
+================================================================================
+Generated: 2026-01-22 17:30:19
+================================================================================
+
+Day 1: 2026-01-23 (Friday)
+  ☁️ 40% - QUIET - 5-20mm (trace-1 inch)
+Day 2: 2026-01-24 (Saturday)
+  ⚪ 10% - QUIET - 0-5mm (trace or none)
+Day 3: 2026-01-25 (Sunday)
+  ⚪ 10% - QUIET - 0-5mm (trace or none)
+Day 4: 2026-01-26 (Monday)
+  ⚪ 25% - QUIET - 0-10mm (trace-0.5 inch)
+Day 5: 2026-01-27 (Tuesday)
+  ⚪ 25% - QUIET - 0-10mm (trace-0.5 inch)
+Day 6: 2026-01-28 (Wednesday)
+  ⚪ 25% - QUIET - 0-10mm (trace-0.5 inch)
+Day 7: 2026-01-29 (Thursday)
+  ☁️ 40% - QUIET - 5-20mm (trace-1 inch)
+
+================================================================================
+
+Loading recent observations...
+✅ Loaded 16 recent observations
+
+
+7-DAY FORECAST SUMMARY for Northern Wisconsin
+Generated: January 22, 2026 at 05:30 PM
+
+OVERVIEW:
+  • 2 day(s) with snow potential (≥30% probability)
+  • Highest probability: 40% on Friday, 2026-01-23
+  • Primary patterns: Quiet conditions
+
+DETAILED OUTLOOK:
+
+Friday, 2026-01-23:
+  ☁️ 40% probability - QUIET
+  Expected: 5-20mm (trace-1 inch)
+  Confidence: MODERATE
+
+Saturday, 2026-01-24:
+  ⚪ 10% probability - QUIET
+  Expected: 0-5mm (trace or none)
+  Confidence: LOW
+
+Sunday, 2026-01-25:
+  ⚪ 10% probability - QUIET
+  Expected: 0-5mm (trace or none)
+  Confidence: LOW
+
+Monday, 2026-01-26:
+  ⚪ 25% probability - QUIET
+  Expected: 0-10mm (trace-0.5 inch)
+  Confidence: LOW-MODERATE
+
+Tuesday, 2026-01-27:
+  ⚪ 25% probability - QUIET
+  Expected: 0-10mm (trace-0.5 inch)
+  Confidence: LOW-MODERATE
+
+Wednesday, 2026-01-28:
+  ⚪ 25% probability - QUIET
+  Expected: 0-10mm (trace-0.5 inch)
+  Confidence: LOW-MODERATE
+
+Thursday, 2026-01-29:
+  ☁️ 40% probability - QUIET
+  Expected: 5-20mm (trace-1 inch)
+  Confidence: MODERATE
+
+ALERT LEVELS:
+  ❄️  HIGH (≥70%) - Major snow likely
+  🌨️  MODERATE (50-69%) - Significant snow possible
+  ☁️  LOW (30-49%) - Light snow possible
+  ⚪ MINIMAL (<30%) - Little to no snow expected
+
+Lead times:
+  • Short-range (12-48h): Alberta Clippers, Lake Effect
+  • Long-range (5-7d): Global atmospheric patterns
+
+✅ Forecast saved to: forecast_output/forecast_20260122_173019.json
+✅ Latest forecast saved to: forecast_output/latest_forecast.json
+
+================================================================================
+FORECAST GENERATION COMPLETE
+================================================================================
+
+Forecast files generated:
+  • Timestamped: forecast_output/forecast_20260122_173019.json
+  • Latest: forecast_output/latest_forecast.json
+
+Run web dashboard to view: python3 forecast_web_dashboard.py
+================================================================================
+
+
+========================================
+Daily Update Completed: 2026-01-22 17:30:20
+Regional Update: SUCCESS
+Global Update: SUCCESS
+Forecast Generation: SUCCESS
+========================================

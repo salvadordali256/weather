@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Wisconsin Snowfall Forecast{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+    <div class="page">
+        <nav class="top-nav">
+            <div class="brand">
+                <a href="/">Snowfall Lab</a>
+                <span>Northwoods Intelligence</span>
+            </div>
+            <div class="nav-actions">
+                <a href="/">Dashboard</a>
+                <a href="/history">History</a>
+                <a href="/about">About</a>
+                <a href="/api/forecast.json">API</a>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+
+        <footer class="site-footer">
+            <div>Rendered {{ render_time }}</div>
+            <div class="build-meta">
+                <span class="build-pill">Build {{ build_meta.version }}</span>
+                {% if build_meta.badge_url %}
+                <img src="{{ build_meta.badge_url }}" alt="Build status badge">
+                {% endif %}
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

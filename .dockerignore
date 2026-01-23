@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.grok/
+
+# Databases (don't copy large DBs into image)
+*.db
+*.sqlite
+*.sqlite3
+
+# Documentation
+*.md
+*.txt
+!requirements.txt
+
+# Data files
+weather_data/
+snowfall_graphs/
+
+# Other Python scripts not needed for dashboard
+*.py
+!forecast_web_dashboard.py

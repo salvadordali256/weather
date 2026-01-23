@@ -1,0 +1,38 @@
+{
+  "forecasts": [
+    {
+      "timestamp": "2026-01-06T12:24:56.490744",
+      "result": {
+        "final_probability": 13.385416666666666,
+        "forecast": "\u26aa LOW - Minimal snow expected (<5mm)",
+        "risk_level": "LOW",
+        "expected_amount_mm": 15.0,
+        "model_contributions": {
+          "pattern_matching": 30.0,
+          "global_predictors": 16.249999999999996,
+          "jet_stream": 40.0
+        },
+        "filters_failed": [
+          "Pacific-only signals (no delivery mechanism)"
+        ],
+        "false_positive_penalty": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-01-14T09:19:56.155023",
+      "result": {
+        "final_probability": 19.076315789473682,
+        "forecast": "\u26aa LOW-MODERATE - Light snow chance (5-10mm)",
+        "risk_level": "LOW-MODERATE",
+        "expected_amount_mm": 5.8,
+        "model_contributions": {
+          "pattern_matching": 11.6,
+          "global_predictors": 13.5,
+          "jet_stream": 40.0
+        },
+        "filters_failed": [],
+        "false_positive_penalty": 1.0
+      }
+    }
+  ]
+}

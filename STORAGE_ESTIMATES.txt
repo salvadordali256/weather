@@ -1,0 +1,135 @@
+================================================================================
+WEATHER DATA STORAGE REQUIREMENTS CALCULATOR
+================================================================================
+
+METHODOLOGY:
+--------------------------------------------------------------------------------
+Format: Parquet with Snappy compression
+Daily record size: ~65 bytes (compressed)
+Hourly record size: ~80 bytes (compressed)
+Overhead factor: 1.15x (metadata, indexes)
+
+STANDARD PARAMETERS:
+--------------------------------------------------------------------------------
+Daily: temp_max, temp_min, temp_mean, precip, wind_speed, humidity, etc.
+Hourly: temp, humidity, precip, wind_speed, wind_direction, pressure, etc.
+
+
+================================================================================
+US Coverage
+================================================================================
+
+US Comprehensive (NOAA) - 10K stations, 75 years, daily
+================================================================================
+Daily Data:        17.50 GB
+Hourly Data:        0.00 GB
+________________________________________________________________________________
+Total:             17.50 GB  (    0.02 TB)
+
+
+US Subset (NOAA) - 1K stations, 75 years, daily
+================================================================================
+Daily Data:         1.75 GB
+Hourly Data:        0.00 GB
+________________________________________________________________________________
+Total:              1.75 GB  (    0.00 TB)
+
+
+================================================================================
+Global Coverage
+================================================================================
+
+Global Coarse Grid (1° res) - 85 years, daily + hourly
+================================================================================
+Daily Data:       128.49 GB
+Hourly Data:     3795.39 GB
+________________________________________________________________________________
+Total:           3923.88 GB  (    3.83 TB)
+
+
+Global Fine Grid (0.25° res) - 85 years, daily + hourly
+================================================================================
+Daily Data:      2055.84 GB
+Hourly Data:    60726.30 GB
+________________________________________________________________________________
+Total:          62782.14 GB  (   61.31 TB)
+
+
+North America Grid (0.5° res) - 85 years, daily + hourly
+================================================================================
+Daily Data:        21.41 GB
+Hourly Data:      632.57 GB
+________________________________________________________________________________
+Total:            653.98 GB  (    0.64 TB)
+
+
+================================================================================
+City & Recent Data
+================================================================================
+
+Major Cities (1K cities) - 85 years, daily + hourly
+================================================================================
+Daily Data:         1.98 GB
+Hourly Data:       58.57 GB
+________________________________________________________________________________
+Total:             60.55 GB  (    0.06 TB)
+
+
+Recent Climate Data (0.5° global) - 30 years
+================================================================================
+Daily Data:        18.14 GB
+Hourly Data:      535.82 GB
+________________________________________________________________________________
+Total:            553.96 GB  (    0.54 TB)
+
+
+================================================================================
+QUICK REFERENCE SUMMARY
+================================================================================
+
+Scenario                                                        Storage (TB)
+--------------------------------------------------------------------------------
+US Comprehensive (NOAA) - 10K stations, 75 years, daily                 0.02
+US Subset (NOAA) - 1K stations, 75 years, daily                         0.00
+Global Coarse Grid (1° res) - 85 years, daily + hourly                  3.83
+Global Fine Grid (0.25° res) - 85 years, daily + hourly                61.31
+North America Grid (0.5° res) - 85 years, daily + hourly                0.64
+Major Cities (1K cities) - 85 years, daily + hourly                     0.06
+Recent Climate Data (0.5° global) - 30 years                            0.54
+
+================================================================================
+RECOMMENDED CONFIGURATIONS
+================================================================================
+
+SMALL PROJECT (~100 GB - 1 TB):
+  • Major cities only (1K locations)
+  • OR US subset (1K stations)
+  • Daily data recommended, hourly optional
+
+MEDIUM PROJECT (~1-10 TB):
+  • North America regional grid
+  • OR US comprehensive coverage
+  • Recent 30-50 years
+  • Both daily and hourly
+
+LARGE PROJECT (~10-50 TB):
+  • Global coarse grid (1° resolution)
+  • Full historical period (1940-present)
+  • Both daily and hourly
+
+MASSIVE PROJECT (~50+ TB):
+  • Global fine grid (0.25° resolution)
+  • Full historical period
+  • Both daily and hourly
+  • Multiple climate variables
+
+================================================================================
+STORAGE TIPS
+================================================================================
+
+1. Parquet format provides ~10:1 compression vs CSV
+2. Partition by year for efficient queries
+3. Use Snappy compression (good balance of speed/size)
+4. Consider cloud storage for datasets > 10 TB
+5. Budget 20% extra for backups and intermediate files
+6. SSD recommended for datasets < 5 TB, HDD okay for larger

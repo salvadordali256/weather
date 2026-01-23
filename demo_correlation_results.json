@@ -1,0 +1,146 @@
+[
+  {
+    "station": "Phelps, WI",
+    "region": "target",
+    "significance": "Primary forecast target - Phelps",
+    "correlation": 0.988295034044889,
+    "lag_days": 0,
+    "p_value": 0.0,
+    "sample_size": 11280
+  },
+  {
+    "station": "Land O'Lakes, WI",
+    "region": "target",
+    "significance": "Primary forecast target - Land O'Lakes",
+    "correlation": 0.9680254203568448,
+    "lag_days": 0,
+    "p_value": 0.0,
+    "sample_size": 11280
+  },
+  {
+    "station": "Thunder Bay, ON",
+    "region": "canada",
+    "significance": "Great Lakes lake-effect",
+    "correlation": 0.4682795695797157,
+    "lag_days": 0,
+    "p_value": 0.0,
+    "sample_size": 9454
+  },
+  {
+    "station": "Steamboat Springs, CO",
+    "region": "colorado",
+    "significance": "Northern Colorado upslope snow",
+    "correlation": 0.2224854979903583,
+    "lag_days": -1,
+    "p_value": 1.6268763307061476e-126,
+    "sample_size": 11280
+  },
+  {
+    "station": "Mount Baker, WA",
+    "region": "pacific_nw",
+    "significance": "World record snowfall location, Pacific moisture",
+    "correlation": 0.1433151572074009,
+    "lag_days": -4,
+    "p_value": 8.161113565165884e-53,
+    "sample_size": 11280
+  },
+  {
+    "station": "Novosibirsk, Russia",
+    "region": "siberia",
+    "significance": "Western Siberia continental cold source",
+    "correlation": 0.1387636005390236,
+    "lag_days": -24,
+    "p_value": 1.6497135769410009e-49,
+    "sample_size": 11280
+  },
+  {
+    "station": "Lake Tahoe, CA",
+    "region": "california",
+    "significance": "Northern Sierra atmospheric river indicator",
+    "correlation": 0.13334231066676155,
+    "lag_days": -3,
+    "p_value": 6.688545698621715e-46,
+    "sample_size": 11280
+  },
+  {
+    "station": "Sapporo, Japan",
+    "region": "japan",
+    "significance": "East Asian jet stream",
+    "correlation": 0.11953410029479275,
+    "lag_days": 6,
+    "p_value": 2.0621443401346617e-31,
+    "sample_size": 9454
+  },
+  {
+    "station": "Nagano, Japan",
+    "region": "japan",
+    "significance": "Japanese Alps orographic enhancement",
+    "correlation": 0.11770892753069229,
+    "lag_days": -10,
+    "p_value": 4.61172362026912e-36,
+    "sample_size": 11280
+  },
+  {
+    "station": "Chamonix, France",
+    "region": "europe_alps",
+    "significance": "Mont Blanc Atlantic influence",
+    "correlation": 0.11150690771798802,
+    "lag_days": 5,
+    "p_value": 1.5780125333366276e-32,
+    "sample_size": 11280
+  },
+  {
+    "station": "Mammoth Mountain, CA",
+    "region": "california",
+    "significance": "Pacific atmospheric rivers",
+    "correlation": 0.111135657073138,
+    "lag_days": -3,
+    "p_value": 2.3153732119702556e-27,
+    "sample_size": 9454
+  },
+  {
+    "station": "Niigata, Japan",
+    "region": "japan",
+    "significance": "Sea of Japan extreme lake-effect snow",
+    "correlation": 0.10227326444768184,
+    "lag_days": 3,
+    "p_value": 1.3137684561585571e-27,
+    "sample_size": 11280
+  },
+  {
+    "station": "Denver, CO",
+    "region": "colorado",
+    "significance": "Continental upslope",
+    "correlation": 0.09435595638351461,
+    "lag_days": -1,
+    "p_value": 3.8130594243224054e-20,
+    "sample_size": 9454
+  },
+  {
+    "station": "Irkutsk, Russia",
+    "region": "siberia",
+    "significance": "Lake Baikal, Siberian cold source",
+    "correlation": 0.0739739934627988,
+    "lag_days": 7,
+    "p_value": 6.071570334051744e-13,
+    "sample_size": 9454
+  },
+  {
+    "station": "Zermatt, Switzerland",
+    "region": "europe_alps",
+    "significance": "Central Alps Matterhorn",
+    "correlation": 0.06723932108142247,
+    "lag_days": 5,
+    "p_value": 8.867930039046127e-13,
+    "sample_size": 11280
+  },
+  {
+    "station": "Yakutsk, Russia",
+    "region": "siberia",
+    "significance": "Coldest city on Earth, extreme continental signal",
+    "correlation": 0.05028660665006313,
+    "lag_days": -20,
+    "p_value": 9.353522743409022e-08,
+    "sample_size": 11280
+  }
+]

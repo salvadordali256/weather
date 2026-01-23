@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Wisconsin Snowfall Forecast Dashboard{% endblock %}
+
+{% block content %}
+<header class="card hero">
+    <div class="hero-copy">
+        <div class="eyebrow">Northern Wisconsin Snowfall Forecast</div>
+        <h1>Wisconsin Snowfall Outlook</h1>
+        <p class="subtitle">Northern Wisconsin Ski Areas • 7-Day Planning Window</p>
+        <div class="meta">
+            <span>Last updated: {{ forecast.generated_at_human }}</span>
+            <span>Server time: {{ current_time }}</span>
+        </div>
+    </div>
+    <div class="hero-art">
+        <div class="orb orb-lg"></div>
+        <div class="orb orb-md"></div>
+        <div class="orb orb-sm"></div>
+        <div class="hero-tag">Snow-ready intelligence</div>
+    </div>
+</header>
+
+<section class="card">
+    <div class="card-header">
+        <h2>Forecast Summary</h2>
+        <span class="pill">Daily digest</span>
+    </div>
+    <div class="summary-text">{{ forecast.summary_text }}</div>
+</section>
+
+{% if forecast_stats %}
+<section class="card">
+    <div class="card-header">
+        <h3>Forecast Pulse</h3>
+        <span class="pill">At a glance</span>
+    </div>
+    <div class="pulse-grid">
+        <div class="pulse-card">
+            <div class="pulse-label">Coverage window</div>
+            <div class="pulse-value">{{ forecast_stats.days }} days</div>
+            <div class="pulse-meta">7-day rolling outlook</div>
+        </div>
+        <div class="pulse-card">
+            <div class="pulse-label">Highest risk</div>
+            <div class="pulse-value">{% if forecast_stats.max_probability is not none %}{{ forecast_stats.max_probability }}%{% else %}N/A{% endif %}</div>
+            <div class="pulse-meta">{{ forecast_stats.max_day }}</div>
+        </div>
+        <div class="pulse-card">
+            <div class="pulse-label">Average probability</div>
+            <div class="pulse-value">{% if forecast_stats.avg_probability is not none %}{{ forecast_stats.avg_probability }}%{% else %}N/A{% endif %}</div>
+            <div class="pulse-meta">Mean of modeled days</div>
+        </div>
+        <div class="pulse-card">
+            <div class="pulse-label">Alert split</div>
+            <div class="pulse-value">{{ forecast_stats.alert_counts.high }}H / {{ forecast_stats.alert_counts.moderate }}M</div>
+            <div class="pulse-meta">{{ forecast_stats.alert_counts.low }}L / {{ forecast_stats.alert_counts.minimal }}Min</div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="card">
+    <div class="card-header">
+        <h3>Alert Level Guide</h3>
+    </div>
+    <div class="legend-grid">
+        <div class="legend-item">
+            <div class="legend-icon">❄️</div>
+            <div><strong>HIGH (≥70%)</strong> - Major snow likely</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon">🌨️</div>
+            <div><strong>MODERATE (50-69%)</strong> - Significant snow possible</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon">☁️</div>
+            <div><strong>LOW (30-49%)</strong> - Light snow possible</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon">⚪</div>
+            <div><strong>MINIMAL (&lt;30%)</strong> - Little to no snow expected</div>
+        </div>
+    </div>
+</section>
+
+<section class="forecast-grid">
+    {% for day in forecast.forecasts %}
+    <article class="forecast-card {{ day.alert_level|lower }}" style="--i: {{ loop.index0 }}">
+        <div class="forecast-header">
+            <div class="forecast-date">
+                {{ day.day_of_week }}
+                <span>{{ day.date }}</span>
+            </div>
+            <div class="forecast-icon">{{ day.icon }}</div>
+        </div>
+
+        <div class="probability">{{ day.probability }}%</div>
+
+        <div class="event-type">{{ day.event_type }}</div>
+
+        <div class="forecast-details">
+            <div class="detail-row">
+                <span class="detail-label">Expected:</span>
+                <span class="detail-value">{{ day.expected_snowfall }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Confidence:</span>
+                <span class="detail-value">{{ day.confidence }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Lead Time:</span>
+                <span class="detail-value">{{ day.lead_time }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Active Signals:</span>
+                <span class="detail-value">{{ day.active_signals }}</span>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</section>
+
+{% if forecast.recent_observations %}
+<section class="card">
+    <div class="card-header">
+        <h3>Recent Observations (Last 7 Days)</h3>
+        <span class="pill">Station rollup</span>
+    </div>
+    <div class="table-wrap">
+        <table class="obs-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Station</th>
+                    <th>Snowfall (mm)</th>
+                    <th>Snowfall (inches)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obs in forecast.recent_observations[:20] %}
+                <tr>
+                    <td>{{ obs.date }}</td>
+                    <td>{{ obs.station }}</td>
+                    <td>{{ obs.snowfall_mm }}</td>
+                    <td>{{ obs.snowfall_inches }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

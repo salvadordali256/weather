@@ -1,0 +1,182 @@
+================================================================================
+NORTHERN WISCONSIN WEATHER - QUICK REFERENCE
+================================================================================
+
+🚀 EASIEST WAY TO USE - THE WEATHER APP
+================================================================================
+
+./venv/bin/python weather_app.py
+
+This interactive app lets you:
+  ✓ Check current weather for ANY location worldwide
+  ✓ Get 7-day forecasts
+  ✓ View historical data (30, 90, or 365 days)
+  ✓ No API key needed!
+
+Example coordinates:
+  • Eagle River, WI:  45.9169, -89.2443
+  • Phelps, WI:       46.0608, -89.0793
+  • Land O'Lakes:     46.1558, -89.3318
+
+📊 YOUR DATABASES
+================================================================================
+
+northwoods_full_history.db    18.2 MB    94,101 records    85 years (1940-2025)
+  ├─ Eagle River, WI:  31,367 days
+  ├─ Land O'Lakes, WI: 31,367 days
+  └─ Phelps, WI:       31,367 days
+
+northwoods_snowfall.db        704 KB     3,294 records     1 year (2024-2025)
+  └─ 9 Northern WI locations
+
+snowfall_7day.db              60 KB      152 records       7 days (Nov 2025)
+  └─ 19 ski resort locations
+
+📈 ANALYSIS SCRIPTS
+================================================================================
+
+# 85-year climate trends (1940-2025)
+./venv/bin/python analyze_85year_trends.py
+
+# 1-year Northern Wisconsin analysis
+./venv/bin/python analyze_northwoods.py
+
+# 7-day recent snapshot
+./venv/bin/python analyze_7day_data.py
+
+🔑 KEY FINDINGS (85-Year Analysis)
+================================================================================
+
+Average Annual Snowfall:
+  • Land O'Lakes: 156.5 cm/year (61.6 inches)
+  • Eagle River:  137.3 cm/year (54.1 inches)
+  • Phelps:       137.1 cm/year (54.0 inches)
+
+Climate Change (1940-1979 vs 1990-2025):
+  • Change: -5.5 cm (-3.8% decrease)
+  • Historical: 144.8 cm/year
+  • Recent: 139.3 cm/year
+
+Record Years:
+  • Snowiest: 1950 (226.0 cm average)
+  • Least Snowy: 2010 (83.1 cm average)
+
+Biggest Storm:
+  • 26.5 cm at Land O'Lakes on March 4, 1979
+
+🔄 DATA COLLECTION
+================================================================================
+
+# Quick 7-day snapshot (any locations)
+./venv/bin/python collect_7days_openmeteo.py
+
+# Northern Wisconsin 1-10 years
+./venv/bin/python collect_northwoods_wi.py
+
+# Full 85-year history (1940-2025)
+./venv/bin/python collect_northwoods_full_history.py
+
+⚠️ Note: 6 of 9 locations are pending (rate limited). Wait a few hours and re-run.
+
+🔧 API INFO
+================================================================================
+
+Open-Meteo (Primary):
+  ✓ NO API KEY REQUIRED
+  ✓ Free unlimited (reasonable use)
+  ✓ Historical: 1940-present (85 years!)
+  ✓ Current weather + forecasts
+  📍 https://open-meteo.com
+
+NOAA (Optional):
+  📧 Email: kyle@salvadordali256.net
+  🔑 Token: dTIloUkePZGxmwosKdjYELmXTjXqKUHk
+  ⚠️ Only 1998-2025 for this region
+  ⚠️ Open-Meteo has MORE history!
+
+💡 QUICK PYTHON QUERIES
+================================================================================
+
+from snowfall_duckdb import SnowfallDuckDB
+
+engine = SnowfallDuckDB("./northwoods_full_history.db")
+
+# Top 10 snowiest years
+df = engine.query("""
+    SELECT
+        YEAR(CAST(date AS DATE)) as year,
+        ROUND(SUM(snowfall_mm) / 10.0, 1) as total_cm
+    FROM snowfall.snowfall_daily
+    GROUP BY year
+    ORDER BY total_cm DESC
+    LIMIT 10
+""")
+print(df)
+
+# Monthly averages
+df = engine.query("""
+    SELECT
+        MONTH(CAST(date AS DATE)) as month,
+        ROUND(AVG(snowfall_mm) / 10.0, 2) as avg_cm
+    FROM snowfall.snowfall_daily
+    WHERE snowfall_mm > 0
+    GROUP BY month
+    ORDER BY month
+""")
+print(df)
+
+engine.close()
+
+✅ TEST RESULTS
+================================================================================
+
+✅ PASS  Current Weather
+✅ PASS  7-Day Forecast
+✅ PASS  Historical Data
+✅ PASS  Coordinate Validation
+
+All 4/4 tests passed!
+
+📚 DOCUMENTATION
+================================================================================
+
+WEATHER_README.md           Complete weather system documentation
+DUCKDB_GUIDE.md             DuckDB integration guide
+PROJECT_COMPLETE.md         Project summary
+weather_requirements.txt    Python dependencies
+
+🎯 COMMON TASKS
+================================================================================
+
+1. Get current weather for Eagle River:
+   ./venv/bin/python weather_app.py
+   (Enter: 45.9169, -89.2443)
+
+2. Analyze specific winter (e.g., 1978-1979):
+   from snowfall_duckdb import SnowfallDuckDB
+   engine = SnowfallDuckDB("./northwoods_full_history.db")
+   df = engine.query("""
+       SELECT date, station_id, 
+              ROUND(snowfall_mm / 10.0, 1) as snow_cm
+       FROM snowfall.snowfall_daily
+       WHERE date BETWEEN '1978-11-01' AND '1979-04-30'
+           AND snowfall_mm > 0
+       ORDER BY snowfall_mm DESC
+       LIMIT 20
+   """)
+   print(df)
+   engine.close()
+
+3. Export data to CSV:
+   from snowfall_duckdb import SnowfallDuckDB
+   engine = SnowfallDuckDB("./northwoods_full_history.db")
+   df = engine.query("SELECT * FROM snowfall.snowfall_daily")
+   df.to_csv("snowfall_data.csv", index=False)
+   engine.close()
+
+4. Collect remaining 6 locations (after rate limit reset):
+   ./venv/bin/python collect_northwoods_full_history.py
+
+================================================================================
+🌤️  Enjoy your weather data! For more info, see WEATHER_README.md
+================================================================================

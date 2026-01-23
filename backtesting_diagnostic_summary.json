@@ -1,0 +1,8 @@
+{
+  "total_events": 4399,
+  "events_with_global_signal": 175,
+  "global_signal_percentage": 3.9781768583769037,
+  "major_events_with_signal": 13,
+  "major_events_without_signal": 134,
+  "recommendation": "Add regional/local predictors for operational forecasting"
+}

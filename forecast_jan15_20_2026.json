@@ -1,0 +1,1192 @@
+{
+  "Phelps_WI": {
+    "location": "Phelps, WI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 29.5,
+        "temp_min_f": 20.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 31.2,
+        "temp_min_f": 25.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 15,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 33.7,
+        "temp_min_f": 14.6,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 3,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 35.2,
+        "temp_min_f": 17.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 8,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 30.3,
+        "temp_min_f": 24.6,
+        "precipitation_in": 0.071,
+        "snowfall_in": 0.386,
+        "precip_probability": 32,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 26.7,
+        "temp_min_f": 19.0,
+        "precipitation_in": 0.197,
+        "snowfall_in": 1.378,
+        "precip_probability": 44,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 23.0,
+        "temp_min_f": 12.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 26,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 33.3,
+        "temp_min_f": 11.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 8,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 26.9,
+        "temp_min_f": 6.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 13,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 11.3,
+        "temp_min_f": -6.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 16,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 12.6,
+        "temp_min_f": -7.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 14,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 19.4,
+        "temp_min_f": -5.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 18,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 25.9,
+        "temp_min_f": 2.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 6.3,
+        "temp_min_f": -5.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 10,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 4.0,
+        "temp_min_f": -8.1,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 24,
+        "weather_code": 51,
+        "weather_desc": "Light Drizzle"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 5.8,
+        "temp_min_f": -8.6,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 51,
+        "weather_desc": "Light Drizzle"
+      }
+    ],
+    "totals": {
+      "jan6_12": 1.7639999999999998,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  },
+  "Land_O_Lakes_WI": {
+    "location": "Land O'Lakes, WI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 29.8,
+        "temp_min_f": 21.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 3,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 31.1,
+        "temp_min_f": 25.9,
+        "precipitation_in": 0.031,
+        "snowfall_in": 0.11,
+        "precip_probability": 13,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 33.8,
+        "temp_min_f": 13.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 35.1,
+        "temp_min_f": 18.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 7,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 30.3,
+        "temp_min_f": 24.9,
+        "precipitation_in": 0.154,
+        "snowfall_in": 0.882,
+        "precip_probability": 31,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 26.7,
+        "temp_min_f": 19.0,
+        "precipitation_in": 0.256,
+        "snowfall_in": 1.433,
+        "precip_probability": 47,
+        "weather_code": 75,
+        "weather_desc": "Heavy Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 22.9,
+        "temp_min_f": 8.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 27,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 33.5,
+        "temp_min_f": 9.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 10,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 27.1,
+        "temp_min_f": 6.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 14,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 11.4,
+        "temp_min_f": -4.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 16,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 12.9,
+        "temp_min_f": -8.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 15,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 19.2,
+        "temp_min_f": -4.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 25,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 26.2,
+        "temp_min_f": 2.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 26,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 6.2,
+        "temp_min_f": -5.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 14,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 4.1,
+        "temp_min_f": -8.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 23,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 6.6,
+        "temp_min_f": -9.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 23,
+        "weather_code": 51,
+        "weather_desc": "Light Drizzle"
+      }
+    ],
+    "totals": {
+      "jan6_12": 2.4250000000000003,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  },
+  "Eagle_River_WI": {
+    "location": "Eagle River, WI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 30.0,
+        "temp_min_f": 21.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 31.4,
+        "temp_min_f": 26.3,
+        "precipitation_in": 0.047,
+        "snowfall_in": 0.22,
+        "precip_probability": 17,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 34.2,
+        "temp_min_f": 14.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 36.3,
+        "temp_min_f": 20.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 9,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 31.4,
+        "temp_min_f": 25.8,
+        "precipitation_in": 0.217,
+        "snowfall_in": 1.102,
+        "precip_probability": 31,
+        "weather_code": 75,
+        "weather_desc": "Heavy Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 27.4,
+        "temp_min_f": 19.6,
+        "precipitation_in": 0.256,
+        "snowfall_in": 1.433,
+        "precip_probability": 41,
+        "weather_code": 75,
+        "weather_desc": "Heavy Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 23.2,
+        "temp_min_f": 10.2,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 23,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 33.5,
+        "temp_min_f": 7.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 6,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 27.6,
+        "temp_min_f": 5.2,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 11,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 11.7,
+        "temp_min_f": -4.6,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 13,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 13.7,
+        "temp_min_f": -7.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 11,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 20.0,
+        "temp_min_f": -5.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 18,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 26.4,
+        "temp_min_f": 3.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 7.3,
+        "temp_min_f": -5.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 10,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 4.9,
+        "temp_min_f": -7.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 24,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 8.0,
+        "temp_min_f": -10.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      }
+    ],
+    "totals": {
+      "jan6_12": 2.7550000000000003,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  },
+  "St_Germain_WI": {
+    "location": "St. Germain, WI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 30.1,
+        "temp_min_f": 21.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 31.5,
+        "temp_min_f": 25.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 15,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 34.4,
+        "temp_min_f": 15.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 36.4,
+        "temp_min_f": 20.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 8,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 31.5,
+        "temp_min_f": 25.9,
+        "precipitation_in": 0.264,
+        "snowfall_in": 1.24,
+        "precip_probability": 31,
+        "weather_code": 75,
+        "weather_desc": "Heavy Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 27.4,
+        "temp_min_f": 19.6,
+        "precipitation_in": 0.256,
+        "snowfall_in": 1.406,
+        "precip_probability": 41,
+        "weather_code": 75,
+        "weather_desc": "Heavy Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 23.1,
+        "temp_min_f": 11.2,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 22,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 33.5,
+        "temp_min_f": 7.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 6,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 27.5,
+        "temp_min_f": 4.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 12,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 11.7,
+        "temp_min_f": -4.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 14,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 13.8,
+        "temp_min_f": -6.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 12,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 19.8,
+        "temp_min_f": -3.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 25,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 26.7,
+        "temp_min_f": 3.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 26,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 7.0,
+        "temp_min_f": -4.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 14,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 5.1,
+        "temp_min_f": -7.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 23,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 8.6,
+        "temp_min_f": -10.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 23,
+        "weather_code": 51,
+        "weather_desc": "Light Drizzle"
+      }
+    ],
+    "totals": {
+      "jan6_12": 2.646,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  },
+  "Watersmeet_MI": {
+    "location": "Watersmeet, MI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 30.4,
+        "temp_min_f": 20.6,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 4,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 31.4,
+        "temp_min_f": 26.6,
+        "precipitation_in": 0.016,
+        "snowfall_in": 0.11,
+        "precip_probability": 12,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 34.2,
+        "temp_min_f": 15.1,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 3,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 35.1,
+        "temp_min_f": 19.1,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 7,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 30.1,
+        "temp_min_f": 24.8,
+        "precipitation_in": 0.083,
+        "snowfall_in": 0.496,
+        "precip_probability": 31,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 27.0,
+        "temp_min_f": 19.4,
+        "precipitation_in": 0.248,
+        "snowfall_in": 1.378,
+        "precip_probability": 47,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 23.5,
+        "temp_min_f": 10.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 30,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 34.2,
+        "temp_min_f": 12.2,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 10,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 27.7,
+        "temp_min_f": 7.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 16,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 11.1,
+        "temp_min_f": -5.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 13.0,
+        "temp_min_f": -8.2,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 17,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 19.8,
+        "temp_min_f": -4.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 32,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 26.5,
+        "temp_min_f": 3.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 35,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 6.5,
+        "temp_min_f": -4.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 4.3,
+        "temp_min_f": -7.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 35,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 6.3,
+        "temp_min_f": -6.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 40,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      }
+    ],
+    "totals": {
+      "jan6_12": 1.984,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  },
+  "Ironwood_MI": {
+    "location": "Ironwood, MI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 29.4,
+        "temp_min_f": 22.2,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 4,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 30.1,
+        "temp_min_f": 26.2,
+        "precipitation_in": 0.047,
+        "snowfall_in": 0.22,
+        "precip_probability": 8,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 33.9,
+        "temp_min_f": 15.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 34.3,
+        "temp_min_f": 21.6,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 4,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 30.6,
+        "temp_min_f": 24.2,
+        "precipitation_in": 0.157,
+        "snowfall_in": 0.799,
+        "precip_probability": 30,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 26.9,
+        "temp_min_f": 20.8,
+        "precipitation_in": 0.205,
+        "snowfall_in": 1.406,
+        "precip_probability": 46,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 23.9,
+        "temp_min_f": 11.3,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 26,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 34.3,
+        "temp_min_f": 14.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 14,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 27.5,
+        "temp_min_f": 6.4,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 18,
+        "weather_code": 51,
+        "weather_desc": "Light Drizzle"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 10.3,
+        "temp_min_f": -5.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 22,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 11.6,
+        "temp_min_f": -6.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 20,
+        "weather_code": 51,
+        "weather_desc": "Light Drizzle"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 21.2,
+        "temp_min_f": 1.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 35,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 26.2,
+        "temp_min_f": 3.5,
+        "precipitation_in": 0.047,
+        "snowfall_in": 0.0,
+        "precip_probability": 39,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 4.2,
+        "temp_min_f": -0.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 27,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 6.4,
+        "temp_min_f": -7.1,
+        "precipitation_in": 0.047,
+        "snowfall_in": 0.0,
+        "precip_probability": 39,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 7.6,
+        "temp_min_f": -6.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 43,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      }
+    ],
+    "totals": {
+      "jan6_12": 2.425,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  },
+  "Bergland_MI": {
+    "location": "Bergland, MI",
+    "forecast": [
+      {
+        "date": "2026-01-05",
+        "temp_max_f": 30.5,
+        "temp_min_f": 22.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 6,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-06",
+        "temp_max_f": 31.2,
+        "temp_min_f": 27.8,
+        "precipitation_in": 0.016,
+        "snowfall_in": 0.11,
+        "precip_probability": 8,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-07",
+        "temp_max_f": 33.9,
+        "temp_min_f": 14.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 2,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-08",
+        "temp_max_f": 34.4,
+        "temp_min_f": 19.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 4,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-09",
+        "temp_max_f": 31.3,
+        "temp_min_f": 25.0,
+        "precipitation_in": 0.098,
+        "snowfall_in": 0.496,
+        "precip_probability": 29,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-10",
+        "temp_max_f": 27.0,
+        "temp_min_f": 20.8,
+        "precipitation_in": 0.248,
+        "snowfall_in": 1.378,
+        "precip_probability": 47,
+        "weather_code": 73,
+        "weather_desc": "Snow"
+      },
+      {
+        "date": "2026-01-11",
+        "temp_max_f": 24.9,
+        "temp_min_f": 9.6,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 30,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-12",
+        "temp_max_f": 35.2,
+        "temp_min_f": 10.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 13,
+        "weather_code": 3,
+        "weather_desc": "Overcast"
+      },
+      {
+        "date": "2026-01-13",
+        "temp_max_f": 29.7,
+        "temp_min_f": 8.7,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 19,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-14",
+        "temp_max_f": 12.1,
+        "temp_min_f": -2.8,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 21,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-15",
+        "temp_max_f": 12.9,
+        "temp_min_f": -2.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 21,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-16",
+        "temp_max_f": 21.7,
+        "temp_min_f": 1.5,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 38,
+        "weather_code": 45,
+        "weather_desc": "Fog"
+      },
+      {
+        "date": "2026-01-17",
+        "temp_max_f": 26.7,
+        "temp_min_f": 4.9,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 39,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-18",
+        "temp_max_f": 6.3,
+        "temp_min_f": 3.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 23,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-19",
+        "temp_max_f": 6.3,
+        "temp_min_f": -2.1,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 42,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      },
+      {
+        "date": "2026-01-20",
+        "temp_max_f": 7.5,
+        "temp_min_f": -3.0,
+        "precipitation_in": 0.0,
+        "snowfall_in": 0.0,
+        "precip_probability": 43,
+        "weather_code": 71,
+        "weather_desc": "Light Snow"
+      }
+    ],
+    "totals": {
+      "jan6_12": 1.984,
+      "jan13_19": 0.0,
+      "jan15_20": 0.0
+    }
+  }
+}

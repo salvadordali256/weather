@@ -1,0 +1,55 @@
+{
+  "overall": {
+    "n_events": 1000,
+    "hits": 993,
+    "hit_rate": 0.993,
+    "avg_probability": 67.855,
+    "avg_ensemble_score": 0.4865513791230085
+  },
+  "by_category": {
+    "trace": {
+      "n_events": 651,
+      "hits": 644,
+      "hit_rate": 0.989247311827957,
+      "avg_probability": 66.036866359447
+    },
+    "significant": {
+      "n_events": 239,
+      "hits": 239,
+      "hit_rate": 1.0,
+      "avg_probability": 71.25523012552301
+    },
+    "major": {
+      "n_events": 90,
+      "hits": 90,
+      "hit_rate": 1.0,
+      "avg_probability": 70.66666666666667
+    },
+    "extreme": {
+      "n_events": 20,
+      "hits": 20,
+      "hit_rate": 1.0,
+      "avg_probability": 73.75
+    }
+  },
+  "by_event_type": {
+    "LAKE EFFECT": {
+      "n_events": 614,
+      "hits": 614,
+      "hit_rate": 1.0,
+      "avg_snow": 24.578778501628662
+    },
+    "ALBERTA CLIPPER": {
+      "n_events": 249,
+      "hits": 249,
+      "hit_rate": 1.0,
+      "avg_snow": 24.03586345381526
+    },
+    "REGIONAL SYSTEM": {
+      "n_events": 15,
+      "hits": 15,
+      "hit_rate": 1.0,
+      "avg_snow": 16.832666666666665
+    }
+  }
+}

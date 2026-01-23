@@ -1,0 +1,59 @@
+{
+  "methodology": {
+    "daily_record_bytes": 65,
+    "hourly_record_bytes": 80,
+    "overhead_factor": 1.15,
+    "format": "Parquet with Snappy compression"
+  },
+  "estimates": [
+    {
+      "scenario": "US Comprehensive (NOAA) - 10K stations, 75 years, daily",
+      "daily_gb": 17.5,
+      "hourly_gb": 0.0,
+      "total_gb": 17.5,
+      "total_tb": 0.02
+    },
+    {
+      "scenario": "US Subset (NOAA) - 1K stations, 75 years, daily",
+      "daily_gb": 1.75,
+      "hourly_gb": 0.0,
+      "total_gb": 1.75,
+      "total_tb": 0.0
+    },
+    {
+      "scenario": "Global Coarse Grid (1\u00b0 res) - 85 years, daily + hourly",
+      "daily_gb": 128.49,
+      "hourly_gb": 3795.39,
+      "total_gb": 3923.88,
+      "total_tb": 3.83
+    },
+    {
+      "scenario": "Global Fine Grid (0.25\u00b0 res) - 85 years, daily + hourly",
+      "daily_gb": 2055.84,
+      "hourly_gb": 60726.3,
+      "total_gb": 62782.14,
+      "total_tb": 61.31
+    },
+    {
+      "scenario": "North America Grid (0.5\u00b0 res) - 85 years, daily + hourly",
+      "daily_gb": 21.41,
+      "hourly_gb": 632.57,
+      "total_gb": 653.98,
+      "total_tb": 0.64
+    },
+    {
+      "scenario": "Major Cities (1K cities) - 85 years, daily + hourly",
+      "daily_gb": 1.98,
+      "hourly_gb": 58.57,
+      "total_gb": 60.55,
+      "total_tb": 0.06
+    },
+    {
+      "scenario": "Recent Climate Data (0.5\u00b0 global) - 30 years",
+      "daily_gb": 18.14,
+      "hourly_gb": 535.82,
+      "total_gb": 553.96,
+      "total_tb": 0.54
+    }
+  ]
+}

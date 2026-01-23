@@ -1,0 +1,267 @@
+================================================================================
+GLOBAL SNOWFALL PREDICTION SYSTEM - QUICK START GUIDE
+Target: Phelps & Land O'Lakes, Wisconsin
+================================================================================
+
+📋 SYSTEM OVERVIEW
+──────────────────────────────────────────────────────────────────────────────
+Uses 100+ worldwide locations to predict Wisconsin snowfall:
+  • Russia/Siberia (11 locations) - Cold air source
+  • Japan (7 locations) - Jet stream indicator
+  • China (7 locations) - Tibetan High influence
+  • California Ski Resorts (4 locations) - Pacific patterns
+  • Colorado Rockies (5 locations) - Continental indicators
+  • Plus: Pacific NW, Canada, Europe, Scandinavia
+
+Data: 1940-2025 (85 years) from Open-Meteo API
+
+
+🚀 QUICKEST START (ONE COMMAND)
+──────────────────────────────────────────────────────────────────────────────
+Full pipeline - data collection + analysis + visualizations:
+
+    python run_global_analysis.py --full
+
+⏱ Time: 3-5 hours (first run collects 85 years × 100+ locations)
+📦 Output: global_snowfall.db (2GB), model, report, visualizations
+
+
+⚡ FASTER START (Testing)
+──────────────────────────────────────────────────────────────────────────────
+Collect just last 5 years (much faster for testing):
+
+    python global_snowfall_fetcher.py --start 2020-01-01
+    python run_global_analysis.py --analyze-only
+
+⏱ Time: ~15 minutes
+📦 Output: global_snowfall.db (120MB), model, report
+
+
+📊 CHECK STATUS
+──────────────────────────────────────────────────────────────────────────────
+See what data you have:
+
+    python run_global_analysis.py --summary
+
+
+🔍 INDIVIDUAL COMPONENTS
+──────────────────────────────────────────────────────────────────────────────
+
+1️⃣ DATA COLLECTION ONLY
+   Fetch global snowfall data:
+
+   python global_snowfall_fetcher.py \
+       --start 1940-01-01 \
+       --rate-limit 1.0
+
+   Options:
+     --start DATE         Start date (default: 1940-01-01)
+     --end DATE          End date (default: today)
+     --rate-limit SECS   Delay between API calls (default: 1.0)
+     --register-only     Just create location database
+     --summary           Show database statistics
+
+2️⃣ CORRELATION ANALYSIS ONLY
+   Analyze global patterns:
+
+   python global_correlation_analysis.py \
+       --target northern_wisconsin \
+       --max-lag 30 \
+       --export \
+       --model
+
+   Output: phelps_prediction_model.json
+   Shows: Which regions predict Wisconsin snow + lag patterns
+
+3️⃣ VISUALIZATIONS ONLY
+   Generate charts and maps:
+
+   python visualize_global_snowfall.py \
+       --db global_snowfall.db \
+       --model phelps_prediction_model.json
+
+   Output: snowfall_graphs/ directory with:
+     • global_correlation_heatmap.png
+     • global_correlation_map.png
+     • lag_distribution.png
+     • prediction_model_summary.png
+     • regional_comparison_2020.png
+
+
+📈 UNDERSTANDING THE OUTPUT
+──────────────────────────────────────────────────────────────────────────────
+
+PREDICTION MODEL (phelps_prediction_model.json)
+├── Top predictors ranked by correlation strength
+├── Lag patterns (e.g., "Russia leads Wisconsin by 7 days")
+├── Statistical significance markers (***)
+└── Normalized weights for ensemble forecasting
+
+INTERPRETATION:
+  Correlation (r):
+    • r > 0.3        = STRONG predictor
+    • r = 0.15-0.3   = MODERATE predictor
+    • r < 0.15       = WEAK predictor
+
+  Lag (days):
+    • Positive lag   = Predictor leads Wisconsin (early warning!)
+    • Zero lag       = Simultaneous (same storm system)
+    • Negative lag   = Wisconsin leads (not useful for prediction)
+
+  Significance:
+    • p < 0.05 (***)  = Statistically significant (trust it)
+    • p >= 0.05       = Not significant (use with caution)
+
+
+🎯 USING FOR PREDICTION
+──────────────────────────────────────────────────────────────────────────────
+
+Example workflow:
+
+1. Check model for top predictors:
+   cat phelps_prediction_model.json | grep -A5 "predictors"
+
+2. Monitor those regions in your global database:
+   sqlite3 global_snowfall.db "
+     SELECT date, SUM(snowfall_mm)
+     FROM snowfall_daily d
+     JOIN stations s ON d.station_id = s.station_id
+     WHERE s.region = 'siberia_central'
+       AND date >= date('now', '-7 days')
+     GROUP BY date;
+   "
+
+3. Apply lag pattern:
+   IF Siberia got 50mm snow 7 days ago
+   AND California got 30mm snow 3 days ago
+   AND Japan got 40mm snow 5 days ago
+   → Wisconsin likely getting heavy snow NOW or next 2 days
+
+4. Weight by correlation strength from model
+
+
+🔄 DAILY OPERATIONS
+──────────────────────────────────────────────────────────────────────────────
+
+Update with latest week's data:
+
+    python global_snowfall_fetcher.py \
+        --start $(date -d "7 days ago" +%Y-%m-%d)
+
+Check current patterns vs Wisconsin:
+
+    python global_correlation_analysis.py \
+        --start $(date -d "90 days ago" +%Y-%m-%d)
+
+
+💾 DATABASE QUERIES
+──────────────────────────────────────────────────────────────────────────────
+
+All regions:
+  sqlite3 global_snowfall.db "SELECT DISTINCT region FROM stations;"
+
+Stations in a region:
+  sqlite3 global_snowfall.db "SELECT * FROM stations WHERE region='japan_north';"
+
+Recent snowfall for Phelps:
+  sqlite3 global_snowfall.db "
+    SELECT date, snowfall_mm
+    FROM snowfall_daily
+    WHERE station_id='Phelps_WI_USA'
+      AND date >= date('now', '-30 days')
+    ORDER BY date DESC;
+  "
+
+Top 10 snowfall days globally:
+  sqlite3 global_snowfall.db "
+    SELECT d.date, s.name, s.country, d.snowfall_mm
+    FROM snowfall_daily d
+    JOIN stations s ON d.station_id = s.station_id
+    ORDER BY d.snowfall_mm DESC
+    LIMIT 10;
+  "
+
+
+⚠️ TROUBLESHOOTING
+──────────────────────────────────────────────────────────────────────────────
+
+"No module named 'requests'" or similar:
+  pip install requests pandas numpy scipy matplotlib seaborn
+
+"API rate limit exceeded":
+  python global_snowfall_fetcher.py --rate-limit 2.0
+
+"Database locked":
+  Close all SQLite connections, then:
+  sqlite3 global_snowfall.db "PRAGMA integrity_check;"
+
+"No correlations found":
+  Need more data - collect at least 2000-2025:
+  python global_snowfall_fetcher.py --start 2000-01-01
+
+Data collection taking too long:
+  Interrupt (Ctrl+C) and resume later - it will skip existing data
+  OR start with recent years: --start 2015-01-01
+
+
+📁 OUTPUT FILES
+──────────────────────────────────────────────────────────────────────────────
+
+global_snowfall.db                    Main database (2GB full, 120MB recent)
+phelps_prediction_model.json          Prediction model configuration
+global_analysis_report.txt            Human-readable analysis summary
+snowfall_graphs/*.png                 Visualizations
+  ├── global_correlation_heatmap.png  Top predictors ranked
+  ├── global_correlation_map.png      Geographic visualization
+  ├── lag_distribution.png            Time lag patterns
+  ├── prediction_model_summary.png    Model breakdown
+  └── regional_comparison_2020.png    Time series overlay
+
+
+🌍 GLOBAL COVERAGE DETAILS
+──────────────────────────────────────────────────────────────────────────────
+
+Northern Wisconsin    3 stations   Target area (Phelps, Land O'Lakes)
+Russia/Siberia       11 stations   Cold air source, polar vortex
+Japan                 7 stations   East Asian jet stream
+China                 7 stations   Tibetan High, continental patterns
+California Ski        4 stations   Pacific atmospheric rivers
+Colorado Rockies      5 stations   Continental upslope indicators
+Pacific Northwest     3 stations   Pacific moisture source
+Canada West           2 stations   Coastal mountains
+Canada Rockies        2 stations   Interior mountains
+Canada East           2 stations   Great Lakes lake-effect
+Europe Alps           5 stations   Northern Hemisphere completeness
+Scandinavia           3 stations   Arctic patterns
+─────────────────────────────────────────────────────────────────────────────
+TOTAL               ~55 stations across 10+ countries
+
+
+🎓 SCIENTIFIC BASIS
+──────────────────────────────────────────────────────────────────────────────
+
+Teleconnections: Global atmospheric patterns are connected
+
+  Asia → North America Wave Propagation (5-10 day lag)
+    Heavy Siberian snow → Cold air mass builds
+    → Polar vortex disruption → North American outbreak
+
+  Pacific Patterns (2-5 day lag)
+    California atmospheric river → Blocking high pressure
+    → Downstream jet stream amplification → Wisconsin snow
+
+  Jet Stream Position
+    Japan heavy snow → Strong East Asian jet
+    → Wave energy transfer → Amplified North American jet
+
+
+📖 MORE INFO
+──────────────────────────────────────────────────────────────────────────────
+
+Full documentation:  GLOBAL_SNOWFALL_README.md
+Script help:         python script_name.py --help
+SQL schema:          sqlite3 global_snowfall.db ".schema"
+
+================================================================================
+Ready to start? Run:  python run_global_analysis.py --full
+================================================================================

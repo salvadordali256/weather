@@ -1,0 +1,38 @@
+# Weather Data Fetcher Requirements
+
+# Core dependencies
+requests>=2.31.0
+pandas>=2.1.0
+numpy>=1.24.0
+
+# Storage formats (Parquet is most efficient for time-series data)
+pyarrow>=14.0.0  # For Parquet format - highly recommended for compression and speed
+fastparquet>=2023.10.0  # Alternative Parquet engine
+
+# Retry and rate limiting
+tenacity>=8.2.3  # For retry logic with exponential backoff
+
+# Optional but recommended
+python-dotenv>=1.0.0  # For managing API keys in .env files
+tqdm>=4.66.0  # For progress bars during long downloads
+
+# Database support (optional - for advanced storage)
+sqlalchemy>=2.0.0  # SQL database connectivity
+psycopg2-binary>=2.9.0  # PostgreSQL adapter
+pymongo>=4.5.0  # MongoDB adapter
+
+# DuckDB - High-performance analytical database (HIGHLY RECOMMENDED)
+duckdb>=0.9.0  # Fast analytical queries, 10-100x faster than SQLite for aggregations
+
+# Time series database support (optional - highly recommended for large datasets)
+influxdb-client>=1.38.0  # InfluxDB time-series database
+
+# Data quality and validation
+great-expectations>=0.18.0  # Data quality validation
+
+# Visualization (optional)
+matplotlib>=3.8.0
+plotly>=5.18.0
+
+# Performance monitoring
+psutil>=5.9.0  # System monitoring

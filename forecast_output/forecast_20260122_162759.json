@@ -1,0 +1,200 @@
+{
+  "generated_at": "2026-01-22T16:27:59.903888",
+  "generated_at_human": "January 22, 2026 at 04:27 PM",
+  "forecast_days": 7,
+  "forecasts": [
+    {
+      "date": "2026-01-23",
+      "day_of_week": "Friday",
+      "day_number": 1,
+      "probability": 40,
+      "event_type": "QUIET",
+      "confidence": "MODERATE",
+      "lead_time": "12-48 hours",
+      "ensemble_score": 0.245,
+      "regional_score": 0.3,
+      "global_score": 0.117,
+      "forecast_category": "trace",
+      "active_signals": 2,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
+    },
+    {
+      "date": "2026-01-24",
+      "day_of_week": "Saturday",
+      "day_number": 2,
+      "probability": 10,
+      "event_type": "QUIET",
+      "confidence": "LOW",
+      "lead_time": "N/A",
+      "ensemble_score": 0.035,
+      "regional_score": 0.0,
+      "global_score": 0.117,
+      "forecast_category": "none",
+      "active_signals": 1,
+      "expected_snowfall": "0-5mm (trace or none)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-01-25",
+      "day_of_week": "Sunday",
+      "day_number": 3,
+      "probability": 10,
+      "event_type": "QUIET",
+      "confidence": "LOW",
+      "lead_time": "N/A",
+      "ensemble_score": 0.035,
+      "regional_score": 0.0,
+      "global_score": 0.117,
+      "forecast_category": "none",
+      "active_signals": 1,
+      "expected_snowfall": "0-5mm (trace or none)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-01-26",
+      "day_of_week": "Monday",
+      "day_number": 4,
+      "probability": 25,
+      "event_type": "QUIET",
+      "confidence": "LOW-MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.117,
+      "regional_score": 0.0,
+      "global_score": 0.388,
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "0-10mm (trace-0.5 inch)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-01-27",
+      "day_of_week": "Tuesday",
+      "day_number": 5,
+      "probability": 25,
+      "event_type": "QUIET",
+      "confidence": "LOW-MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.117,
+      "regional_score": 0.0,
+      "global_score": 0.388,
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "0-10mm (trace-0.5 inch)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-01-28",
+      "day_of_week": "Wednesday",
+      "day_number": 6,
+      "probability": 25,
+      "event_type": "QUIET",
+      "confidence": "LOW-MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.117,
+      "regional_score": 0.0,
+      "global_score": 0.388,
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "0-10mm (trace-0.5 inch)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-01-29",
+      "day_of_week": "Thursday",
+      "day_number": 7,
+      "probability": 40,
+      "event_type": "QUIET",
+      "confidence": "MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.186,
+      "regional_score": 0.0,
+      "global_score": 0.619,
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
+    }
+  ],
+  "recent_observations": [
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-22",
+      "snowfall_mm": 1.4,
+      "snowfall_inches": 0.1
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-21",
+      "snowfall_mm": 4.2,
+      "snowfall_inches": 0.2
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-20",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-19",
+      "snowfall_mm": 21.7,
+      "snowfall_inches": 0.9
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-18",
+      "snowfall_mm": 11.2,
+      "snowfall_inches": 0.4
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-17",
+      "snowfall_mm": 14.0,
+      "snowfall_inches": 0.6
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-16",
+      "snowfall_mm": 30.8,
+      "snowfall_inches": 1.2
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-01-15",
+      "snowfall_mm": 4.9,
+      "snowfall_inches": 0.2
+    }
+  ],
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: January 22, 2026 at 04:27 PM\n\nOVERVIEW:\n  \u2022 2 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 40% on Friday, 2026-01-23\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nFriday, 2026-01-23:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nSaturday, 2026-01-24:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSunday, 2026-01-25:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-01-26:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nTuesday, 2026-01-27:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nWednesday, 2026-01-28:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nThursday, 2026-01-29:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "locations": {
+    "phelps_wi": {
+      "name": "Phelps, WI",
+      "ski_resorts": [
+        "Big Snow Resort (nearby)"
+      ],
+      "display_name": "Northern Wisconsin - Phelps"
+    },
+    "land_o_lakes_wi": {
+      "name": "Land O'Lakes, WI",
+      "ski_resorts": [
+        "Gateway area"
+      ],
+      "display_name": "Northern Wisconsin - Land O'Lakes"
+    },
+    "eagle_river_wi": {
+      "name": "Eagle River, WI",
+      "ski_resorts": [
+        "Numerous area resorts"
+      ],
+      "display_name": "Northern Wisconsin - Eagle River"
+    }
+  }
+}

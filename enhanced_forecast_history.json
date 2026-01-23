@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2026-01-14T12:55:49.766303",
+    "probability": 22.020000000000003,
+    "original_probability": null,
+    "confidence": "MEDIUM",
+    "event_type": "MIXED SIGNALS",
+    "expected_7day_mm": null,
+    "atmospheric_patterns": [],
+    "adjustments": []
+  },
+  {
+    "timestamp": "2026-01-14T12:55:57.838801",
+    "probability": 22.020000000000003,
+    "original_probability": null,
+    "confidence": "MEDIUM",
+    "event_type": "MIXED SIGNALS",
+    "expected_7day_mm": null,
+    "atmospheric_patterns": [],
+    "adjustments": []
+  }
+]

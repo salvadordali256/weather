@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount forecast output so updates appear in real-time
+      - ./forecast_output:/app/forecast_output
+      - ./templates:/app/templates
+    environment:
+      - FLASK_ENV=development
+    restart: unless-stopped

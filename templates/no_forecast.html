@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}No Forecast Available{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="eyebrow">System Status</div>
+    <h1 class="section-title">No Forecast Available</h1>
+    <p class="lead">There is no forecast data available yet.</p>
+    <p>To generate a forecast, run:</p>
+    <div class="code-box">python3 daily_automated_forecast.py</div>
+    <p>Then refresh this page to see the forecast dashboard.</p>
+    <a href="/" class="button-link">Refresh Page</a>
+</section>
+{% endblock %}

@@ -1,0 +1,91 @@
+{
+  "summary": {
+    "total_issues": 10,
+    "high": 1,
+    "medium": 9,
+    "low": 0,
+    "scanned_path": "."
+  },
+  "issues": [
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "noaa_weather_fetcher.py",
+      "line": 130,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "noaa_weather_fetcher.py",
+      "line": 191,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "noaa_weather_fetcher.py",
+      "line": 251,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "noaa_weather_fetcher.py",
+      "line": 362,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "noaa_weather_fetcher.py",
+      "line": 426,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "HIGH",
+      "file": "agents.py",
+      "line": 272,
+      "description": "Broad exception handler catches Exception without logging",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "openmeteo_weather_fetcher.py",
+      "line": 273,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "openmeteo_weather_fetcher.py",
+      "line": 402,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "weather_orchestrator.py",
+      "line": 213,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    },
+    {
+      "check": "Broad Exception Handler",
+      "severity": "MEDIUM",
+      "file": "weather_orchestrator.py",
+      "line": 297,
+      "description": "Broad exception handler catches Exception",
+      "fix": "Catch specific exceptions instead of Exception. Always log errors:\n    except SpecificError as e:\n        logger.error(f'Error: {e}')\n        raise"
+    }
+  ]
+}
