@@ -1,0 +1,18 @@
+# Databases (large binary files)
+*.db
+
+# Logs
+logs/
+
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+
+# Keep forecast history local
+forecast_output/forecast_*.json

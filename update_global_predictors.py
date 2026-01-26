@@ -3,8 +3,16 @@
 
 import requests
 import sqlite3
+import os
 from datetime import datetime, timedelta
 import time
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
+
+# Default database path, can be overridden via DB_PATH environment variable
+DEFAULT_DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
 def update_station(station_id, lat, lon, name):
     """Update last 14 days of data for a station"""
@@ -38,7 +46,7 @@ def update_station(station_id, lat, lon, name):
                     snow_mm = snow * 10.0
                     records.append((station_id, date, snow_mm))
 
-            conn = sqlite3.connect('demo_global_snowfall.db')
+            conn = sqlite3.connect(DEFAULT_DB_PATH)
             cursor = conn.cursor()
             cursor.executemany("""
                 INSERT OR REPLACE INTO snowfall_daily (station_id, date, snowfall_mm)

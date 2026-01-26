@@ -14,16 +14,26 @@ Detection capabilities:
 import sqlite3
 import pandas as pd
 import numpy as np
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 import json
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
+
+# Default database path, can be overridden via DB_PATH environment variable
+DEFAULT_DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
 class EnhancedRegionalForecastSystem:
     """
     Enhanced forecast system combining global teleconnections with regional predictors
     """
 
-    def __init__(self, db_path='demo_global_snowfall.db'):
+    def __init__(self, db_path=None):
+        if db_path is None:
+            db_path = DEFAULT_DB_PATH
         self.db_path = db_path
 
         # Global predictors (long-range, 5-7 day lead time)

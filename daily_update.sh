@@ -2,7 +2,14 @@
 # Daily Automated Weather Data Update & Forecast Generation
 # Runs at 17:30 daily via cron
 
-cd /Users/kyle.jurgens/weather
+# Change to script directory (works on Mac or Pi)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# Load environment variables from .env file
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
 
 # Activate virtual environment
 source venv/bin/activate

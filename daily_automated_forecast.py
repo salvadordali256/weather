@@ -13,18 +13,32 @@ Runs daily to provide:
 import sqlite3
 import pandas as pd
 import numpy as np
+import os
 from datetime import datetime, timedelta
-from enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
+from dotenv import load_dotenv
 import json
 from pathlib import Path
+
+# Load .env file
+load_dotenv()
+
+from enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
+
+# Default paths, can be overridden via environment variables
+DEFAULT_DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
+DEFAULT_OUTPUT_DIR = os.environ.get('FORECAST_OUTPUT_DIR', 'forecast_output')
 
 class DailyForecastRunner:
     """Automated daily forecast generation"""
 
-    def __init__(self, db_path='demo_global_snowfall.db'):
+    def __init__(self, db_path=None, output_dir=None):
+        if db_path is None:
+            db_path = DEFAULT_DB_PATH
+        if output_dir is None:
+            output_dir = DEFAULT_OUTPUT_DIR
         self.db_path = db_path
         self.forecast_system = EnhancedRegionalForecastSystem(db_path)
-        self.output_dir = Path('forecast_output')
+        self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
 
         # Target locations
