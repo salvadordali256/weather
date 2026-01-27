@@ -23,6 +23,11 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 
+      - name: Update recent observations
+        run: |
+          python update_recent_data.py
+          python update_global_predictors.py
+
       - name: Generate latest forecast
         run: python daily_automated_forecast.py
 
