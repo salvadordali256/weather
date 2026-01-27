@@ -1,29 +1,12 @@
 {
-  "generated_at": "2026-01-26T17:31:29.030334",
-  "generated_at_human": "January 26, 2026 at 05:31 PM",
+  "generated_at": "2026-01-27T06:00:03.727990",
+  "generated_at_human": "January 27, 2026 at 06:00 AM",
   "forecast_days": 7,
   "forecasts": [
     {
-      "date": "2026-01-27",
-      "day_of_week": "Tuesday",
-      "day_number": 1,
-      "probability": 40,
-      "event_type": "QUIET",
-      "confidence": "MODERATE",
-      "lead_time": "5-7 days",
-      "ensemble_score": 0.15,
-      "regional_score": 0.0,
-      "global_score": 0.5,
-      "forecast_category": "trace",
-      "active_signals": 2,
-      "expected_snowfall": "5-20mm (trace-1 inch)",
-      "icon": "\u2601\ufe0f",
-      "alert_level": "LOW"
-    },
-    {
       "date": "2026-01-28",
       "day_of_week": "Wednesday",
-      "day_number": 2,
+      "day_number": 1,
       "probability": 40,
       "event_type": "QUIET",
       "confidence": "MODERATE",
@@ -40,7 +23,7 @@
     {
       "date": "2026-01-29",
       "day_of_week": "Thursday",
-      "day_number": 3,
+      "day_number": 2,
       "probability": 40,
       "event_type": "QUIET",
       "confidence": "MODERATE",
@@ -57,7 +40,7 @@
     {
       "date": "2026-01-30",
       "day_of_week": "Friday",
-      "day_number": 4,
+      "day_number": 3,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -74,7 +57,7 @@
     {
       "date": "2026-01-31",
       "day_of_week": "Saturday",
-      "day_number": 5,
+      "day_number": 4,
       "probability": 40,
       "event_type": "QUIET",
       "confidence": "MODERATE",
@@ -91,7 +74,7 @@
     {
       "date": "2026-02-01",
       "day_of_week": "Sunday",
-      "day_number": 6,
+      "day_number": 5,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -108,7 +91,7 @@
     {
       "date": "2026-02-02",
       "day_of_week": "Monday",
-      "day_number": 7,
+      "day_number": 6,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -119,6 +102,23 @@
       "forecast_category": "trace",
       "active_signals": 1,
       "expected_snowfall": "0-10mm (trace-0.5 inch)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-02-03",
+      "day_of_week": "Tuesday",
+      "day_number": 7,
+      "probability": 10,
+      "event_type": "QUIET",
+      "confidence": "LOW",
+      "lead_time": "N/A",
+      "ensemble_score": 0.0,
+      "regional_score": 0.0,
+      "global_score": 0.0,
+      "forecast_category": "none",
+      "active_signals": 0,
+      "expected_snowfall": "0-5mm (trace or none)",
       "icon": "\u26aa",
       "alert_level": "MINIMAL"
     }
@@ -177,21 +177,9 @@
       "date": "2026-01-20",
       "snowfall_mm": 0.0,
       "snowfall_inches": 0.0
-    },
-    {
-      "station": "Eagle River, WI",
-      "date": "2026-01-19",
-      "snowfall_mm": 17.5,
-      "snowfall_inches": 0.7
-    },
-    {
-      "station": "Phelps, WI",
-      "date": "2026-01-19",
-      "snowfall_mm": 21.7,
-      "snowfall_inches": 0.9
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: January 26, 2026 at 05:31 PM\n\nOVERVIEW:\n  \u2022 4 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 40% on Tuesday, 2026-01-27\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nTuesday, 2026-01-27:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nWednesday, 2026-01-28:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nThursday, 2026-01-29:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nFriday, 2026-01-30:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nSaturday, 2026-01-31:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nSunday, 2026-02-01:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nMonday, 2026-02-02:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: January 27, 2026 at 06:00 AM\n\nOVERVIEW:\n  \u2022 3 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 40% on Wednesday, 2026-01-28\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nWednesday, 2026-01-28:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nThursday, 2026-01-29:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nFriday, 2026-01-30:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nSaturday, 2026-01-31:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nSunday, 2026-02-01:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nMonday, 2026-02-02:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nTuesday, 2026-02-03:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
