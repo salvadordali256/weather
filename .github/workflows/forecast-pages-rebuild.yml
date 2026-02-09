@@ -29,6 +29,9 @@ jobs:
           python update_global_predictors.py
 
       - name: Generate latest forecast
+        env:
+          FORECAST_OUTPUT_DIR: forecast_output
+          DB_PATH: demo_global_snowfall.db
         run: python daily_automated_forecast.py
 
       - name: Build static site
