@@ -170,7 +170,7 @@ def main():
     logger.info("=" * 80)
 
     conn = sqlite3.connect(DB_PATH, timeout=60)
-    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.execute("PRAGMA busy_timeout=60000")
     setup_hourly_table(conn)
 

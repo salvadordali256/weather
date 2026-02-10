@@ -217,7 +217,7 @@ def collect_noaa_data(budget=5000, rate_limit=0.3, start_year=1940):
     logger.info("=" * 80)
 
     conn = sqlite3.connect(DB_PATH, timeout=60)
-    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.execute("PRAGMA busy_timeout=60000")
     setup_noaa_table(conn)
 
@@ -305,7 +305,7 @@ def collect_noaa_data(budget=5000, rate_limit=0.3, start_year=1940):
 def show_status():
     """Show NOAA collection progress"""
     conn = sqlite3.connect(DB_PATH, timeout=60)
-    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.execute("PRAGMA busy_timeout=60000")
 
     try:

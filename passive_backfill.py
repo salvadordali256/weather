@@ -262,7 +262,7 @@ class BackfillTracker:
         self.logger.info("=" * 80)
 
         conn = sqlite3.connect(self.db_path, timeout=60)
-        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA journal_mode=DELETE")
         conn.execute("PRAGMA busy_timeout=60000")
         self.setup_tables(conn)
 
@@ -343,7 +343,7 @@ class BackfillTracker:
     def show_status(self):
         """Print backfill progress report"""
         conn = sqlite3.connect(self.db_path, timeout=60)
-        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA journal_mode=DELETE")
         conn.execute("PRAGMA busy_timeout=60000")
 
         # Overall progress
