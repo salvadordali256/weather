@@ -13,6 +13,9 @@ gunicorn>=21.2.0
 # Database (included with Python)
 # sqlite3 - Built-in
 
+# Radiosonde / upper-air data
+siphon>=0.9.0
+
 # Already installed from previous work
 # matplotlib>=3.7.0  # For visualizations (already have)
 # scipy>=1.10.0      # For statistics (if needed)

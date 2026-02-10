@@ -16,6 +16,43 @@ load_dotenv()
 # Database path - uses NAS mount on Pi, local file otherwise
 DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
+# Expanded daily variables for comprehensive collection
+DAILY_VARIABLES = (
+    'snowfall_sum,precipitation_sum,rain_sum,'
+    'temperature_2m_max,temperature_2m_min,temperature_2m_mean,'
+    'apparent_temperature_max,apparent_temperature_min,'
+    'wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,'
+    'shortwave_radiation_sum,sunshine_duration,'
+    'precipitation_hours,weather_code,'
+    'et0_fao_evapotranspiration'
+)
+
+
+def migrate_schema(conn):
+    """Add new columns to snowfall_daily if they don't exist"""
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(snowfall_daily)")
+    existing = {row[1] for row in cursor.fetchall()}
+
+    new_columns = {
+        'precipitation_mm': 'REAL', 'rain_mm': 'REAL',
+        'temp_max_celsius': 'REAL', 'temp_min_celsius': 'REAL',
+        'apparent_temp_max': 'REAL', 'apparent_temp_min': 'REAL',
+        'wind_speed_max': 'REAL', 'wind_gusts_max': 'REAL',
+        'wind_direction_dominant': 'INTEGER',
+        'radiation_sum': 'REAL', 'sunshine_duration': 'REAL',
+        'precipitation_hours': 'REAL', 'weather_code': 'INTEGER',
+        'evapotranspiration': 'REAL',
+    }
+
+    for col, dtype in new_columns.items():
+        if col not in existing:
+            cursor.execute(f"ALTER TABLE snowfall_daily ADD COLUMN {col} {dtype}")
+            print(f"  Added column: {col}")
+
+    conn.commit()
+
+
 # All global stations organized by region
 WORLD_STATIONS = {
     # Northern Wisconsin (Primary targets)
@@ -145,19 +182,88 @@ WORLD_STATIONS = {
         ("banff_ab", 51.1784, -115.5708, "Banff, AB"),
         ("lake_louise_ab", 51.4254, -116.1773, "Lake Louise, AB"),
     ],
+    # South America
+    "south_america": [
+        ("bariloche_argentina", -41.1335, -71.3103, "Bariloche, Argentina"),
+        ("ushuaia_argentina", -54.8019, -68.3030, "Ushuaia, Argentina"),
+        ("santiago_chile", -33.3500, -70.3200, "Santiago/Farellones, Chile"),
+        ("punta_arenas_chile", -53.1638, -70.9171, "Punta Arenas, Chile"),
+        ("mendoza_argentina", -32.8895, -68.8458, "Mendoza, Argentina"),
+    ],
+    # Africa Mountains
+    "africa_mountains": [
+        ("ifrane_morocco", 33.5228, -5.1110, "Ifrane, Morocco"),
+        ("midelt_morocco", 32.6801, -4.7400, "Midelt, Morocco"),
+        ("mount_kenya_area", -0.0167, 37.0667, "Nanyuki, Kenya"),
+        ("lesotho_highlands", -29.2892, 29.0728, "Mokhotlong, Lesotho"),
+    ],
+    # Central Asia
+    "central_asia": [
+        ("astana_kazakhstan", 51.1694, 71.4491, "Astana, Kazakhstan"),
+        ("almaty_kazakhstan", 43.2220, 76.8512, "Almaty, Kazakhstan"),
+        ("bishkek_kyrgyzstan", 42.8746, 74.5698, "Bishkek, Kyrgyzstan"),
+        ("dushanbe_tajikistan", 38.5598, 68.7740, "Dushanbe, Tajikistan"),
+        ("kabul_afghanistan", 34.5553, 69.2075, "Kabul, Afghanistan"),
+    ],
+    # Middle East Mountains
+    "middle_east_mountains": [
+        ("erzurum_turkey", 39.9055, 41.2658, "Erzurum, Turkey"),
+        ("kars_turkey", 40.6013, 43.0975, "Kars, Turkey"),
+        ("tabriz_iran", 38.0962, 46.2738, "Tabriz, Iran"),
+        ("tehran_iran", 35.7448, 51.3753, "Tehran, Iran"),
+    ],
+    # Australia / New Zealand
+    "australia_nz": [
+        ("mount_buller_australia", -37.1456, 146.4408, "Mount Buller, Australia"),
+        ("thredbo_australia", -36.5059, 148.3064, "Thredbo, Australia"),
+        ("queenstown_nz", -45.0312, 168.6626, "Queenstown, NZ"),
+        ("mount_cook_nz", -43.7352, 170.0962, "Mount Cook Village, NZ"),
+    ],
+    # Canada East
+    "canada_east": [
+        ("quebec_city_qc", 46.8139, -71.2080, "Quebec City, QC"),
+        ("sept_iles_qc", 50.2120, -66.3750, "Sept-Iles, QC"),
+        ("st_johns_nl", 47.5615, -52.7126, "St. John's, NL"),
+    ],
+    # Canada North
+    "canada_north": [
+        ("edmonton_ab", 53.5461, -113.4938, "Edmonton, AB"),
+        ("yellowknife_nt", 62.4540, -114.3718, "Yellowknife, NT"),
+        ("churchill_mb", 58.7684, -94.1636, "Churchill, MB"),
+    ],
+    # Appalachian / Eastern US
+    "appalachian_eastern_us": [
+        ("mount_washington_nh", 44.2706, -71.3033, "Mount Washington, NH"),
+        ("syracuse_ny", 43.0481, -76.1474, "Syracuse, NY"),
+        ("burlington_vt", 44.4759, -73.2121, "Burlington, VT"),
+        ("elkins_wv", 38.9262, -79.8467, "Elkins, WV"),
+        ("boone_nc", 36.2168, -81.6746, "Boone, NC"),
+    ],
+    # Southern Hemisphere Reference
+    "southern_hemisphere_ref": [
+        ("grytviken_south_georgia", -54.2811, -36.5092, "Grytviken, South Georgia"),
+        ("hobart_australia", -42.8821, 147.3272, "Hobart, Australia"),
+        ("stanley_falklands", -51.6975, -57.8517, "Stanley, Falkland Islands"),
+    ],
+    # Europe Additional
+    "europe_additional": [
+        ("tbilisi_georgia", 41.7151, 44.8271, "Tbilisi, Georgia"),
+        ("moscow_russia", 55.7558, 37.6173, "Moscow, Russia"),
+        ("helsinki_finland", 60.1699, 24.9384, "Helsinki, Finland"),
+    ],
 }
 
 
 def ensure_station_exists(cursor, station_id, lat, lon, name, region):
     """Make sure station is registered in the database"""
     cursor.execute("""
-        INSERT OR IGNORE INTO stations (station_id, name, latitude, longitude, region, data_source)
+        INSERT OR IGNORE INTO stations (station_id, name, latitude, longitude, region, significance)
         VALUES (?, ?, ?, ?, ?, 'open-meteo')
     """, (station_id, name, lat, lon, region))
 
 
 def update_station(cursor, station_id, lat, lon, name, days_back=14):
-    """Update a single station with recent data"""
+    """Update a single station with recent data (expanded variables)"""
     end_date = datetime.now()
     start_date = end_date - timedelta(days=days_back)
 
@@ -167,7 +273,7 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
         'longitude': lon,
         'start_date': start_date.strftime('%Y-%m-%d'),
         'end_date': end_date.strftime('%Y-%m-%d'),
-        'daily': 'snowfall_sum,temperature_2m_max,temperature_2m_min,precipitation_sum',
+        'daily': DAILY_VARIABLES,
         'timezone': 'UTC'
     }
 
@@ -179,23 +285,45 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
         if 'daily' not in data or 'time' not in data['daily']:
             return 0, None
 
-        dates = data['daily']['time']
-        snowfall = data['daily'].get('snowfall_sum', [None] * len(dates))
-        temp_max = data['daily'].get('temperature_2m_max', [None] * len(dates))
-        temp_min = data['daily'].get('temperature_2m_min', [None] * len(dates))
-        precip = data['daily'].get('precipitation_sum', [None] * len(dates))
+        d = data['daily']
+        dates = d['time']
+        n = len(dates)
+
+        def get(key):
+            return d.get(key, [None] * n)
 
         records = 0
         recent_snow = []
 
         for i, date in enumerate(dates):
-            snow_mm = snowfall[i] * 10.0 if snowfall[i] is not None else None
+            snow_raw = get('snowfall_sum')[i]
+            snow_mm = snow_raw * 10.0 if snow_raw is not None else None
+            temp_mean = None
+            t_max = get('temperature_2m_max')[i]
+            t_min = get('temperature_2m_min')[i]
+            if t_max is not None and t_min is not None:
+                temp_mean = (t_max + t_min) / 2.0
 
             cursor.execute("""
                 INSERT OR REPLACE INTO snowfall_daily
-                (station_id, date, snowfall_mm, temp_max_celsius, temp_min_celsius, precipitation_mm)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (station_id, date, snow_mm, temp_max[i], temp_min[i], precip[i]))
+                (station_id, date, snowfall_mm, temp_mean_celsius,
+                 precipitation_mm, rain_mm, temp_max_celsius, temp_min_celsius,
+                 apparent_temp_max, apparent_temp_min,
+                 wind_speed_max, wind_gusts_max, wind_direction_dominant,
+                 radiation_sum, sunshine_duration,
+                 precipitation_hours, weather_code, evapotranspiration)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                station_id, date, snow_mm, temp_mean,
+                get('precipitation_sum')[i], get('rain_sum')[i],
+                t_max, t_min,
+                get('apparent_temperature_max')[i], get('apparent_temperature_min')[i],
+                get('wind_speed_10m_max')[i], get('wind_gusts_10m_max')[i],
+                get('wind_direction_10m_dominant')[i],
+                get('shortwave_radiation_sum')[i], get('sunshine_duration')[i],
+                get('precipitation_hours')[i], get('weather_code')[i],
+                get('et0_fao_evapotranspiration')[i],
+            ))
             records += 1
 
             if snow_mm and snow_mm > 5:
@@ -223,6 +351,7 @@ def collect_world_data(days_back=14, rate_limit=0.3):
     print(f"{'='*80}\n")
 
     conn = sqlite3.connect(DB_PATH, timeout=30)
+    migrate_schema(conn)
     cursor = conn.cursor()
 
     success_count = 0
