@@ -1,29 +1,12 @@
 {
-  "generated_at": "2026-02-09T21:16:55.806210",
-  "generated_at_human": "February 09, 2026 at 09:16 PM",
+  "generated_at": "2026-02-10T06:00:02.491214",
+  "generated_at_human": "February 10, 2026 at 06:00 AM",
   "forecast_days": 7,
   "forecasts": [
     {
-      "date": "2026-02-10",
-      "day_of_week": "Tuesday",
-      "day_number": 1,
-      "probability": 55,
-      "event_type": "QUIET",
-      "confidence": "MODERATE",
-      "lead_time": "12-48 hours",
-      "ensemble_score": 0.347,
-      "regional_score": 0.3,
-      "global_score": 0.456,
-      "forecast_category": "significant",
-      "active_signals": 4,
-      "expected_snowfall": "10-30mm (0.5-1.5 inches)",
-      "icon": "\ud83c\udf28\ufe0f",
-      "alert_level": "MODERATE"
-    },
-    {
       "date": "2026-02-11",
       "day_of_week": "Wednesday",
-      "day_number": 2,
+      "day_number": 1,
       "probability": 55,
       "event_type": "QUIET",
       "confidence": "MODERATE",
@@ -40,7 +23,7 @@
     {
       "date": "2026-02-12",
       "day_of_week": "Thursday",
-      "day_number": 3,
+      "day_number": 2,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -57,7 +40,7 @@
     {
       "date": "2026-02-13",
       "day_of_week": "Friday",
-      "day_number": 4,
+      "day_number": 3,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -74,7 +57,7 @@
     {
       "date": "2026-02-14",
       "day_of_week": "Saturday",
-      "day_number": 5,
+      "day_number": 4,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -91,7 +74,7 @@
     {
       "date": "2026-02-15",
       "day_of_week": "Sunday",
-      "day_number": 6,
+      "day_number": 5,
       "probability": 25,
       "event_type": "QUIET",
       "confidence": "LOW-MODERATE",
@@ -108,6 +91,23 @@
     {
       "date": "2026-02-16",
       "day_of_week": "Monday",
+      "day_number": 6,
+      "probability": 10,
+      "event_type": "QUIET",
+      "confidence": "LOW",
+      "lead_time": "N/A",
+      "ensemble_score": 0.0,
+      "regional_score": 0.0,
+      "global_score": 0.0,
+      "forecast_category": "none",
+      "active_signals": 0,
+      "expected_snowfall": "0-5mm (trace or none)",
+      "icon": "\u26aa",
+      "alert_level": "MINIMAL"
+    },
+    {
+      "date": "2026-02-17",
+      "day_of_week": "Tuesday",
       "day_number": 7,
       "probability": 10,
       "event_type": "QUIET",
@@ -165,15 +165,9 @@
       "date": "2026-02-03",
       "snowfall_mm": 0.0,
       "snowfall_inches": 0.0
-    },
-    {
-      "station": "Phelps, WI",
-      "date": "2026-02-02",
-      "snowfall_mm": 2.1,
-      "snowfall_inches": 0.1
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: February 09, 2026 at 09:16 PM\n\nOVERVIEW:\n  \u2022 2 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 55% on Tuesday, 2026-02-10\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nTuesday, 2026-02-10:\n  \ud83c\udf28\ufe0f 55% probability - QUIET\n  Expected: 10-30mm (0.5-1.5 inches)\n  Confidence: MODERATE\n\nWednesday, 2026-02-11:\n  \ud83c\udf28\ufe0f 55% probability - QUIET\n  Expected: 10-30mm (0.5-1.5 inches)\n  Confidence: MODERATE\n\nThursday, 2026-02-12:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nFriday, 2026-02-13:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nSaturday, 2026-02-14:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nSunday, 2026-02-15:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nMonday, 2026-02-16:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: February 10, 2026 at 06:00 AM\n\nOVERVIEW:\n  \u2022 1 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 55% on Wednesday, 2026-02-11\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nWednesday, 2026-02-11:\n  \ud83c\udf28\ufe0f 55% probability - QUIET\n  Expected: 10-30mm (0.5-1.5 inches)\n  Confidence: MODERATE\n\nThursday, 2026-02-12:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nFriday, 2026-02-13:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nSaturday, 2026-02-14:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nSunday, 2026-02-15:\n  \u26aa 25% probability - QUIET\n  Expected: 0-10mm (trace-0.5 inch)\n  Confidence: LOW-MODERATE\n\nMonday, 2026-02-16:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-02-17:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
