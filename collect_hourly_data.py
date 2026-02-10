@@ -169,7 +169,9 @@ def main():
     logger.info(f"Budget: {args.budget}")
     logger.info("=" * 80)
 
-    conn = sqlite3.connect(DB_PATH, timeout=30)
+    conn = sqlite3.connect(DB_PATH, timeout=60)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=60000")
     setup_hourly_table(conn)
 
     weighted_used = 0.0

@@ -261,7 +261,9 @@ class BackfillTracker:
         self.logger.info(f"Year range: {self.start_year}-{self.current_year}")
         self.logger.info("=" * 80)
 
-        conn = sqlite3.connect(self.db_path, timeout=30)
+        conn = sqlite3.connect(self.db_path, timeout=60)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=60000")
         self.setup_tables(conn)
 
         # Register all stations
@@ -340,7 +342,9 @@ class BackfillTracker:
 
     def show_status(self):
         """Print backfill progress report"""
-        conn = sqlite3.connect(self.db_path, timeout=30)
+        conn = sqlite3.connect(self.db_path, timeout=60)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=60000")
 
         # Overall progress
         total_possible = len(self.stations) * (self.current_year - self.start_year + 1)

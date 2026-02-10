@@ -177,7 +177,9 @@ def collect_soundings(days_back=7, rate_limit=2.0):
     logger.info(f"Sounding times: 00Z, 12Z")
     logger.info("=" * 80)
 
-    conn = sqlite3.connect(DB_PATH, timeout=30)
+    conn = sqlite3.connect(DB_PATH, timeout=60)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=60000")
     setup_radiosonde_table(conn)
 
     # Register stations
