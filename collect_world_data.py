@@ -222,7 +222,7 @@ def collect_world_data(days_back=14, rate_limit=0.3):
     print(f"Total stations: {total_stations}")
     print(f"{'='*80}\n")
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     success_count = 0
@@ -270,7 +270,7 @@ def collect_world_data(days_back=14, rate_limit=0.3):
 
 def get_database_stats():
     """Print database statistics"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     cursor.execute("SELECT COUNT(DISTINCT station_id) FROM snowfall_daily")

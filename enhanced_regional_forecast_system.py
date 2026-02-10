@@ -98,7 +98,7 @@ class EnhancedRegionalForecastSystem:
         Get snowfall at a station around target date
         Returns: (avg_snow, max_snow)
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30)
 
         start_date = target_date - timedelta(days=window_days)
         end_date = target_date + timedelta(days=window_days)

@@ -141,7 +141,7 @@ class DailyForecastRunner:
 
     def get_recent_observations(self, days=7):
         """Get recent snowfall observations"""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30)
 
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)

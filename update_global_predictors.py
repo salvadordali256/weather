@@ -46,7 +46,7 @@ def update_station(station_id, lat, lon, name):
                     snow_mm = snow * 10.0
                     records.append((station_id, date, snow_mm))
 
-            conn = sqlite3.connect(DEFAULT_DB_PATH)
+            conn = sqlite3.connect(DEFAULT_DB_PATH, timeout=30)
             cursor = conn.cursor()
             cursor.executemany("""
                 INSERT OR REPLACE INTO snowfall_daily (station_id, date, snowfall_mm)

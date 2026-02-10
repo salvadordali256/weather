@@ -52,7 +52,7 @@ def update_station_recent(station_id, lat, lon, name):
                     records.append((station_id, date, snow_mm))
 
             # Save to database
-            conn = sqlite3.connect(DEFAULT_DB_PATH)
+            conn = sqlite3.connect(DEFAULT_DB_PATH, timeout=30)
             cursor = conn.cursor()
             cursor.executemany("""
                 INSERT OR REPLACE INTO snowfall_daily (station_id, date, snowfall_mm)
