@@ -4,4 +4,4 @@ compatibility_date = "2024-01-01"
 
 [[kv_namespaces]]
 binding = "STATION_KV"
-id = ""  # Fill in after: npx wrangler kv:namespace create STATION_KV
+id = "8b256335b2a0499fb2d3994b70a40491"

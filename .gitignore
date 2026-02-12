@@ -14,5 +14,11 @@ __pycache__/
 # OS files
 .DS_Store
 
+# Environment variables (secrets)
+.env
+
+# Node modules
+node_modules/
+
 # Keep forecast history local
 forecast_output/forecast_*.json

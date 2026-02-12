@@ -5,7 +5,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 # Source .env for FORECAST_OUTPUT_DIR
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | grep FORECAST_OUTPUT_DIR | xargs)
+    set -a
+    source .env
+    set +a
 fi
 FORECAST_DIR="${FORECAST_OUTPUT_DIR:-forecast_output}"
 

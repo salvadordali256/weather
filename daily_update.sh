@@ -8,7 +8,9 @@ cd "$SCRIPT_DIR"
 
 # Load environment variables from .env file
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+    set -a
+    source .env
+    set +a
 fi
 
 # Activate virtual environment

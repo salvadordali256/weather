@@ -3,6 +3,13 @@
 (function () {
     'use strict';
 
+    // ─── HTML-escape to prevent XSS from JSON data ───
+    function esc(str) {
+        var el = document.createElement('span');
+        el.textContent = String(str == null ? '' : str);
+        return el.innerHTML;
+    }
+
     // ─── State ───
     let stationData = null;
     let map = null;
@@ -11,21 +18,21 @@
 
     // ─── WMO weather code → emoji ───
     const WMO_ICONS = {
-        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
-        45: '🌫️', 48: '🌫️',
-        51: '🌧️', 53: '🌧️', 55: '🌧️',
-        56: '🌧️', 57: '🌧️',
-        61: '🌧️', 63: '🌧️', 65: '🌧️',
-        66: '🌧️', 67: '🌧️',
-        71: '🌨️', 73: '❄️', 75: '❄️',
-        77: '❄️',
-        80: '🌦️', 81: '🌦️', 82: '🌦️',
-        85: '🌨️', 86: '❄️',
-        95: '⛈️', 96: '⛈️', 99: '⛈️',
+        0: '\u2600\uFE0F', 1: '\uD83C\uDF24\uFE0F', 2: '\u26C5', 3: '\u2601\uFE0F',
+        45: '\uD83C\uDF2B\uFE0F', 48: '\uD83C\uDF2B\uFE0F',
+        51: '\uD83C\uDF27\uFE0F', 53: '\uD83C\uDF27\uFE0F', 55: '\uD83C\uDF27\uFE0F',
+        56: '\uD83C\uDF27\uFE0F', 57: '\uD83C\uDF27\uFE0F',
+        61: '\uD83C\uDF27\uFE0F', 63: '\uD83C\uDF27\uFE0F', 65: '\uD83C\uDF27\uFE0F',
+        66: '\uD83C\uDF27\uFE0F', 67: '\uD83C\uDF27\uFE0F',
+        71: '\uD83C\uDF28\uFE0F', 73: '\u2744\uFE0F', 75: '\u2744\uFE0F',
+        77: '\u2744\uFE0F',
+        80: '\uD83C\uDF26\uFE0F', 81: '\uD83C\uDF26\uFE0F', 82: '\uD83C\uDF26\uFE0F',
+        85: '\uD83C\uDF28\uFE0F', 86: '\u2744\uFE0F',
+        95: '\u26C8\uFE0F', 96: '\u26C8\uFE0F', 99: '\u26C8\uFE0F',
     };
 
     function wmoIcon(code) {
-        return WMO_ICONS[code] || '🌡️';
+        return WMO_ICONS[code] || '\uD83C\uDF21\uFE0F';
     }
 
     // ─── Score → color ───
@@ -126,14 +133,13 @@
     async function loadData() {
         try {
             const resp = await fetch('station_data.json');
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
             stationData = await resp.json();
             document.getElementById('station-count').textContent =
-                `${stationData.station_count} stations`;
+                stationData.station_count + ' stations';
             addMarkers();
             buildRegionList();
         } catch (err) {
-            console.error('Failed to load station data:', err);
             document.getElementById('station-count').textContent = 'Data unavailable';
         }
     }
@@ -155,18 +161,18 @@
             const total7 = s.forecast.snowfall_cm.slice(0, 7)
                 .reduce((a, b) => a + b, 0).toFixed(1);
 
-            marker.bindPopup(`
-                <div class="popup-name">${s.name}</div>
-                <div class="popup-region">${regionDisplayName(s.region)}</div>
-                <div class="popup-snow">
-                    ${wmoIcon(s.forecast.weather_code[0])} <strong>${total7} cm</strong> next 7 days
-                </div>
-                <div class="popup-snow">Score: <strong>${s.snow_score}</strong>/100</div>
-                <div class="popup-link" data-id="${id}">View details</div>
-            `);
+            marker.bindPopup(
+                '<div class="popup-name">' + esc(s.name) + '</div>' +
+                '<div class="popup-region">' + esc(regionDisplayName(s.region)) + '</div>' +
+                '<div class="popup-snow">' +
+                    wmoIcon(s.forecast.weather_code[0]) + ' <strong>' + esc(total7) + ' cm</strong> next 7 days' +
+                '</div>' +
+                '<div class="popup-snow">Score: <strong>' + esc(s.snow_score) + '</strong>/100</div>' +
+                '<div class="popup-link" data-id="' + esc(id) + '">View details</div>'
+            );
 
             marker.on('popupopen', function () {
-                const link = document.querySelector(`.popup-link[data-id="${id}"]`);
+                const link = document.querySelector('.popup-link[data-id="' + CSS.escape(id) + '"]');
                 if (link) link.addEventListener('click', () => selectStation(id));
             });
 
@@ -188,7 +194,7 @@
         ul.innerHTML = '';
         for (const [key, r] of Object.entries(regions)) {
             const li = document.createElement('li');
-            li.innerHTML = `<span>${r.display_name}</span><span class="region-count">${r.stations.length}</span>`;
+            li.innerHTML = '<span>' + esc(r.display_name) + '</span><span class="region-count">' + esc(r.stations.length) + '</span>';
             li.addEventListener('click', () => zoomToRegion(key));
             ul.appendChild(li);
         }
@@ -233,7 +239,7 @@
 
             for (const m of matches) {
                 const li = document.createElement('li');
-                li.innerHTML = `<span>${m.s.name}</span><span class="result-region">${regionDisplayName(m.s.region)}</span>`;
+                li.innerHTML = '<span>' + esc(m.s.name) + '</span><span class="result-region">' + esc(regionDisplayName(m.s.region)) + '</span>';
                 li.addEventListener('click', () => {
                     selectStation(m.id);
                     input.value = m.s.name;
@@ -299,7 +305,7 @@
         document.getElementById('detail-region').textContent = regionDisplayName(s.region);
 
         const scoreEl = document.getElementById('detail-score');
-        scoreEl.textContent = `Snow Score: ${s.snow_score}/100 — ${scoreLabel(s.snow_score)}`;
+        scoreEl.textContent = 'Snow Score: ' + s.snow_score + '/100 \u2014 ' + scoreLabel(s.snow_score);
         scoreEl.className = 'snow-score-badge ' + scoreBadgeClass(s.snow_score);
 
         renderForecastStrip(s);
@@ -319,15 +325,15 @@
             const inRange = d >= arrive && d <= depart;
             const snow = fc.snowfall_cm[i];
             const icon = wmoIcon(fc.weather_code[i]);
-            const tMax = fc.temp_max_c[i] != null ? Math.round(fc.temp_max_c[i]) : '—';
-            const tMin = fc.temp_min_c[i] != null ? Math.round(fc.temp_min_c[i]) : '—';
+            const tMax = fc.temp_max_c[i] != null ? Math.round(fc.temp_max_c[i]) : '\u2014';
+            const tMin = fc.temp_min_c[i] != null ? Math.round(fc.temp_min_c[i]) : '\u2014';
 
-            html += `<div class="fc-day${inRange ? ' in-range' : ''}">
-                <div class="fc-date">${shortDay(d)}<br>${shortDate(d)}</div>
-                <div class="fc-icon">${icon}</div>
-                <div class="fc-snow">${snow > 0 ? snow + ' cm' : '—'}</div>
-                <div class="fc-temp">${tMax}/${tMin}&deg;</div>
-            </div>`;
+            html += '<div class="fc-day' + (inRange ? ' in-range' : '') + '">' +
+                '<div class="fc-date">' + esc(shortDay(d)) + '<br>' + esc(shortDate(d)) + '</div>' +
+                '<div class="fc-icon">' + icon + '</div>' +
+                '<div class="fc-snow">' + (snow > 0 ? esc(snow) + ' cm' : '\u2014') + '</div>' +
+                '<div class="fc-temp">' + esc(tMax) + '/' + esc(tMin) + '&deg;</div>' +
+            '</div>';
         }
         strip.innerHTML = html;
     }
@@ -347,14 +353,16 @@
             return;
         }
 
-        card.innerHTML = `
-            <div class="history-row"><span class="hist-label">Week</span><span class="hist-value">${week.week_label}</span></div>
-            <div class="history-row"><span class="hist-label">Avg daily snowfall</span><span class="hist-value">${week.avg_daily_snowfall_mm} mm</span></div>
-            <div class="history-row"><span class="hist-label">Snow day probability</span><span class="hist-value">${Math.round(week.snow_day_probability * 100)}%</span></div>
-            <div class="history-row"><span class="hist-label">Avg high / low</span><span class="hist-value">${week.avg_temp_max_c != null ? week.avg_temp_max_c + '°' : '—'} / ${week.avg_temp_min_c != null ? week.avg_temp_min_c + '°' : '—'}</span></div>
-            <div class="history-row"><span class="hist-label">Max recorded</span><span class="hist-value">${week.max_recorded_snowfall_mm} mm</span></div>
-            <div class="history-row"><span class="hist-label">Years of data</span><span class="hist-value">${week.years_of_data}</span></div>
-        `;
+        const tempMax = week.avg_temp_max_c != null ? esc(week.avg_temp_max_c) + '\u00B0' : '\u2014';
+        const tempMin = week.avg_temp_min_c != null ? esc(week.avg_temp_min_c) + '\u00B0' : '\u2014';
+
+        card.innerHTML =
+            '<div class="history-row"><span class="hist-label">Week</span><span class="hist-value">' + esc(week.week_label) + '</span></div>' +
+            '<div class="history-row"><span class="hist-label">Avg daily snowfall</span><span class="hist-value">' + esc(week.avg_daily_snowfall_mm) + ' mm</span></div>' +
+            '<div class="history-row"><span class="hist-label">Snow day probability</span><span class="hist-value">' + esc(Math.round(week.snow_day_probability * 100)) + '%</span></div>' +
+            '<div class="history-row"><span class="hist-label">Avg high / low</span><span class="hist-value">' + tempMax + ' / ' + tempMin + '</span></div>' +
+            '<div class="history-row"><span class="hist-label">Max recorded</span><span class="hist-value">' + esc(week.max_recorded_snowfall_mm) + ' mm</span></div>' +
+            '<div class="history-row"><span class="hist-label">Years of data</span><span class="hist-value">' + esc(week.years_of_data) + '</span></div>';
     }
 
     function renderRecentObs(s) {
@@ -364,14 +372,14 @@
             return;
         }
 
-        let html = `<table>
-            <thead><tr><th>Date</th><th>Snow</th><th>High/Low</th></tr></thead>
-            <tbody>`;
+        let html = '<table>' +
+            '<thead><tr><th>Date</th><th>Snow</th><th>High/Low</th></tr></thead>' +
+            '<tbody>';
         for (const obs of s.recent_observations.slice(0, 7)) {
-            const snow = obs.snowfall_mm > 0 ? obs.snowfall_mm + ' mm' : '—';
-            const hi = obs.temp_max_c != null ? Math.round(obs.temp_max_c) + '°' : '—';
-            const lo = obs.temp_min_c != null ? Math.round(obs.temp_min_c) + '°' : '—';
-            html += `<tr><td>${shortDate(obs.date)}</td><td>${snow}</td><td>${hi}/${lo}</td></tr>`;
+            const snow = obs.snowfall_mm > 0 ? esc(obs.snowfall_mm) + ' mm' : '\u2014';
+            const hi = obs.temp_max_c != null ? esc(Math.round(obs.temp_max_c)) + '\u00B0' : '\u2014';
+            const lo = obs.temp_min_c != null ? esc(Math.round(obs.temp_min_c)) + '\u00B0' : '\u2014';
+            html += '<tr><td>' + esc(shortDate(obs.date)) + '</td><td>' + snow + '</td><td>' + hi + '/' + lo + '</td></tr>';
         }
         html += '</tbody></table>';
         el.innerHTML = html;
@@ -393,7 +401,7 @@
             const distLabel = d.dist < 100
                 ? Math.round(d.dist) + ' km'
                 : Math.round(d.dist / 10) * 10 + ' km';
-            li.innerHTML = `<span>${d.s.name}</span><span class="nearby-dist">${distLabel} — score ${d.s.snow_score}</span>`;
+            li.innerHTML = '<span>' + esc(d.s.name) + '</span><span class="nearby-dist">' + esc(distLabel) + ' \u2014 score ' + esc(d.s.snow_score) + '</span>';
             li.addEventListener('click', () => selectStation(d.id));
             ul.appendChild(li);
         }
