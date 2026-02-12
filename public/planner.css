@@ -1,0 +1,502 @@
+/* Snow Trip Planner — matches existing dark design system */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ─── Top nav ─── */
+.top-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    background: rgba(15, 52, 96, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+    position: relative;
+}
+
+.nav-back {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-back:hover {
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.nav-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    flex: 1;
+}
+
+.nav-badge {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    background: rgba(255,255,255,0.08);
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* ─── Layout ─── */
+.planner-layout {
+    display: flex;
+    height: calc(100vh - 45px);
+}
+
+/* ─── Side panel ─── */
+.side-panel {
+    width: 380px;
+    min-width: 380px;
+    background: linear-gradient(180deg, #16213e 0%, #1a1a2e 100%);
+    overflow-y: auto;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.panel-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.panel-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* ─── Search ─── */
+.search-input {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+}
+
+.search-input::placeholder {
+    color: #64748b;
+}
+
+.search-results {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-results:empty {
+    display: none;
+}
+
+.search-results li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.search-results li:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.search-results .result-region {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+/* ─── Date picker ─── */
+.date-row {
+    display: flex;
+    gap: 10px;
+}
+
+.date-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+
+.date-input {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: #e0e0e0;
+    font-size: 0.85rem;
+    outline: none;
+    color-scheme: dark;
+}
+
+.date-input:focus {
+    border-color: #3b82f6;
+}
+
+/* ─── Station detail ─── */
+.detail-header {
+    text-align: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.detail-header h2 {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.detail-region {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.snow-score-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.detail-subsection {
+    margin-top: 14px;
+}
+
+.detail-subsection h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+/* ─── Forecast strip ─── */
+.forecast-strip {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.fc-day {
+    flex: 0 0 auto;
+    width: 70px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: border-color 0.2s;
+}
+
+.fc-day.in-range {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.12);
+}
+
+.fc-day .fc-date {
+    font-size: 0.65rem;
+    color: #94a3b8;
+}
+
+.fc-day .fc-icon {
+    font-size: 1.3rem;
+    margin: 4px 0;
+}
+
+.fc-day .fc-snow {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.fc-day .fc-temp {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* ─── History card ─── */
+.history-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.history-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.85rem;
+}
+
+.history-row .hist-label {
+    color: #94a3b8;
+}
+
+.history-row .hist-value {
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+/* ─── Recent observations ─── */
+.recent-obs table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.recent-obs th {
+    color: #64748b;
+    font-weight: 600;
+    text-align: left;
+    padding: 4px 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.recent-obs td {
+    padding: 4px 6px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    color: #cbd5e1;
+}
+
+/* ─── Nearby list ─── */
+.nearby-list {
+    list-style: none;
+}
+
+.nearby-list li {
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.nearby-list li:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.nearby-dist {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+/* ─── Region list ─── */
+.region-list {
+    list-style: none;
+}
+
+.region-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.region-list li:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.region-count {
+    font-size: 0.7rem;
+    color: #64748b;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* ─── Map ─── */
+.map-container {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Leaflet popup override */
+.leaflet-popup-content-wrapper {
+    background: rgba(22, 33, 62, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #e0e0e0;
+}
+
+.leaflet-popup-tip {
+    background: rgba(22, 33, 62, 0.95);
+}
+
+.leaflet-popup-content {
+    margin: 10px 14px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.leaflet-popup-content .popup-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.leaflet-popup-content .popup-region {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.leaflet-popup-content .popup-snow {
+    margin-top: 6px;
+    font-size: 0.9rem;
+}
+
+.popup-link {
+    display: inline-block;
+    margin-top: 6px;
+    color: #3b82f6;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.popup-link:hover {
+    text-decoration: underline;
+}
+
+/* ─── Score colors ─── */
+.score-high { color: #3b82f6; }
+.score-moderate { color: #6366f1; }
+.score-low { color: #94a3b8; }
+
+.badge-high { background: rgba(59,130,246,0.25); color: #60a5fa; }
+.badge-moderate { background: rgba(99,102,241,0.25); color: #818cf8; }
+.badge-low { background: rgba(148,163,184,0.2); color: #94a3b8; }
+
+/* ─── Scrollbar ─── */
+.side-panel::-webkit-scrollbar,
+.forecast-strip::-webkit-scrollbar,
+.search-results::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.side-panel::-webkit-scrollbar-thumb,
+.forecast-strip::-webkit-scrollbar-thumb,
+.search-results::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+
+/* ─── No data message ─── */
+.no-data {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 8px 0;
+}
+
+/* ─── Loading ─── */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 26, 46, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.loading-overlay .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 768px) {
+    .planner-layout {
+        flex-direction: column-reverse;
+    }
+
+    .map-container {
+        height: 300px;
+        min-height: 300px;
+    }
+
+    .side-panel {
+        width: 100%;
+        min-width: 100%;
+        height: calc(100vh - 345px);
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-title {
+        font-size: 0.95rem;
+    }
+
+    .fc-day {
+        width: 62px;
+    }
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snow Trip Planner — 104 Stations Worldwide</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <link rel="stylesheet" href="planner.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-back">Wisconsin Forecast</a>
+        <span class="nav-title">Snow Trip Planner</span>
+        <span class="nav-badge" id="station-count">—</span>
+    </nav>
+
+    <div class="planner-layout">
+        <!-- Side panel -->
+        <aside class="side-panel" id="side-panel">
+            <div class="panel-section">
+                <label class="panel-label">Search destination</label>
+                <input type="text" id="search-input" class="search-input"
+                       placeholder="e.g. Chamonix, Niseko, Vail..." autocomplete="off">
+                <ul class="search-results" id="search-results"></ul>
+            </div>
+
+            <div class="panel-section">
+                <label class="panel-label">Travel dates</label>
+                <div class="date-row">
+                    <div class="date-field">
+                        <span class="date-label">Arrive</span>
+                        <input type="date" id="date-arrive" class="date-input">
+                    </div>
+                    <div class="date-field">
+                        <span class="date-label">Depart</span>
+                        <input type="date" id="date-depart" class="date-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station detail (hidden until selected) -->
+            <div class="panel-section station-detail" id="station-detail" style="display:none;">
+                <div class="detail-header">
+                    <h2 id="detail-name"></h2>
+                    <span class="detail-region" id="detail-region"></span>
+                    <div class="snow-score-badge" id="detail-score"></div>
+                </div>
+
+                <!-- Forecast strip -->
+                <div class="detail-subsection">
+                    <h3>Forecast</h3>
+                    <div class="forecast-strip" id="forecast-strip"></div>
+                </div>
+
+                <!-- Historical context -->
+                <div class="detail-subsection">
+                    <h3>Historical Snowfall</h3>
+                    <div class="history-card" id="history-card"></div>
+                </div>
+
+                <!-- Recent observations -->
+                <div class="detail-subsection">
+                    <h3>Recent Observations</h3>
+                    <div class="recent-obs" id="recent-obs"></div>
+                </div>
+
+                <!-- Nearby stations -->
+                <div class="detail-subsection">
+                    <h3>Nearby Stations</h3>
+                    <ul class="nearby-list" id="nearby-list"></ul>
+                </div>
+            </div>
+
+            <!-- Region list (shown when no station selected) -->
+            <div class="panel-section" id="region-list-section">
+                <label class="panel-label">Regions</label>
+                <ul class="region-list" id="region-list"></ul>
+            </div>
+        </aside>
+
+        <!-- Map -->
+        <div class="map-container" id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="planner.js"></script>
+</body>
+</html>
