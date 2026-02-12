@@ -90,11 +90,31 @@ def build_forecast_dict(daily):
                          for v in daily.get('weather_code', [None] * n)],
         'precip_probability_pct': [v if v is not None else 0
                                    for v in daily.get('precipitation_probability_max', [None] * n)],
+        'wind_speed_max_kmh': [round(v, 1) if v is not None else None
+                               for v in daily.get('wind_speed_10m_max', [None] * n)],
+        'wind_gusts_max_kmh': [round(v, 1) if v is not None else None
+                               for v in daily.get('wind_gusts_10m_max', [None] * n)],
+        'cloud_cover_pct': [round(v) if v is not None else None
+                            for v in daily.get('cloud_cover_mean', [None] * n)],
     }
+
+
+def iso_week_label(week_num):
+    """Get date range label for an ISO week number in the current year."""
+    # ISO week 1 contains the first Thursday of the year
+    # Find the Monday of the given ISO week
+    jan4 = datetime(datetime.now().year, 1, 4)  # Jan 4 is always in ISO week 1
+    week1_monday = jan4 - timedelta(days=jan4.weekday())
+    week_start = week1_monday + timedelta(weeks=week_num - 1)
+    week_end = week_start + timedelta(days=6)
+    return f"{week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}"
 
 
 def get_climatology(cursor, station_id):
     """Query historical climatology grouped by ISO week number."""
+    # Use strftime('%W') which gives week 00-53 (Sunday start in SQLite)
+    # We map it to approximate ISO week by adding 1 when needed
+    # For best compatibility, we just use %W and accept minor offset
     cursor.execute("""
         SELECT
             CAST(strftime('%%W', date) AS INTEGER) as week_num,
@@ -115,14 +135,11 @@ def get_climatology(cursor, station_id):
     weeks = {}
     for row in rows:
         week_num = row[0]
-        # Compute approximate week label
-        # Week 0 starts Jan 1; use Monday of that week
-        jan1 = datetime(datetime.now().year, 1, 1)
-        week_start = jan1 + timedelta(weeks=week_num)
-        week_end = week_start + timedelta(days=6)
-        week_label = f"{week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}"
+        # Clamp to 1-53 range for ISO-style keys
+        iso_week = max(1, min(53, week_num + 1))
+        week_label = iso_week_label(iso_week)
 
-        weeks[str(week_num)] = {
+        weeks[str(iso_week)] = {
             'week_label': week_label,
             'avg_daily_snowfall_mm': round(row[1], 1) if row[1] else 0.0,
             'snow_day_probability': round(row[2], 2) if row[2] else 0.0,
@@ -164,29 +181,54 @@ def get_recent_observations(cursor, station_id, days=7):
 def compute_snow_score(forecast_dict, climatology):
     """
     Compute snow_score (0-100) for map color coding.
-    Based on: upcoming forecast snowfall + historical snow probability for current week.
-    """
-    # Forecast component: total snowfall in next 7 days (cm)
-    snowfall_7d = sum(forecast_dict['snowfall_cm'][:7])
-    # Scale: 0cm=0, 5cm=30, 15cm=60, 30cm+=80
-    if snowfall_7d >= 30:
-        forecast_score = 80
-    elif snowfall_7d >= 15:
-        forecast_score = 60 + (snowfall_7d - 15) / 15 * 20
-    elif snowfall_7d >= 5:
-        forecast_score = 30 + (snowfall_7d - 5) / 10 * 30
-    elif snowfall_7d > 0:
-        forecast_score = snowfall_7d / 5 * 30
-    else:
-        forecast_score = 0
+    Recalibrated so the map shows meaningful color spread.
 
-    # Historical component: snow day probability for current week
-    current_week = str(int(datetime.now().strftime('%W')))
+    Components:
+    - Forecast snowfall (0-70 pts): total cm in next 7 days
+    - Forecast probability (0-15 pts): avg precip probability for snow days
+    - Historical/fallback (0-15 pts): snow day probability for current week
+    """
+    # Forecast snowfall component: total in next 7 days (cm)
+    snowfall_7d = sum(forecast_dict['snowfall_cm'][:7])
+    # Recalibrated: 0cm=0, 2cm=20, 8cm=40, 20cm=60, 40cm+=70
+    if snowfall_7d >= 40:
+        fc_snow = 70
+    elif snowfall_7d >= 20:
+        fc_snow = 60 + (snowfall_7d - 20) / 20 * 10
+    elif snowfall_7d >= 8:
+        fc_snow = 40 + (snowfall_7d - 8) / 12 * 20
+    elif snowfall_7d >= 2:
+        fc_snow = 20 + (snowfall_7d - 2) / 6 * 20
+    elif snowfall_7d > 0:
+        fc_snow = snowfall_7d / 2 * 20
+    else:
+        fc_snow = 0
+
+    # Forecast probability component: avg precip probability on days with cold temps
+    probs = forecast_dict.get('precip_probability_pct', [])[:7]
+    temps = forecast_dict.get('temp_max_c', [])[:7]
+    snow_probs = []
+    for i in range(min(len(probs), len(temps))):
+        if temps[i] is not None and temps[i] <= 2:
+            snow_probs.append(probs[i])
+    avg_prob = sum(snow_probs) / len(snow_probs) if snow_probs else 0
+    fc_prob = avg_prob / 100 * 15  # 0-15 pts
+
+    # Historical component: snow day probability for current ISO week
+    # Use ISO week: %W + 1 to match our key convention
+    current_week = str(max(1, int(datetime.now().strftime('%W')) + 1))
     week_data = climatology.get('weeks', {}).get(current_week, {})
     hist_prob = week_data.get('snow_day_probability', 0)
-    hist_score = hist_prob * 20  # 0-20 points from historical
 
-    score = min(100, round(forecast_score + hist_score))
+    if hist_prob > 0:
+        hist_score = hist_prob * 15  # 0-15 pts from historical
+    else:
+        # Fallback for stations without historical data:
+        # Use forecast cold-day count as a proxy
+        cold_days = sum(1 for t in temps if t is not None and t <= 0)
+        hist_score = min(15, cold_days * 2.5)
+
+    score = min(100, round(fc_snow + fc_prob + hist_score))
     return max(0, score)
 
 

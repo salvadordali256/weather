@@ -89,6 +89,7 @@
         showLoading(false);
         setupSearch();
         setupDateListeners();
+        setupCloseButton();
     }
 
     function showLoading(show) {
@@ -137,6 +138,10 @@
             stationData = await resp.json();
             document.getElementById('station-count').textContent =
                 stationData.station_count + ' stations';
+            if (stationData.generated_at_human) {
+                document.getElementById('nav-updated').textContent =
+                    'Updated ' + stationData.generated_at_human;
+            }
             addMarkers();
             buildRegionList();
         } catch (err) {
@@ -257,8 +262,36 @@
 
     // ─── Date listeners ───
     function setupDateListeners() {
-        document.getElementById('date-arrive').addEventListener('change', refreshDetail);
-        document.getElementById('date-depart').addEventListener('change', refreshDetail);
+        document.getElementById('date-arrive').addEventListener('change', onDateChange);
+        document.getElementById('date-depart').addEventListener('change', onDateChange);
+    }
+
+    function onDateChange() {
+        validateDates();
+        if (selectedId) renderDetail(selectedId);
+    }
+
+    function validateDates() {
+        const warn = document.getElementById('date-warning');
+        const arrive = document.getElementById('date-arrive').value;
+        const depart = document.getElementById('date-depart').value;
+        if (!arrive || !depart) { warn.textContent = ''; return; }
+        if (depart < arrive) {
+            warn.textContent = 'Depart date is before arrive date.';
+            return;
+        }
+        // Check if dates are within the forecast window
+        if (stationData) {
+            const first = Object.values(stationData.stations)[0];
+            if (first && first.forecast.dates.length > 0) {
+                const lastDate = first.forecast.dates[first.forecast.dates.length - 1];
+                if (arrive > lastDate) {
+                    warn.textContent = 'Dates are beyond the 16-day forecast window.';
+                    return;
+                }
+            }
+        }
+        warn.textContent = '';
     }
 
     function getDateRange() {
@@ -271,6 +304,22 @@
         if (selectedId) renderDetail(selectedId);
     }
 
+    // ─── Close / deselect ───
+    function setupCloseButton() {
+        document.getElementById('detail-close').addEventListener('click', deselectStation);
+    }
+
+    function deselectStation() {
+        selectedId = null;
+        // Reset all markers
+        for (const [mid, m] of Object.entries(markers)) {
+            m.setStyle({ weight: 1, color: '#fff', radius: 7 });
+        }
+        // Hide detail, show region list
+        document.getElementById('station-detail').style.display = 'none';
+        document.getElementById('region-list-section').style.display = 'block';
+    }
+
     // ─── Select station ───
     function selectStation(id) {
         selectedId = id;
@@ -280,11 +329,11 @@
         // Pan map
         map.setView([s.lat, s.lon], 6);
 
-        // Highlight marker
+        // Highlight marker — amber border for selected
         for (const [mid, m] of Object.entries(markers)) {
             m.setStyle({
                 weight: mid === id ? 3 : 1,
-                color: mid === id ? '#fff' : '#fff',
+                color: mid === id ? '#f59e0b' : '#fff',
                 radius: mid === id ? 10 : 7,
             });
         }
@@ -328,25 +377,35 @@
             const tMax = fc.temp_max_c[i] != null ? Math.round(fc.temp_max_c[i]) : '\u2014';
             const tMin = fc.temp_min_c[i] != null ? Math.round(fc.temp_min_c[i]) : '\u2014';
 
+            var wind = fc.wind_speed_max_kmh ? fc.wind_speed_max_kmh[i] : null;
+            var windStr = wind != null ? esc(Math.round(wind)) + ' km/h' : '';
+
             html += '<div class="fc-day' + (inRange ? ' in-range' : '') + '">' +
                 '<div class="fc-date">' + esc(shortDay(d)) + '<br>' + esc(shortDate(d)) + '</div>' +
                 '<div class="fc-icon">' + icon + '</div>' +
                 '<div class="fc-snow">' + (snow > 0 ? esc(snow) + ' cm' : '\u2014') + '</div>' +
                 '<div class="fc-temp">' + esc(tMax) + '/' + esc(tMin) + '&deg;</div>' +
+                (windStr ? '<div class="fc-wind">' + windStr + '</div>' : '') +
             '</div>';
         }
         strip.innerHTML = html;
+    }
+
+    // ISO week number matching Python's %W + 1 convention
+    function isoWeekNum(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        // Find nearest Thursday (ISO weeks are Thursday-anchored)
+        var dayNum = d.getDay() || 7; // Make Sunday = 7
+        d.setDate(d.getDate() + 4 - dayNum);
+        var yearStart = new Date(d.getFullYear(), 0, 1);
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
     }
 
     function renderHistoryCard(s) {
         const card = document.getElementById('history-card');
         const { arrive } = getDateRange();
 
-        // Find week number for arrival date
-        const arrDate = new Date(arrive + 'T00:00:00');
-        const startOfYear = new Date(arrDate.getFullYear(), 0, 1);
-        const weekNum = Math.floor((arrDate - startOfYear) / (7 * 24 * 60 * 60 * 1000));
-
+        const weekNum = isoWeekNum(arrive);
         const week = s.climatology.weeks[String(weekNum)];
         if (!week) {
             card.innerHTML = '<p class="no-data">No historical data for this period.</p>';
