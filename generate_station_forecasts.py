@@ -110,18 +110,31 @@ def iso_week_label(week_num):
     return f"{week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}"
 
 
-def get_climatology(cursor, station_id):
+def detect_schema(cursor):
+    """Detect available columns in snowfall_daily table (call once)."""
+    cursor.execute("PRAGMA table_info(snowfall_daily)")
+    columns = {row[1] for row in cursor.fetchall()}
+    return {
+        'has_temp': 'temp_max_celsius' in columns and 'temp_min_celsius' in columns,
+        'has_wcode': 'weather_code' in columns,
+    }
+
+
+def get_climatology(cursor, station_id, schema=None):
     """Query historical climatology grouped by ISO week number."""
-    # Use strftime('%W') which gives week 00-53 (Sunday start in SQLite)
-    # We map it to approximate ISO week by adding 1 when needed
-    # For best compatibility, we just use %W and accept minor offset
-    cursor.execute("""
+    has_temp = schema['has_temp'] if schema else False
+
+    if has_temp:
+        temp_select = "AVG(temp_max_celsius) as avg_temp_max_c, AVG(temp_min_celsius) as avg_temp_min_c,"
+    else:
+        temp_select = "NULL as avg_temp_max_c, NULL as avg_temp_min_c,"
+
+    cursor.execute(f"""
         SELECT
             CAST(strftime('%%W', date) AS INTEGER) as week_num,
             AVG(snowfall_mm) as avg_daily_snowfall_mm,
             AVG(CASE WHEN snowfall_mm > 1.0 THEN 1.0 ELSE 0.0 END) as snow_day_probability,
-            AVG(temp_max_celsius) as avg_temp_max_c,
-            AVG(temp_min_celsius) as avg_temp_min_c,
+            {temp_select}
             MAX(snowfall_mm) as max_recorded_snowfall_mm,
             COUNT(DISTINCT strftime('%%Y', date)) as years_of_data
         FROM snowfall_daily
@@ -152,13 +165,22 @@ def get_climatology(cursor, station_id):
     return {'weeks': weeks}
 
 
-def get_recent_observations(cursor, station_id, days=7):
+def get_recent_observations(cursor, station_id, days=7, schema=None):
     """Get last N days of actual observations."""
     end_date = datetime.now().strftime('%Y-%m-%d')
     start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
 
-    cursor.execute("""
-        SELECT date, snowfall_mm, temp_max_celsius, temp_min_celsius, weather_code
+    has_temp = schema['has_temp'] if schema else False
+    has_wcode = schema['has_wcode'] if schema else False
+
+    select_cols = "date, snowfall_mm"
+    if has_temp:
+        select_cols += ", temp_max_celsius, temp_min_celsius"
+    if has_wcode:
+        select_cols += ", weather_code"
+
+    cursor.execute(f"""
+        SELECT {select_cols}
         FROM snowfall_daily
         WHERE station_id = ?
           AND date >= ? AND date <= ?
@@ -168,13 +190,21 @@ def get_recent_observations(cursor, station_id, days=7):
     rows = cursor.fetchall()
     observations = []
     for row in rows:
-        observations.append({
+        obs = {
             'date': row[0],
             'snowfall_mm': round(row[1], 1) if row[1] is not None else 0.0,
-            'temp_max_c': round(row[2], 1) if row[2] is not None else None,
-            'temp_min_c': round(row[3], 1) if row[3] is not None else None,
-            'weather_code': row[4],
-        })
+            'temp_max_c': None,
+            'temp_min_c': None,
+            'weather_code': None,
+        }
+        idx = 2
+        if has_temp:
+            obs['temp_max_c'] = round(row[idx], 1) if row[idx] is not None else None
+            obs['temp_min_c'] = round(row[idx+1], 1) if row[idx+1] is not None else None
+            idx += 2
+        if has_wcode:
+            obs['weather_code'] = row[idx]
+        observations.append(obs)
     return observations
 
 
@@ -296,6 +326,7 @@ def generate_all():
     try:
         conn.execute("PRAGMA journal_mode=DELETE")
         cursor = conn.cursor()
+        schema = detect_schema(cursor)
 
         station_data = {}
         success = 0
@@ -315,10 +346,10 @@ def generate_all():
             forecast_dict = build_forecast_dict(daily)
 
             # Historical climatology
-            climatology = get_climatology(cursor, station_id)
+            climatology = get_climatology(cursor, station_id, schema)
 
             # Recent observations
-            recent = get_recent_observations(cursor, station_id)
+            recent = get_recent_observations(cursor, station_id, schema=schema)
 
             # Snow score
             snow_score = compute_snow_score(forecast_dict, climatology)
