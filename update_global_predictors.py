@@ -47,13 +47,16 @@ def update_station(station_id, lat, lon, name):
                     records.append((station_id, date, snow_mm))
 
             conn = sqlite3.connect(DEFAULT_DB_PATH, timeout=30)
-            cursor = conn.cursor()
-            cursor.executemany("""
-                INSERT OR REPLACE INTO snowfall_daily (station_id, date, snowfall_mm)
-                VALUES (?, ?, ?)
-            """, records)
-            conn.commit()
-            conn.close()
+            try:
+                conn.execute("PRAGMA journal_mode=DELETE")
+                cursor = conn.cursor()
+                cursor.executemany("""
+                    INSERT OR REPLACE INTO snowfall_daily (station_id, date, snowfall_mm)
+                    VALUES (?, ?, ?)
+                """, records)
+                conn.commit()
+            finally:
+                conn.close()
 
             print(f"  ✅ Updated {len(records)} records")
 

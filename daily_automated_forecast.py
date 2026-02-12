@@ -142,29 +142,31 @@ class DailyForecastRunner:
     def get_recent_observations(self, days=7):
         """Get recent snowfall observations"""
         conn = sqlite3.connect(self.db_path, timeout=30)
+        try:
+            conn.execute("PRAGMA journal_mode=DELETE")
 
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days)
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=days)
 
-        query = """
-            SELECT
-                s.name as station_name,
-                sd.date,
-                sd.snowfall_mm
-            FROM snowfall_daily sd
-            JOIN stations s ON sd.station_id = s.station_id
-            WHERE sd.station_id IN ('phelps_wi', 'land_o_lakes_wi', 'eagle_river_wi')
-              AND sd.date >= ?
-              AND sd.date <= ?
-            ORDER BY sd.date DESC, s.name
-        """
+            query = """
+                SELECT
+                    s.name as station_name,
+                    sd.date,
+                    sd.snowfall_mm
+                FROM snowfall_daily sd
+                JOIN stations s ON sd.station_id = s.station_id
+                WHERE sd.station_id IN ('phelps_wi', 'land_o_lakes_wi', 'eagle_river_wi')
+                  AND sd.date >= ?
+                  AND sd.date <= ?
+                ORDER BY sd.date DESC, s.name
+            """
 
-        df = pd.read_sql_query(query, conn, params=(
-            start_date.strftime('%Y-%m-%d'),
-            end_date.strftime('%Y-%m-%d')
-        ))
-
-        conn.close()
+            df = pd.read_sql_query(query, conn, params=(
+                start_date.strftime('%Y-%m-%d'),
+                end_date.strftime('%Y-%m-%d')
+            ))
+        finally:
+            conn.close()
 
         if df.empty:
             return []

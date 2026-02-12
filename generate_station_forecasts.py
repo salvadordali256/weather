@@ -293,51 +293,52 @@ def generate_all():
     print(f"{'='*80}\n")
 
     conn = sqlite3.connect(DB_PATH, timeout=30)
-    conn.execute("PRAGMA journal_mode=DELETE")
-    cursor = conn.cursor()
+    try:
+        conn.execute("PRAGMA journal_mode=DELETE")
+        cursor = conn.cursor()
 
-    station_data = {}
-    success = 0
-    fail = 0
+        station_data = {}
+        success = 0
+        fail = 0
 
-    for i, (station_id, lat, lon, name, region) in enumerate(stations, 1):
-        print(f"  [{i}/{total}] {name}...", end=" ", flush=True)
+        for i, (station_id, lat, lon, name, region) in enumerate(stations, 1):
+            print(f"  [{i}/{total}] {name}...", end=" ", flush=True)
 
-        # Fetch 16-day forecast
-        daily = fetch_forecast(lat, lon)
-        if daily is None:
-            print("SKIP (forecast failed)")
-            fail += 1
+            # Fetch 16-day forecast
+            daily = fetch_forecast(lat, lon)
+            if daily is None:
+                print("SKIP (forecast failed)")
+                fail += 1
+                time.sleep(RATE_LIMIT)
+                continue
+
+            forecast_dict = build_forecast_dict(daily)
+
+            # Historical climatology
+            climatology = get_climatology(cursor, station_id)
+
+            # Recent observations
+            recent = get_recent_observations(cursor, station_id)
+
+            # Snow score
+            snow_score = compute_snow_score(forecast_dict, climatology)
+
+            station_data[station_id] = {
+                'name': name,
+                'region': region,
+                'lat': lat,
+                'lon': lon,
+                'forecast': forecast_dict,
+                'climatology': climatology,
+                'recent_observations': recent,
+                'snow_score': snow_score,
+            }
+
+            success += 1
+            print(f"OK  score={snow_score}  snow_7d={sum(forecast_dict['snowfall_cm'][:7]):.1f}cm")
             time.sleep(RATE_LIMIT)
-            continue
-
-        forecast_dict = build_forecast_dict(daily)
-
-        # Historical climatology
-        climatology = get_climatology(cursor, station_id)
-
-        # Recent observations
-        recent = get_recent_observations(cursor, station_id)
-
-        # Snow score
-        snow_score = compute_snow_score(forecast_dict, climatology)
-
-        station_data[station_id] = {
-            'name': name,
-            'region': region,
-            'lat': lat,
-            'lon': lon,
-            'forecast': forecast_dict,
-            'climatology': climatology,
-            'recent_observations': recent,
-            'snow_score': snow_score,
-        }
-
-        success += 1
-        print(f"OK  score={snow_score}  snow_7d={sum(forecast_dict['snowfall_cm'][:7]):.1f}cm")
-        time.sleep(RATE_LIMIT)
-
-    conn.close()
+    finally:
+        conn.close()
 
     # Build output
     output = {

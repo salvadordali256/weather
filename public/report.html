@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Snow Report</title>
+    <link rel="stylesheet" href="report.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-link">Wisconsin Forecast</a>
+        <a href="planner.html" class="nav-link">Trip Planner</a>
+        <span class="nav-title">Daily Snow Report</span>
+        <span class="nav-updated" id="nav-updated"></span>
+    </nav>
+
+    <div class="report-container">
+        <!-- Pipeline Status -->
+        <section class="card pipeline-card" id="pipeline-section">
+            <div class="card-header">
+                <h2>Pipeline Status</h2>
+                <span class="status-badge" id="pipeline-badge"></span>
+            </div>
+            <div class="pipeline-stats" id="pipeline-stats"></div>
+        </section>
+
+        <!-- Score Distribution -->
+        <section class="card dist-card" id="dist-section">
+            <h2>Score Distribution</h2>
+            <div class="dist-bar-container" id="dist-bar"></div>
+        </section>
+
+        <!-- Snow Alerts — Top 10 -->
+        <section class="card" id="alerts-section">
+            <h2>Top 10 Stations</h2>
+            <div class="table-wrap">
+                <table class="alerts-table" id="alerts-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Station</th>
+                            <th>Region</th>
+                            <th>Score</th>
+                            <th>7d Snow</th>
+                            <th>3d Snow</th>
+                            <th>Peak Day</th>
+                            <th>Temps</th>
+                            <th>Alert</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alerts-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Active Alerts -->
+        <section class="card" id="active-alerts-section">
+            <h2>Active Snow Alerts</h2>
+            <p class="card-subtitle" id="alert-count"></p>
+            <div class="table-wrap">
+                <table class="alerts-table compact" id="active-alerts-table">
+                    <thead>
+                        <tr>
+                            <th>Station</th>
+                            <th>Region</th>
+                            <th>Score</th>
+                            <th>7d Snow</th>
+                            <th>Alert</th>
+                        </tr>
+                    </thead>
+                    <tbody id="active-alerts-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Regional Summary -->
+        <section class="card" id="regional-section">
+            <h2>Regional Summary</h2>
+            <div class="region-grid" id="region-grid"></div>
+        </section>
+
+        <!-- Wisconsin Quick Look -->
+        <section class="card" id="wisconsin-section">
+            <h2>Wisconsin Quick Look</h2>
+            <div id="wisconsin-content"></div>
+        </section>
+    </div>
+
+    <footer class="report-footer">
+        <p>Data updates daily at 6:00 AM and 5:30 PM CST</p>
+    </footer>
+
+    <script src="report.js"></script>
+</body>
+</html>

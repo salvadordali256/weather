@@ -1,0 +1,426 @@
+/* Daily Snow Report — matches existing dark design system */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+}
+
+/* ─── Top nav ─── */
+.top-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    background: rgba(15, 52, 96, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-link:hover {
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.nav-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    flex: 1;
+}
+
+.nav-updated {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+/* ─── Container ─── */
+.report-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ─── Cards ─── */
+.card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.card h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    margin-bottom: 14px;
+    font-weight: 600;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: -8px;
+    margin-bottom: 12px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header h2 {
+    margin-bottom: 0;
+}
+
+/* ─── Pipeline status ─── */
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.status-ok {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+}
+
+.status-warn {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.status-error {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.pipeline-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ─── Score distribution bar ─── */
+.dist-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.dist-bar {
+    flex: 1;
+    min-width: 200px;
+    height: 28px;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+}
+
+.dist-segment {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    transition: width 0.3s;
+}
+
+.dist-segment.high { background: #3b82f6; }
+.dist-segment.moderate { background: #6366f1; }
+.dist-segment.low { background: rgba(148,163,184,0.4); }
+
+.dist-labels {
+    display: flex;
+    gap: 16px;
+    font-size: 0.75rem;
+}
+
+.dist-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+}
+
+.dist-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* ─── Tables ─── */
+.table-wrap {
+    overflow-x: auto;
+}
+
+.alerts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.alerts-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    white-space: nowrap;
+}
+
+.alerts-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: #cbd5e1;
+    white-space: nowrap;
+}
+
+.alerts-table tbody tr:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+.alerts-table.compact td,
+.alerts-table.compact th {
+    padding: 5px 8px;
+}
+
+.alert-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.alert-high {
+    background: rgba(59,130,246,0.25);
+    color: #60a5fa;
+}
+
+.alert-moderate {
+    background: rgba(99,102,241,0.25);
+    color: #818cf8;
+}
+
+.alert-low {
+    background: rgba(148,163,184,0.2);
+    color: #94a3b8;
+}
+
+.score-cell {
+    font-weight: 700;
+}
+
+.score-high { color: #60a5fa; }
+.score-moderate { color: #818cf8; }
+.score-low { color: #94a3b8; }
+
+.snow-highlight {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ─── Region grid ─── */
+.region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.region-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 14px;
+    transition: border-color 0.2s;
+}
+
+.region-card:hover {
+    border-color: rgba(255,255,255,0.15);
+}
+
+.region-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.region-stats {
+    display: flex;
+    gap: 14px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+
+.region-top {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.region-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.08);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.region-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+/* ─── Wisconsin ─── */
+.wi-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.wi-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.wi-stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.wi-stat-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+/* ─── Footer ─── */
+.report-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.75rem;
+    color: #475569;
+}
+
+/* ─── Error state ─── */
+.error-msg {
+    color: #f87171;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* ─── Scrollbar ─── */
+.table-wrap::-webkit-scrollbar {
+    height: 4px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 768px) {
+    .report-container {
+        padding: 12px;
+        gap: 14px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+
+    .pipeline-stats {
+        gap: 16px;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .alerts-table {
+        font-size: 0.78rem;
+    }
+
+    .region-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .top-nav {
+        gap: 8px;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+    }
+
+    .nav-title {
+        font-size: 0.95rem;
+    }
+
+    .nav-link {
+        font-size: 0.75rem;
+        padding: 3px 7px;
+    }
+
+    .dist-bar-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

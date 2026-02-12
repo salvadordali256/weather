@@ -351,41 +351,43 @@ def collect_world_data(days_back=14, rate_limit=0.3):
     print(f"{'='*80}\n")
 
     conn = sqlite3.connect(DB_PATH, timeout=30)
-    migrate_schema(conn)
-    cursor = conn.cursor()
+    try:
+        conn.execute("PRAGMA journal_mode=DELETE")
+        migrate_schema(conn)
+        cursor = conn.cursor()
 
-    success_count = 0
-    fail_count = 0
-    current = 0
+        success_count = 0
+        fail_count = 0
+        current = 0
 
-    for region, stations in WORLD_STATIONS.items():
-        print(f"\n[{region.upper().replace('_', ' ')}]")
-        print("-" * 60)
+        for region, stations in WORLD_STATIONS.items():
+            print(f"\n[{region.upper().replace('_', ' ')}]")
+            print("-" * 60)
 
-        for station_id, lat, lon, name in stations:
-            current += 1
+            for station_id, lat, lon, name in stations:
+                current += 1
 
-            # Ensure station is registered
-            ensure_station_exists(cursor, station_id, lat, lon, name, region)
+                # Ensure station is registered
+                ensure_station_exists(cursor, station_id, lat, lon, name, region)
 
-            print(f"  [{current}/{total_stations}] {name}...", end=" ", flush=True)
+                print(f"  [{current}/{total_stations}] {name}...", end=" ", flush=True)
 
-            records, result = update_station(cursor, station_id, lat, lon, name, days_back)
+                records, result = update_station(cursor, station_id, lat, lon, name, days_back)
 
-            if records >= 0:
-                success_count += 1
-                print(f"✅ {records} records")
-                if result:  # recent snow events
-                    for date, snow_mm in result[-3:]:  # show last 3
-                        print(f"       {date}: {snow_mm:.1f}mm ❄️")
-            else:
-                fail_count += 1
-                print(f"❌ Error: {result}")
+                if records >= 0:
+                    success_count += 1
+                    print(f"✅ {records} records")
+                    if result:  # recent snow events
+                        for date, snow_mm in result[-3:]:  # show last 3
+                            print(f"       {date}: {snow_mm:.1f}mm ❄️")
+                else:
+                    fail_count += 1
+                    print(f"❌ Error: {result}")
 
-            conn.commit()
-            time.sleep(rate_limit)
-
-    conn.close()
+                conn.commit()
+                time.sleep(rate_limit)
+    finally:
+        conn.close()
 
     print(f"\n{'='*80}")
     print("COLLECTION COMPLETE")
@@ -400,27 +402,29 @@ def collect_world_data(days_back=14, rate_limit=0.3):
 def get_database_stats():
     """Print database statistics"""
     conn = sqlite3.connect(DB_PATH, timeout=30)
-    cursor = conn.cursor()
+    try:
+        conn.execute("PRAGMA journal_mode=DELETE")
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(DISTINCT station_id) FROM snowfall_daily")
-    stations = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(DISTINCT station_id) FROM snowfall_daily")
+        stations = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM snowfall_daily")
-    records = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM snowfall_daily")
+        records = cursor.fetchone()[0]
 
-    cursor.execute("SELECT MIN(date), MAX(date) FROM snowfall_daily")
-    date_range = cursor.fetchone()
+        cursor.execute("SELECT MIN(date), MAX(date) FROM snowfall_daily")
+        date_range = cursor.fetchone()
 
-    cursor.execute("""
-        SELECT station_id, COUNT(*) as cnt, MAX(date) as latest
-        FROM snowfall_daily
-        GROUP BY station_id
-        ORDER BY latest DESC
-        LIMIT 10
-    """)
-    recent = cursor.fetchall()
-
-    conn.close()
+        cursor.execute("""
+            SELECT station_id, COUNT(*) as cnt, MAX(date) as latest
+            FROM snowfall_daily
+            GROUP BY station_id
+            ORDER BY latest DESC
+            LIMIT 10
+        """)
+        recent = cursor.fetchall()
+    finally:
+        conn.close()
 
     print(f"\n{'='*80}")
     print("DATABASE STATISTICS")

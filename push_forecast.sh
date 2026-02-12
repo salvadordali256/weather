@@ -18,13 +18,16 @@ fi
 if [ -f "$FORECAST_DIR/station_data.json" ]; then
     cp "$FORECAST_DIR/station_data.json" public/
 fi
+if [ -f "$FORECAST_DIR/daily_report.json" ]; then
+    cp "$FORECAST_DIR/daily_report.json" public/
+fi
 
 # Git operations
-git add public/latest_forecast.json public/station_data.json 2>/dev/null
+git add public/latest_forecast.json public/station_data.json public/daily_report.json 2>/dev/null
 # Only track forecast_output if it's inside the repo (relative path)
 case "$FORECAST_DIR" in
     /*) ;; # absolute path, skip git add
-    *)  git add "$FORECAST_DIR/latest_forecast.json" "$FORECAST_DIR/station_data.json" 2>/dev/null ;;
+    *)  git add "$FORECAST_DIR/latest_forecast.json" "$FORECAST_DIR/station_data.json" "$FORECAST_DIR/daily_report.json" 2>/dev/null ;;
 esac
 git diff --cached --quiet && { echo "No changes to push"; exit 0; }
 
