@@ -41,6 +41,7 @@
                 <div class="view-toggle" id="view-toggle">
                     <button class="view-btn active" data-view="regions">Regions</button>
                     <button class="view-btn" data-view="heatmap">Heatmap</button>
+                    <button class="view-btn" data-view="favorites">Favorites</button>
                 </div>
             </div>
 
@@ -49,11 +50,29 @@
                 <div class="heatmap-wrap" id="heatmap-wrap"></div>
             </div>
 
+            <!-- Never Summer hero button -->
+            <div class="panel-section">
+                <button class="neversummer-btn" id="neversummer-btn">Never Summer</button>
+            </div>
+
+            <!-- Never Summer view (hidden by default) -->
+            <div class="panel-section" id="neversummer-section" style="display:none;">
+                <div class="ns-back-row">
+                    <button class="detail-close" id="ns-close" title="Back">&larr; Back</button>
+                </div>
+                <div id="neversummer-content"></div>
+            </div>
+
+            <!-- Favorites view (hidden by default) -->
+            <div class="panel-section" id="favorites-section" style="display:none;">
+                <div id="favorites-list"></div>
+            </div>
+
             <!-- Station detail (hidden until selected) -->
             <div class="panel-section station-detail" id="station-detail" style="display:none;">
                 <div class="detail-header">
                     <button class="detail-close" id="detail-close" title="Back">&larr; Back</button>
-                    <h2 id="detail-name"></h2>
+                    <h2 id="detail-name"><span id="detail-name-text"></span> <button class="fav-star" id="fav-star" title="Add to favorites">&#9734;</button></h2>
                     <span class="detail-region" id="detail-region"></span>
                     <div class="snow-score-badge" id="detail-score"></div>
                 </div>

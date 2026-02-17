@@ -65,7 +65,7 @@ def calculate_weighted_cost(num_variables, num_days):
 class BackfillTracker:
     """Manages historical data backfill with progress tracking and budget control"""
 
-    def __init__(self, db_path=DB_PATH, budget=5000, rate_limit=0.5, start_year=1940):
+    def __init__(self, db_path=DB_PATH, budget=5000, rate_limit=1.5, start_year=1940):
         self.db_path = db_path
         self.budget = budget
         self.rate_limit = rate_limit
@@ -319,6 +319,26 @@ class BackfillTracker:
                     self.logger.info(f"  {name} {year}: no data")
 
                 self.weighted_calls_used += cost_per_year
+                consecutive_429s = 0
+
+            except requests.exceptions.HTTPError as e:
+                if e.response is not None and e.response.status_code == 429:
+                    consecutive_429s = getattr(self, '_c429', 0) + 1
+                    self._c429 = consecutive_429s
+                    backoff = min(60, 5 * consecutive_429s)
+                    self.logger.warning(f"  {name} {year}: 429 rate limited — waiting {backoff}s")
+                    time.sleep(backoff)
+                    # Don't mark as failed or count budget — will retry next run
+                    if consecutive_429s >= 5:
+                        self.logger.info(f"Hit 5 consecutive 429s — stopping to avoid wasting calls")
+                        break
+                    continue
+                else:
+                    self.mark_progress(conn, station_id, year, 'failed', error=str(e))
+                    conn.commit()
+                    failed += 1
+                    self.logger.warning(f"  {name} {year}: FAILED — {e}")
+                    self.weighted_calls_used += cost_per_year
 
             except Exception as e:
                 self.mark_progress(conn, station_id, year, 'failed', error=str(e))
@@ -400,8 +420,8 @@ def main():
     parser = argparse.ArgumentParser(description='Passive Historical Data Backfill')
     parser.add_argument('--budget', type=float, default=5000,
                         help='Max weighted API calls per run (default: 5000)')
-    parser.add_argument('--rate-limit', type=float, default=0.5,
-                        help='Seconds between API calls (default: 0.5)')
+    parser.add_argument('--rate-limit', type=float, default=1.5,
+                        help='Seconds between API calls (default: 1.5)')
     parser.add_argument('--start-year', type=int, default=1940,
                         help='Earliest year to backfill (default: 1940)')
     parser.add_argument('--dry-run', action='store_true',

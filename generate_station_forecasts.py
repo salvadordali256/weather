@@ -329,6 +329,167 @@ def compute_futurecast(climatology, enso_phase='neutral'):
     return futurecast
 
 
+def compute_never_summer(station_data):
+    """
+    Compute year-round snow-chasing itinerary across both hemispheres.
+
+    For each of 54 ISO weeks, finds the best snow destination on Earth.
+    Groups consecutive weeks at the same station into legs (min 2 weeks).
+    """
+    # Collect weekly snowfall data across all stations
+    weekly_best = {}  # week -> {station_id, score, snow_mm, station_name}
+    weeks_with_data = set()
+
+    for station_id, s in station_data.items():
+        fc = s.get('futurecast', {})
+        for week_key, wd in fc.items():
+            wk = int(week_key)
+            snow_mm = wd.get('avg_daily_snow_mm', 0)
+            prob = wd.get('snow_day_prob', 0)
+            score = wd.get('score', 0)
+
+            weeks_with_data.add(wk)
+
+            current_best = weekly_best.get(wk)
+            # Rank by absolute snowfall, tiebreak by probability
+            if current_best is None or snow_mm > current_best['snow_mm'] or \
+               (snow_mm == current_best['snow_mm'] and prob > current_best.get('prob', 0)):
+                weekly_best[wk] = {
+                    'station_id': station_id,
+                    'station_name': s['name'],
+                    'region': s['region'],
+                    'score': score,
+                    'snow_mm': round(snow_mm, 1),
+                    'prob': round(prob, 2),
+                }
+
+    coverage_pct = round(len(weeks_with_data) / 54 * 100)
+
+    if not weekly_best:
+        return {
+            'coverage_pct': 0,
+            'avg_score': 0,
+            'total_legs': 0,
+            'legs': [],
+            'weekly_best': {},
+        }
+
+    # Greedy assignment with grouping (min 2-week stays)
+    # First pass: raw best per week
+    assigned = {}  # week -> station_id
+    for wk in range(1, 55):
+        if wk in weekly_best:
+            assigned[wk] = weekly_best[wk]['station_id']
+
+    # Second pass: smooth short 1-week hops
+    # If a station appears for only 1 week between two runs of the same station, absorb it
+    # unless the score difference is > 30%
+    assigned_list = sorted(assigned.keys())
+    for i in range(1, len(assigned_list) - 1):
+        wk = assigned_list[i]
+        prev_wk = assigned_list[i - 1]
+        next_wk = assigned_list[i + 1]
+        if assigned[prev_wk] == assigned[next_wk] and assigned[wk] != assigned[prev_wk]:
+            # Single-week hop — check if difference justifies it
+            prev_snow = weekly_best.get(wk, {}).get('snow_mm', 0)
+            alt_snow = 0
+            alt_station = assigned[prev_wk]
+            # Look up what the previous station scores this week
+            alt_s = station_data.get(alt_station, {})
+            alt_fc = alt_s.get('futurecast', {}).get(str(wk), {})
+            alt_snow = alt_fc.get('avg_daily_snow_mm', 0)
+            if prev_snow > 0 and alt_snow > 0:
+                diff = (prev_snow - alt_snow) / prev_snow
+                if diff < 0.3:
+                    assigned[wk] = alt_station
+
+    # Also: prefer staying if same region and within 10%
+    for i in range(1, len(assigned_list)):
+        wk = assigned_list[i]
+        prev_wk = assigned_list[i - 1]
+        if assigned[wk] != assigned[prev_wk]:
+            curr_s = station_data.get(assigned[wk], {})
+            prev_s = station_data.get(assigned[prev_wk], {})
+            if curr_s.get('region') == prev_s.get('region'):
+                curr_snow = weekly_best.get(wk, {}).get('snow_mm', 0)
+                prev_fc = prev_s.get('futurecast', {}).get(str(wk), {})
+                prev_snow = prev_fc.get('avg_daily_snow_mm', 0)
+                if curr_snow > 0 and prev_snow > 0 and prev_snow >= curr_snow * 0.9:
+                    assigned[wk] = assigned[prev_wk]
+
+    # Build legs from consecutive same-station weeks
+    legs = []
+    sorted_weeks = sorted(assigned.keys())
+    if sorted_weeks:
+        current_leg = {
+            'station_id': assigned[sorted_weeks[0]],
+            'start_week': sorted_weeks[0],
+            'end_week': sorted_weeks[0],
+            'weeks': [sorted_weeks[0]],
+        }
+        for i in range(1, len(sorted_weeks)):
+            wk = sorted_weeks[i]
+            # Check if same station and consecutive (or close)
+            if assigned[wk] == current_leg['station_id'] and wk - current_leg['end_week'] <= 1:
+                current_leg['end_week'] = wk
+                current_leg['weeks'].append(wk)
+            else:
+                legs.append(current_leg)
+                current_leg = {
+                    'station_id': assigned[wk],
+                    'start_week': wk,
+                    'end_week': wk,
+                    'weeks': [wk],
+                }
+        legs.append(current_leg)
+
+    # Enrich legs with scores and station info
+    enriched_legs = []
+    for leg in legs:
+        s = station_data.get(leg['station_id'], {})
+        fc = s.get('futurecast', {})
+        scores = []
+        snows = []
+        for wk in leg['weeks']:
+            wd = fc.get(str(wk), {})
+            scores.append(wd.get('score', 0))
+            snows.append(wd.get('avg_daily_snow_mm', 0))
+        avg_score = round(sum(scores) / len(scores)) if scores else 0
+        avg_snow = round(sum(snows) / len(snows), 1) if snows else 0
+
+        enriched_legs.append({
+            'station_id': leg['station_id'],
+            'station_name': s.get('name', leg['station_id']),
+            'region': s.get('region', ''),
+            'start_week': leg['start_week'],
+            'end_week': leg['end_week'],
+            'avg_score': avg_score,
+            'avg_snow_mm': avg_snow,
+            'hemisphere': 'S' if s.get('lat', 0) < 0 else 'N',
+        })
+
+    # Weekly best output (compact)
+    wb_output = {}
+    for wk, best in weekly_best.items():
+        wb_output[str(wk)] = {
+            'station_id': best['station_id'],
+            'station_name': best['station_name'],
+            'score': best['score'],
+            'snow_mm': best['snow_mm'],
+        }
+
+    all_scores = [best['score'] for best in weekly_best.values()]
+    avg_score = round(sum(all_scores) / len(all_scores)) if all_scores else 0
+
+    return {
+        'coverage_pct': coverage_pct,
+        'avg_score': avg_score,
+        'total_legs': len(enriched_legs),
+        'legs': enriched_legs,
+        'weekly_best': wb_output,
+    }
+
+
 def build_region_index(all_stations):
     """Build region display names and station lists."""
     region_names = {
@@ -442,6 +603,11 @@ def generate_all():
     finally:
         conn.close()
 
+    # Compute Never Summer itinerary
+    never_summer = compute_never_summer(station_data)
+    print(f"\nNever Summer: {never_summer['coverage_pct']}% coverage, "
+          f"{never_summer['total_legs']} legs, avg score {never_summer['avg_score']}")
+
     # Build output
     output = {
         'generated_at': datetime.now().isoformat(),
@@ -450,6 +616,7 @@ def generate_all():
         'enso_phase': CURRENT_ENSO_PHASE,
         'stations': station_data,
         'regions': build_region_index(station_data),
+        'never_summer': never_summer,
     }
 
     # Write JSON

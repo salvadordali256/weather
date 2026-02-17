@@ -18,7 +18,10 @@
     var currentMonth = new Date().getMonth();
     var currentYear = new Date().getFullYear();
     var useImperial = false;
-    var currentView = 'regions'; // 'regions' | 'heatmap'
+    var currentView = 'regions'; // 'regions' | 'heatmap' | 'favorites'
+    var favorites = JSON.parse(localStorage.getItem('planner_favorites') || '[]');
+    var neverSummerActive = false;
+    var neverSummerRoute = null;
 
     // ─── Resort aliases for search ───
     var RESORT_ALIASES = {
@@ -190,6 +193,8 @@
         setupCollapsibles();
         setupViewToggle();
         setupPlanTripButton();
+        setupFavorites();
+        setupNeverSummer();
         setDefaultDates();
         updateFuturecastView();
     }
@@ -408,6 +413,7 @@
         updateMarkerColors();
 
         if (currentView === 'heatmap') renderHeatmap();
+        if (currentView === 'favorites') renderFavorites();
         if (selectedId) renderStationFuturecast(selectedId);
     }
 
@@ -419,24 +425,31 @@
             btn.textContent = useImperial ? 'in' : 'cm';
             btn.classList.toggle('imperial', useImperial);
             if (selectedId) renderDetail(selectedId);
+            if (neverSummerActive) renderNeverSummer();
         });
     }
 
-    // ─── View toggle (Regions / Heatmap) ───
+    // ─── View toggle (Regions / Heatmap / Favorites) ───
     function setupViewToggle() {
         var btns = document.querySelectorAll('#view-toggle .view-btn');
         btns.forEach(function (btn) {
             btn.addEventListener('click', function () {
+                if (neverSummerActive) exitNeverSummer();
                 btns.forEach(function (b) { b.classList.remove('active'); });
                 btn.classList.add('active');
                 currentView = btn.dataset.view;
+                document.getElementById('heatmap-section').style.display = 'none';
+                document.getElementById('favorites-section').style.display = 'none';
+                document.getElementById('region-list-section').style.display = 'none';
+                if (selectedId) return; // detail is showing, just update currentView
                 if (currentView === 'heatmap') {
                     document.getElementById('heatmap-section').style.display = 'block';
-                    document.getElementById('region-list-section').style.display = 'none';
                     renderHeatmap();
+                } else if (currentView === 'favorites') {
+                    document.getElementById('favorites-section').style.display = 'block';
+                    renderFavorites();
                 } else {
-                    document.getElementById('heatmap-section').style.display = 'none';
-                    if (!selectedId) document.getElementById('region-list-section').style.display = 'block';
+                    document.getElementById('region-list-section').style.display = 'block';
                 }
             });
         });
@@ -480,6 +493,9 @@
         document.getElementById('station-detail').style.display = 'none';
         if (currentView === 'heatmap') {
             document.getElementById('heatmap-section').style.display = 'block';
+        } else if (currentView === 'favorites') {
+            document.getElementById('favorites-section').style.display = 'block';
+            renderFavorites();
         } else {
             document.getElementById('region-list-section').style.display = 'block';
         }
@@ -504,6 +520,8 @@
         document.getElementById('station-detail').style.display = 'block';
         document.getElementById('region-list-section').style.display = 'none';
         document.getElementById('heatmap-section').style.display = 'none';
+        document.getElementById('favorites-section').style.display = 'none';
+        if (neverSummerActive) exitNeverSummer();
 
         renderDetail(id);
     }
@@ -513,7 +531,8 @@
         var s = stationData.stations[id];
         if (!s) return;
 
-        document.getElementById('detail-name').textContent = s.name;
+        document.getElementById('detail-name-text').textContent = s.name;
+        updateStarIcon(id);
         document.getElementById('detail-region').textContent = regionDisplayName(s.region);
 
         var score = stationMonthScore(s, currentMonth, currentYear);
@@ -753,6 +772,264 @@
             li.innerHTML = '<span>' + esc(d.s.name) + '</span><span class="nearby-dist">' + esc(distLabel) + ' \u2014 score ' + esc(nearScore) + '</span>';
             (function (did) { li.addEventListener('click', function () { selectStation(did); }); })(d.id);
             ul.appendChild(li);
+        }
+    }
+
+    // ─── Favorites ───
+    function isFavorite(id) { return favorites.indexOf(id) >= 0; }
+
+    function saveFavorites() {
+        localStorage.setItem('planner_favorites', JSON.stringify(favorites));
+    }
+
+    function toggleFavorite(id) {
+        var idx = favorites.indexOf(id);
+        if (idx >= 0) {
+            favorites.splice(idx, 1);
+        } else {
+            favorites.push(id);
+        }
+        saveFavorites();
+        updateStarIcon(id);
+        if (currentView === 'favorites') renderFavorites();
+    }
+
+    function updateStarIcon(id) {
+        var star = document.getElementById('fav-star');
+        if (!star) return;
+        if (isFavorite(id)) {
+            star.innerHTML = '&#9733;';
+            star.classList.add('starred');
+            star.title = 'Remove from favorites';
+        } else {
+            star.innerHTML = '&#9734;';
+            star.classList.remove('starred');
+            star.title = 'Add to favorites';
+        }
+    }
+
+    function setupFavorites() {
+        var star = document.getElementById('fav-star');
+        if (star) {
+            star.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (selectedId) toggleFavorite(selectedId);
+            });
+        }
+    }
+
+    function renderFavorites() {
+        var container = document.getElementById('favorites-list');
+        if (!stationData || favorites.length === 0) {
+            container.innerHTML = '<div class="favorites-empty">No favorites yet — star a station to save it here.</div>';
+            return;
+        }
+        var html = '<div class="favorites-list">';
+        for (var i = 0; i < favorites.length; i++) {
+            var id = favorites[i];
+            var s = stationData.stations[id];
+            if (!s) continue;
+            var score = stationMonthScore(s, currentMonth, currentYear);
+            var color = fcColor(score);
+            html += '<div class="fav-item" data-id="' + esc(id) + '">' +
+                '<span class="fav-item-name">' + esc(s.name) + '</span>' +
+                '<span class="fav-item-score" style="background:' + color + ';color:#fff">' + score + '</span>' +
+                '<button class="fav-item-remove" data-id="' + esc(id) + '" title="Remove">&times;</button>' +
+                '</div>';
+        }
+        html += '</div>';
+        container.innerHTML = html;
+
+        container.querySelectorAll('.fav-item').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                if (e.target.classList.contains('fav-item-remove')) return;
+                selectStation(el.dataset.id);
+            });
+        });
+        container.querySelectorAll('.fav-item-remove').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleFavorite(btn.dataset.id);
+            });
+        });
+    }
+
+    // ─── Never Summer ───
+    function setupNeverSummer() {
+        var btn = document.getElementById('neversummer-btn');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                enterNeverSummer();
+            });
+        }
+        var closeBtn = document.getElementById('ns-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                exitNeverSummer();
+            });
+        }
+    }
+
+    function enterNeverSummer() {
+        neverSummerActive = true;
+        // Hide other panels
+        document.getElementById('station-detail').style.display = 'none';
+        document.getElementById('region-list-section').style.display = 'none';
+        document.getElementById('heatmap-section').style.display = 'none';
+        document.getElementById('favorites-section').style.display = 'none';
+        document.getElementById('neversummer-section').style.display = 'block';
+        document.getElementById('neversummer-btn').style.display = 'none';
+        selectedId = null;
+        for (var mid in markers) {
+            markers[mid].setStyle({ weight: 1, color: '#fff', radius: 7 });
+        }
+        renderNeverSummer();
+    }
+
+    function exitNeverSummer() {
+        neverSummerActive = false;
+        document.getElementById('neversummer-section').style.display = 'none';
+        document.getElementById('neversummer-btn').style.display = 'block';
+        clearNeverSummerRoute();
+        // Restore appropriate view
+        if (currentView === 'heatmap') {
+            document.getElementById('heatmap-section').style.display = 'block';
+        } else if (currentView === 'favorites') {
+            document.getElementById('favorites-section').style.display = 'block';
+            renderFavorites();
+        } else {
+            document.getElementById('region-list-section').style.display = 'block';
+        }
+    }
+
+    function renderNeverSummer() {
+        var container = document.getElementById('neversummer-content');
+        if (!stationData || !stationData.never_summer) {
+            container.innerHTML = '<div class="ns-low-coverage"><p>Never Summer data is not yet available.</p>' +
+                '<p>Run the forecast generator to compute the year-round itinerary.</p></div>';
+            return;
+        }
+
+        var ns = stationData.never_summer;
+
+        if (ns.coverage_pct < 20) {
+            container.innerHTML = '<div class="ns-low-coverage">' +
+                '<p>The Never Summer algorithm needs more historical data.</p>' +
+                '<p>Currently collecting... check back in a few weeks.</p>' +
+                '<div class="ns-coverage-bar"><div class="ns-coverage-fill" style="width:' + ns.coverage_pct + '%"></div></div>' +
+                '<div class="ns-coverage-label">' + ns.coverage_pct + '% of year covered</div></div>';
+            return;
+        }
+
+        var html = '';
+
+        // Summary stats
+        html += '<div class="ns-summary">';
+        html += '<div class="ns-stat"><strong>' + ns.total_legs + '</strong> legs</div>';
+        html += '<div class="ns-stat">Avg score <strong>' + ns.avg_score + '</strong></div>';
+        html += '<div class="ns-stat"><strong>' + ns.coverage_pct + '%</strong> of year</div>';
+        html += '</div>';
+
+        // Coverage bar
+        if (ns.coverage_pct < 80) {
+            html += '<div class="ns-coverage-label">Partial coverage — improving nightly</div>';
+        }
+        html += '<div class="ns-coverage-bar"><div class="ns-coverage-fill" style="width:' + ns.coverage_pct + '%"></div></div>';
+
+        // Timeline: 12 month columns
+        html += '<div class="ns-timeline"><div class="ns-timeline-grid">';
+        var wb = ns.weekly_best || {};
+        for (var m = 0; m < 12; m++) {
+            var monthIdx = m;
+            var y = new Date().getFullYear();
+            var weeks = monthToWeeks(monthIdx, y);
+            html += '<div class="ns-month-col">';
+            html += '<div class="ns-month-label">' + MONTH_SHORT[monthIdx] + '</div>';
+            for (var w = 0; w < weeks.length; w++) {
+                var wk = String(weeks[w]);
+                var best = wb[wk];
+                if (best) {
+                    var color = fcColor(best.score);
+                    var tip = (best.station_name || best.station_id) +
+                        ' | Score: ' + best.score + ' | ' + fmtSnowMm(best.snow_mm) + '/day';
+                    html += '<div class="ns-week-cell" style="background:' + color + '" ' +
+                        'title="' + esc(tip) + '" data-station="' + esc(best.station_id) + '">' +
+                        best.score + '</div>';
+                } else {
+                    html += '<div class="ns-week-cell ns-empty-cell" title="No data yet">?</div>';
+                }
+            }
+            html += '</div>';
+        }
+        html += '</div></div>';
+
+        // Itinerary legs
+        if (ns.legs && ns.legs.length > 0) {
+            html += '<div class="ns-itinerary-label">Itinerary</div>';
+            html += '<div class="ns-itinerary">';
+            for (var i = 0; i < ns.legs.length; i++) {
+                var leg = ns.legs[i];
+                var lColor = fcColor(leg.avg_score);
+                var weekRange = 'Wk ' + leg.start_week + ' — Wk ' + leg.end_week;
+                html += '<div class="ns-leg" data-station="' + esc(leg.station_id) + '" style="border-left-color:' + lColor + '">' +
+                    '<span class="ns-leg-num">' + (i + 1) + '</span>' +
+                    '<div class="ns-leg-info">' +
+                    '<div class="ns-leg-name">' + esc(leg.station_name) + '</div>' +
+                    '<div class="ns-leg-dates">' + esc(weekRange) + ' | ' + esc(leg.region) + '</div>' +
+                    '</div>' +
+                    '<div class="ns-leg-stats">' +
+                    '<span class="ns-leg-score" style="background:' + lColor + ';color:#fff">' + leg.avg_score + '</span>' +
+                    '<span class="ns-leg-snow">' + fmtSnowMm(leg.avg_snow_mm) + '/d</span>' +
+                    '</div></div>';
+            }
+            html += '</div>';
+        }
+
+        container.innerHTML = html;
+
+        // Click handlers — timeline cells
+        container.querySelectorAll('.ns-week-cell[data-station]').forEach(function (cell) {
+            cell.addEventListener('click', function () {
+                selectStation(cell.dataset.station);
+            });
+        });
+
+        // Click handlers — itinerary legs
+        container.querySelectorAll('.ns-leg').forEach(function (leg) {
+            leg.addEventListener('click', function () {
+                selectStation(leg.dataset.station);
+            });
+        });
+
+        // Draw route on map
+        drawNeverSummerRoute(ns.legs);
+    }
+
+    function drawNeverSummerRoute(legs) {
+        clearNeverSummerRoute();
+        if (!legs || legs.length < 2 || !stationData) return;
+
+        var points = [];
+        for (var i = 0; i < legs.length; i++) {
+            var s = stationData.stations[legs[i].station_id];
+            if (s) points.push([s.lat, s.lon]);
+        }
+        // Close the loop
+        if (points.length > 1) points.push(points[0]);
+
+        if (points.length < 2) return;
+        neverSummerRoute = L.polyline(points, {
+            color: '#f59e0b',
+            weight: 2,
+            opacity: 0.6,
+            dashArray: '6, 8',
+        }).addTo(map);
+    }
+
+    function clearNeverSummerRoute() {
+        if (neverSummerRoute) {
+            map.removeLayer(neverSummerRoute);
+            neverSummerRoute = null;
         }
     }
 
