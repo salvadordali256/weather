@@ -403,7 +403,7 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
                     weather_code = excluded.weather_code,
                     evapotranspiration = excluded.evapotranspiration,
                     data_source = 'open-meteo'
-                WHERE snowfall_daily.data_source != 'noaa'
+                WHERE snowfall_daily.data_source NOT IN ('noaa', 'snotel')
             """, (
                 station_id, date, snow_mm, temp_mean,
                 get('precipitation_sum')[i], get('rain_sum')[i],
