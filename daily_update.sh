@@ -36,7 +36,13 @@ echo "Updating global predictor stations..." >> "$LOG_FILE"
 python update_global_predictors.py >> "$LOG_FILE" 2>&1
 GLOBAL_STATUS=$?
 
-# Step 3: Collect world data (all 60+ stations)
+# Step 2.5: Collect NOAA data (NA stations, recent 14 days)
+echo "" >> "$LOG_FILE"
+echo "Collecting NOAA data (North America)..." >> "$LOG_FILE"
+python collect_noaa_data.py --mode daily --days 14 >> "$LOG_FILE" 2>&1
+NOAA_STATUS=$?
+
+# Step 3: Collect world data (all stations — won't overwrite NOAA records)
 echo "" >> "$LOG_FILE"
 echo "Collecting world data (all stations)..." >> "$LOG_FILE"
 python collect_world_data.py --days 7 >> "$LOG_FILE" 2>&1
@@ -84,6 +90,7 @@ echo "========================================" >> "$LOG_FILE"
 echo "Daily Update Completed: $(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE"
 echo "Regional Update: $([ $REGIONAL_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Global Update: $([ $GLOBAL_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
+echo "NOAA Data: $([ $NOAA_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "World Data: $([ $WORLD_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Forecast Generation: $([ $FORECAST_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Station Forecasts: $([ $STATION_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"

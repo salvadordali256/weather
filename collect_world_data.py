@@ -43,6 +43,7 @@ def migrate_schema(conn):
         'radiation_sum': 'REAL', 'sunshine_duration': 'REAL',
         'precipitation_hours': 'REAL', 'weather_code': 'INTEGER',
         'evapotranspiration': 'REAL',
+        'data_source': "TEXT DEFAULT 'open-meteo'",
     }
 
     for col, dtype in new_columns.items():
@@ -251,6 +252,76 @@ WORLD_STATIONS = {
         ("moscow_russia", 55.7558, 37.6173, "Moscow, Russia"),
         ("helsinki_finland", 60.1699, 24.9384, "Helsinki, Finland"),
     ],
+    # US Rockies (expanded)
+    "us_rockies_north": [
+        ("jackson_hole_wy", 43.5877, -110.8279, "Jackson Hole, WY"),
+        ("grand_targhee_wy", 43.7903, -110.9572, "Grand Targhee, WY"),
+        ("big_sky_mt", 45.2833, -111.4014, "Big Sky, MT"),
+        ("sun_valley_id", 43.6952, -114.3514, "Sun Valley, ID"),
+        ("bridger_bowl_mt", 45.8172, -110.8969, "Bridger Bowl, MT"),
+        ("schweitzer_id", 48.3678, -116.6228, "Schweitzer, ID"),
+    ],
+    "us_rockies_utah": [
+        ("park_city_ut", 40.6461, -111.4980, "Park City, UT"),
+        ("alta_ut", 40.5884, -111.6386, "Alta/Snowbird, UT"),
+    ],
+    "us_rockies_co_expanded": [
+        ("winter_park_co", 39.8841, -105.7625, "Winter Park, CO"),
+        ("crested_butte_co", 38.8697, -106.9878, "Crested Butte, CO"),
+        ("monarch_co", 38.5122, -106.3322, "Monarch, CO"),
+        ("ski_cooper_co", 39.3611, -106.3003, "Ski Cooper, CO"),
+        ("taos_nm", 36.5964, -105.4545, "Taos Ski Valley, NM"),
+    ],
+    # US Northeast Ski
+    "us_northeast_ski": [
+        ("stowe_vt", 44.5303, -72.7814, "Stowe, VT"),
+        ("killington_vt", 43.6045, -72.8201, "Killington, VT"),
+        ("jay_peak_vt", 44.9275, -72.5053, "Jay Peak, VT"),
+        ("smugglers_notch_vt", 44.5858, -72.7929, "Smugglers' Notch, VT"),
+        ("okemo_vt", 43.4014, -72.7171, "Okemo, VT"),
+        ("sugarloaf_me", 45.0314, -70.3131, "Sugarloaf, ME"),
+        ("sunday_river_me", 44.4731, -70.8564, "Sunday River, ME"),
+        ("whiteface_ny", 44.3659, -73.9026, "Whiteface, NY"),
+        ("gore_mountain_ny", 43.6728, -74.0062, "Gore Mountain, NY"),
+        ("loon_mountain_nh", 44.0364, -71.6214, "Loon Mountain, NH"),
+        ("bretton_woods_nh", 44.2553, -71.4400, "Bretton Woods, NH"),
+        ("cannon_mountain_nh", 44.1567, -71.6989, "Cannon Mountain, NH"),
+    ],
+    # US Midwest Ski
+    "us_midwest_ski": [
+        ("lutsen_mn", 47.6633, -90.7183, "Lutsen, MN"),
+        ("spirit_mountain_mn", 46.7186, -92.2170, "Spirit Mountain, MN"),
+        ("granite_peak_wi", 44.9333, -89.6823, "Granite Peak, WI"),
+    ],
+    # US Pacific Expanded
+    "us_pacific_ski": [
+        ("crystal_mountain_wa", 46.9350, -121.5047, "Crystal Mountain, WA"),
+        ("snoqualmie_pass_wa", 47.4207, -121.4138, "Snoqualmie Pass, WA"),
+        ("mt_bachelor_or", 43.9792, -121.6886, "Mt. Bachelor, OR"),
+        ("heavenly_ca", 38.9353, -119.9400, "Heavenly, CA"),
+        ("northstar_ca", 39.2746, -120.1210, "Northstar, CA"),
+    ],
+    # Canada BC Ski
+    "canada_bc_ski": [
+        ("big_white_bc", 49.7258, -118.9314, "Big White, BC"),
+        ("sun_peaks_bc", 50.8833, -119.8833, "Sun Peaks, BC"),
+        ("fernie_bc", 49.4628, -115.0872, "Fernie, BC"),
+        ("kicking_horse_bc", 51.2975, -116.9517, "Kicking Horse, BC"),
+        ("red_mountain_bc", 49.1047, -117.8456, "Red Mountain, BC"),
+        ("panorama_bc", 50.4600, -116.2367, "Panorama, BC"),
+    ],
+    # Canada Alberta Ski
+    "canada_ab_ski": [
+        ("marmot_basin_ab", 52.8003, -117.6500, "Marmot Basin, AB"),
+        ("nakiska_ab", 50.9433, -115.1517, "Nakiska, AB"),
+    ],
+    # Canada East Ski
+    "canada_east_ski": [
+        ("tremblant_qc", 46.2092, -74.5858, "Tremblant, QC"),
+        ("mont_sainte_anne_qc", 47.0753, -70.9067, "Mont-Sainte-Anne, QC"),
+        ("le_massif_qc", 47.2833, -70.6333, "Le Massif, QC"),
+        ("blue_mountain_on", 44.5000, -80.3167, "Blue Mountain, ON"),
+    ],
 }
 
 
@@ -305,14 +376,34 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
                 temp_mean = (t_max + t_min) / 2.0
 
             cursor.execute("""
-                INSERT OR REPLACE INTO snowfall_daily
+                INSERT INTO snowfall_daily
                 (station_id, date, snowfall_mm, temp_mean_celsius,
                  precipitation_mm, rain_mm, temp_max_celsius, temp_min_celsius,
                  apparent_temp_max, apparent_temp_min,
                  wind_speed_max, wind_gusts_max, wind_direction_dominant,
                  radiation_sum, sunshine_duration,
-                 precipitation_hours, weather_code, evapotranspiration)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 precipitation_hours, weather_code, evapotranspiration,
+                 data_source)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open-meteo')
+                ON CONFLICT(station_id, date) DO UPDATE SET
+                    snowfall_mm = excluded.snowfall_mm,
+                    temp_mean_celsius = excluded.temp_mean_celsius,
+                    precipitation_mm = excluded.precipitation_mm,
+                    rain_mm = excluded.rain_mm,
+                    temp_max_celsius = excluded.temp_max_celsius,
+                    temp_min_celsius = excluded.temp_min_celsius,
+                    apparent_temp_max = excluded.apparent_temp_max,
+                    apparent_temp_min = excluded.apparent_temp_min,
+                    wind_speed_max = excluded.wind_speed_max,
+                    wind_gusts_max = excluded.wind_gusts_max,
+                    wind_direction_dominant = excluded.wind_direction_dominant,
+                    radiation_sum = excluded.radiation_sum,
+                    sunshine_duration = excluded.sunshine_duration,
+                    precipitation_hours = excluded.precipitation_hours,
+                    weather_code = excluded.weather_code,
+                    evapotranspiration = excluded.evapotranspiration,
+                    data_source = 'open-meteo'
+                WHERE snowfall_daily.data_source != 'noaa'
             """, (
                 station_id, date, snow_mm, temp_mean,
                 get('precipitation_sum')[i], get('rain_sum')[i],

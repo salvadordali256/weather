@@ -524,6 +524,15 @@ def build_region_index(all_stations):
         'appalachian_eastern_us': 'Appalachian / Eastern US',
         'southern_hemisphere_ref': 'Southern Hemisphere',
         'europe_additional': 'Europe Additional',
+        'us_rockies_north': 'Northern Rockies',
+        'us_rockies_utah': 'Utah Ski',
+        'us_rockies_co_expanded': 'Colorado Ski (Expanded)',
+        'us_northeast_ski': 'Northeast Ski',
+        'us_midwest_ski': 'Midwest Ski',
+        'us_pacific_ski': 'Pacific Ski',
+        'canada_bc_ski': 'British Columbia Ski',
+        'canada_ab_ski': 'Alberta Ski',
+        'canada_east_ski': 'Eastern Canada Ski',
     }
 
     regions = {}
