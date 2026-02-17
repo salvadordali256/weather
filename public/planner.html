@@ -15,6 +15,7 @@
         <a href="report.html" class="nav-back">Daily Report</a>
         <span class="nav-title">Snow Trip Planner</span>
         <span class="nav-badge" id="station-count">...</span>
+        <button class="unit-toggle" id="unit-toggle" title="Switch units">cm</button>
         <span class="nav-updated" id="nav-updated"></span>
     </nav>
 
@@ -24,50 +25,88 @@
             <div class="panel-section">
                 <label class="panel-label">Search destination</label>
                 <input type="text" id="search-input" class="search-input"
-                       placeholder="e.g. Chamonix, Niseko, Vail..." autocomplete="off">
+                       placeholder="e.g. Chamonix, Niseko, Heavenly..." autocomplete="off">
                 <ul class="search-results" id="search-results"></ul>
             </div>
 
-            <div class="panel-section">
-                <label class="panel-label">Travel dates</label>
-                <div class="date-row">
-                    <div class="date-field">
-                        <span class="date-label">Arrive</span>
-                        <input type="date" id="date-arrive" class="date-input">
-                    </div>
-                    <div class="date-field">
-                        <span class="date-label">Depart</span>
-                        <input type="date" id="date-depart" class="date-input">
-                    </div>
+            <!-- Futurecast month selector -->
+            <div class="panel-section" id="futurecast-section">
+                <label class="panel-label">FUTURECAST</label>
+                <div class="month-selector">
+                    <button class="month-nav" id="month-prev" title="Previous month">&larr;</button>
+                    <span class="month-display" id="month-display"></span>
+                    <button class="month-nav" id="month-next" title="Next month">&rarr;</button>
                 </div>
-                <p class="date-warning" id="date-warning"></p>
+                <div class="enso-badge" id="enso-badge"></div>
+                <div class="view-toggle" id="view-toggle">
+                    <button class="view-btn active" data-view="regions">Regions</button>
+                    <button class="view-btn" data-view="heatmap">Heatmap</button>
+                </div>
+            </div>
+
+            <!-- Heatmap view (hidden by default) -->
+            <div class="panel-section" id="heatmap-section" style="display:none;">
+                <div class="heatmap-wrap" id="heatmap-wrap"></div>
             </div>
 
             <!-- Station detail (hidden until selected) -->
             <div class="panel-section station-detail" id="station-detail" style="display:none;">
                 <div class="detail-header">
-                    <button class="detail-close" id="detail-close" title="Back to regions">&larr; All regions</button>
+                    <button class="detail-close" id="detail-close" title="Back">&larr; Back</button>
                     <h2 id="detail-name"></h2>
                     <span class="detail-region" id="detail-region"></span>
                     <div class="snow-score-badge" id="detail-score"></div>
                 </div>
 
-                <!-- Forecast strip -->
+                <!-- Futurecast weekly outlook (primary view) -->
                 <div class="detail-subsection">
-                    <h3>Forecast</h3>
-                    <div class="forecast-strip" id="forecast-strip"></div>
+                    <h3>Futurecast &mdash; 6 Month Outlook</h3>
+                    <div class="station-futurecast" id="station-futurecast"></div>
                 </div>
 
-                <!-- Historical context -->
-                <div class="detail-subsection">
-                    <h3>Historical Snowfall</h3>
-                    <div class="history-card" id="history-card"></div>
+                <!-- Live weather (collapsible) -->
+                <div class="detail-subsection collapsible">
+                    <h3 class="collapsible-header" id="live-weather-toggle">
+                        Live Weather (16 Days)
+                        <span class="collapse-icon">+</span>
+                    </h3>
+                    <div class="collapsible-body" style="display:none;">
+                        <div class="date-row">
+                            <div class="date-field">
+                                <span class="date-label">Arrive</span>
+                                <input type="date" id="date-arrive" class="date-input">
+                            </div>
+                            <div class="date-field">
+                                <span class="date-label">Depart</span>
+                                <input type="date" id="date-depart" class="date-input">
+                            </div>
+                        </div>
+                        <button class="plan-trip-btn" id="plan-trip-btn">Plan Trip</button>
+                        <p class="date-warning" id="date-warning"></p>
+                        <div class="forecast-strip" id="forecast-strip"></div>
+                    </div>
                 </div>
 
-                <!-- Recent observations -->
-                <div class="detail-subsection">
-                    <h3>Recent Observations</h3>
-                    <div class="recent-obs" id="recent-obs"></div>
+                <!-- Historical context (collapsible) -->
+                <div class="detail-subsection collapsible">
+                    <h3 class="collapsible-header">
+                        Historical Snowfall
+                        <span class="collapse-icon">+</span>
+                    </h3>
+                    <div class="collapsible-body" style="display:none;">
+                        <div class="history-card" id="history-card"></div>
+                    </div>
+                </div>
+
+                <!-- Recent observations (collapsible) -->
+                <div class="detail-subsection collapsible">
+                    <h3 class="collapsible-header">
+                        Recent Observations
+                        <span class="collapse-icon">+</span>
+                    </h3>
+                    <div class="collapsible-body" style="display:none;">
+                        <div class="recent-obs" id="recent-obs"></div>
+                    </div>
                 </div>
 
                 <!-- Nearby stations -->
@@ -87,10 +126,12 @@
         <!-- Map -->
         <div class="map-container" id="map">
             <div class="map-legend" id="map-legend">
-                <div class="legend-title">Snow Score</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> 60+ High</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span> 30-59 Moderate</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> 0-29 Low</div>
+                <div class="legend-title">Futurecast Score</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> 80+ Excellent</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> 60-79 Good</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span> 40-59 Moderate</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> 20-39 Fair</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> 0-19 Poor</div>
             </div>
         </div>
     </div>

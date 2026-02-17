@@ -1,4 +1,4 @@
-/* Snow Trip Planner — matches existing dark design system */
+/* Snow Trip Planner — Futurecast-First Design */
 
 * {
     margin: 0;
@@ -55,6 +55,31 @@ body {
     background: rgba(255,255,255,0.08);
     padding: 3px 8px;
     border-radius: 10px;
+}
+
+.unit-toggle {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.unit-toggle:hover {
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.unit-toggle.imperial {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #60a5fa;
 }
 
 .nav-updated {
@@ -148,6 +173,284 @@ body {
 .search-results .result-region {
     font-size: 0.7rem;
     color: #64748b;
+}
+
+.search-more {
+    color: #64748b;
+    font-size: 0.8rem;
+    font-style: italic;
+    cursor: default !important;
+    justify-content: center !important;
+}
+
+.search-more:hover {
+    background: none !important;
+}
+
+/* ─── Month selector ─── */
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.month-nav {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #94a3b8;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.month-nav:hover {
+    color: #fff;
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.month-display {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    min-width: 160px;
+    text-align: center;
+}
+
+/* ─── ENSO badge ─── */
+.enso-badge {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.enso-la_nina {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.enso-el_nino {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.enso-neutral {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+/* ─── View toggle (Regions / Heatmap) ─── */
+.view-toggle {
+    display: flex;
+    gap: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.view-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-btn:hover {
+    color: #94a3b8;
+}
+
+.view-btn.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+/* ─── Station futurecast bars ─── */
+.station-futurecast {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.fc-month-group {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+.fc-month-label {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fc-week-bars {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    height: 80px;
+}
+
+.fc-week-bar {
+    width: 22px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+    cursor: default;
+}
+
+.fc-bar-fill {
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: height 0.3s;
+}
+
+.fc-bar-score {
+    font-size: 0.55rem;
+    color: #64748b;
+    margin-top: 2px;
+    line-height: 1;
+}
+
+/* ─── Heatmap ─── */
+.heatmap-wrap {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.heatmap-table {
+    border-collapse: collapse;
+    font-size: 0.7rem;
+    width: 100%;
+    min-width: 300px;
+}
+
+.heatmap-table th {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 3px 2px;
+    text-align: center;
+}
+
+.hm-month {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.heatmap-row {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.heatmap-row:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+.hm-name {
+    color: #cbd5e1;
+    padding: 3px 6px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.hm-cell {
+    text-align: center;
+    padding: 3px 1px;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+    border-radius: 2px;
+    min-width: 20px;
+}
+
+/* ─── Collapsible sections ─── */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.collapsible-header:hover {
+    color: #94a3b8;
+}
+
+.collapse-icon {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 400;
+    width: 18px;
+    text-align: center;
+}
+
+.collapsible-body {
+    padding-top: 8px;
+}
+
+/* ─── Plan trip button ─── */
+.plan-trip-btn {
+    width: 100%;
+    padding: 10px;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 8px;
+    color: #60a5fa;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+.plan-trip-btn:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: #3b82f6;
+    color: #93bbfc;
+}
+
+.plan-trip-btn.btn-applied {
+    background: rgba(34, 197, 94, 0.25);
+    border-color: rgba(34, 197, 94, 0.5);
+    color: #4ade80;
 }
 
 /* ─── Date picker ─── */
@@ -250,7 +553,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* ─── Forecast strip ─── */
+/* ─── Forecast strip (16-day live weather) ─── */
 .forecast-strip {
     display: flex;
     gap: 6px;
@@ -445,7 +748,7 @@ body {
     flex-shrink: 0;
 }
 
-/* Leaflet popup override */
+/* ─── Leaflet popup override ─── */
 .leaflet-popup-content-wrapper {
     background: rgba(22, 33, 62, 0.95);
     backdrop-filter: blur(10px);
@@ -492,11 +795,7 @@ body {
     text-decoration: underline;
 }
 
-/* ─── Score colors ─── */
-.score-high { color: #3b82f6; }
-.score-moderate { color: #6366f1; }
-.score-low { color: #94a3b8; }
-
+/* ─── Score badge colors ─── */
 .badge-high { background: rgba(59,130,246,0.25); color: #60a5fa; }
 .badge-moderate { background: rgba(99,102,241,0.25); color: #818cf8; }
 .badge-low { background: rgba(148,163,184,0.2); color: #94a3b8; }
@@ -504,14 +803,18 @@ body {
 /* ─── Scrollbar ─── */
 .side-panel::-webkit-scrollbar,
 .forecast-strip::-webkit-scrollbar,
-.search-results::-webkit-scrollbar {
+.search-results::-webkit-scrollbar,
+.station-futurecast::-webkit-scrollbar,
+.heatmap-wrap::-webkit-scrollbar {
     width: 4px;
     height: 4px;
 }
 
 .side-panel::-webkit-scrollbar-thumb,
 .forecast-strip::-webkit-scrollbar-thumb,
-.search-results::-webkit-scrollbar-thumb {
+.search-results::-webkit-scrollbar-thumb,
+.station-futurecast::-webkit-scrollbar-thumb,
+.heatmap-wrap::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.15);
     border-radius: 4px;
 }
@@ -580,5 +883,28 @@ body {
 
     .fc-day {
         width: 62px;
+    }
+
+    .fc-week-bar {
+        width: 18px;
+    }
+
+    .fc-week-bars {
+        height: 60px;
+    }
+
+    .month-display {
+        font-size: 0.9rem;
+        min-width: 130px;
+    }
+
+    .hm-name {
+        max-width: 70px;
+        font-size: 0.6rem;
+    }
+
+    .hm-cell {
+        min-width: 16px;
+        font-size: 0.5rem;
     }
 }

@@ -25,6 +25,10 @@ from collect_world_data import WORLD_STATIONS
 DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 OUTPUT_DIR = os.environ.get('FORECAST_OUTPUT_DIR', 'forecast_output')
 
+# Current ENSO phase for the 2025-2026 winter season
+# Update annually based on NOAA ONI data
+CURRENT_ENSO_PHASE = 'la_nina'
+
 FORECAST_API_URL = "https://api.open-meteo.com/v1/forecast"
 FORECAST_VARIABLES = (
     "snowfall_sum,temperature_2m_max,temperature_2m_min,"
@@ -262,6 +266,69 @@ def compute_snow_score(forecast_dict, climatology):
     return max(0, score)
 
 
+def compute_futurecast(climatology, enso_phase='neutral'):
+    """
+    Compute 6-month futurecast scores from weekly climatology.
+
+    Each week gets a score (0-100) based on:
+    - Snowfall component (0-60 pts): normalized to station's own peak week
+    - Probability component (0-30 pts): snow_day_probability * 30
+    - ENSO modulation (NH winter weeks 44-14): La Nina +8%, El Nino -8%
+
+    Only emits weeks with score > 0 to keep JSON compact.
+    """
+    weeks = climatology.get('weeks', {})
+    if not weeks:
+        return {}
+
+    # Find peak snowfall week for normalization
+    peak_snow = max(
+        (w.get('avg_daily_snowfall_mm', 0) for w in weeks.values()),
+        default=0,
+    )
+    if peak_snow <= 0:
+        peak_snow = 1  # avoid division by zero
+
+    enso_mod = {
+        'la_nina': 1.08,
+        'el_nino': 0.92,
+        'neutral': 1.0,
+    }
+    mod = enso_mod.get(enso_phase, 1.0)
+
+    futurecast = {}
+    for week_key, w in weeks.items():
+        wk = int(week_key)
+        avg_snow = w.get('avg_daily_snowfall_mm', 0)
+        snow_prob = w.get('snow_day_probability', 0)
+
+        # Snowfall component: normalized to station peak (0-60)
+        snow_pts = min(60, (avg_snow / peak_snow) * 60)
+
+        # Probability component (0-30)
+        prob_pts = snow_prob * 30
+
+        raw = snow_pts + prob_pts
+
+        # ENSO modulation: NH winter weeks only (Nov-Mar approx)
+        if wk >= 44 or wk <= 14:
+            raw *= mod
+
+        score = min(100, max(0, round(raw)))
+        if score == 0:
+            continue
+
+        futurecast[week_key] = {
+            'score': score,
+            'avg_daily_snow_mm': round(avg_snow, 1),
+            'snow_day_prob': round(snow_prob, 2),
+            'week_label': w.get('week_label', ''),
+            'max_recorded_mm': round(w.get('max_recorded_snowfall_mm', 0), 1),
+        }
+
+    return futurecast
+
+
 def build_region_index(all_stations):
     """Build region display names and station lists."""
     region_names = {
@@ -354,6 +421,9 @@ def generate_all():
             # Snow score
             snow_score = compute_snow_score(forecast_dict, climatology)
 
+            # Futurecast
+            futurecast = compute_futurecast(climatology, CURRENT_ENSO_PHASE)
+
             station_data[station_id] = {
                 'name': name,
                 'region': region,
@@ -361,6 +431,7 @@ def generate_all():
                 'lon': lon,
                 'forecast': forecast_dict,
                 'climatology': climatology,
+                'futurecast': futurecast,
                 'recent_observations': recent,
                 'snow_score': snow_score,
             }
@@ -376,6 +447,7 @@ def generate_all():
         'generated_at': datetime.now().isoformat(),
         'generated_at_human': datetime.now().strftime('%B %d, %Y at %I:%M %p'),
         'station_count': len(station_data),
+        'enso_phase': CURRENT_ENSO_PHASE,
         'stations': station_data,
         'regions': build_region_index(station_data),
     }
