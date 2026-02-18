@@ -14,6 +14,7 @@
     var stationData = null;
     var map = null;
     var markers = {};
+    var clusterGroup = null;
     var selectedId = null;
     var currentMonth = new Date().getMonth();
     var currentYear = new Date().getFullYear();
@@ -25,33 +26,117 @@
 
     // ─── Resort aliases for search ───
     var RESORT_ALIASES = {
+        // Wisconsin
         'phelps_wi': ['phelps', 'nicolet'],
         'land_o_lakes_wi': ['land o lakes', 'land o\'lakes'],
         'eagle_river_wi': ['eagle river'],
+        // Colorado
         'vail_co': ['vail', 'vail mountain'],
         'aspen_co': ['aspen', 'snowmass', 'aspen snowmass'],
         'breckenridge_co': ['breck', 'breckenridge'],
         'steamboat_springs_co': ['steamboat', 'the boat'],
         'telluride_co': ['telluride', 't-ride'],
+        'winter_park_co': ['winter park', 'mary jane'],
+        'crested_butte_co': ['crested butte', 'cb'],
+        'monarch_co': ['monarch', 'monarch mountain'],
+        'ski_cooper_co': ['ski cooper', 'cooper', 'leadville'],
+        // Wyoming
+        'jackson_hole_wy': ['jackson hole', 'jackson', 'jh', 'the big one'],
+        'grand_targhee_wy': ['targhee', 'grand targhee'],
+        // Montana
+        'big_sky_mt': ['big sky', 'lone mountain'],
+        'bridger_bowl_mt': ['bridger', 'bridger bowl'],
+        // Idaho
+        'sun_valley_id': ['sun valley', 'ketchum', 'baldy'],
+        'schweitzer_id': ['schweitzer', 'sandpoint'],
+        // Utah
+        'park_city_ut': ['park city', 'pcmr', 'deer valley', 'canyons'],
+        'alta_ut': ['alta', 'snowbird', 'little cottonwood'],
+        // New Mexico
+        'taos_nm': ['taos', 'taos ski valley', 'tsv'],
+        // California
         'mammoth_mountain_ca': ['mammoth', 'mammoth mountain'],
-        'lake_tahoe_ca': ['tahoe', 'heavenly', 'palisades', 'kirkwood', 'northstar', 'squaw'],
+        'lake_tahoe_ca': ['tahoe', 'palisades', 'kirkwood', 'squaw'],
         'mount_shasta_ca': ['shasta', 'mt shasta'],
         'big_bear_ca': ['big bear', 'snow summit', 'bear mountain'],
+        'heavenly_ca': ['heavenly', 'south lake tahoe'],
+        'northstar_ca': ['northstar', 'north star'],
+        // Washington
         'mount_baker_wa': ['baker', 'mt baker'],
         'stevens_pass_wa': ['stevens', 'stevens pass'],
+        'crystal_mountain_wa': ['crystal', 'crystal mountain'],
+        'snoqualmie_pass_wa': ['snoqualmie', 'alpental', 'summit at snoqualmie'],
+        // Oregon
         'mount_hood_or': ['hood', 'timberline', 'mt hood meadows'],
+        'mt_bachelor_or': ['bachelor', 'mt bachelor', 'bend'],
+        // Northeast
+        'stowe_vt': ['stowe', 'spruce peak'],
+        'killington_vt': ['killington', 'beast of the east', 'k-town'],
+        'jay_peak_vt': ['jay peak', 'jay'],
+        'smugglers_notch_vt': ['smuggs', 'smugglers notch', 'smugglers'],
+        'okemo_vt': ['okemo', 'ludlow'],
+        'sugarloaf_me': ['sugarloaf', 'the loaf'],
+        'sunday_river_me': ['sunday river', 'newry'],
+        'whiteface_ny': ['whiteface', 'lake placid'],
+        'gore_mountain_ny': ['gore', 'gore mountain'],
+        'loon_mountain_nh': ['loon', 'loon mountain', 'lincoln nh'],
+        'bretton_woods_nh': ['bretton woods', 'mount washington'],
+        'cannon_mountain_nh': ['cannon', 'cannon mountain', 'franconia'],
+        // Midwest
+        'lutsen_mn': ['lutsen', 'lutsen mountains'],
+        'spirit_mountain_mn': ['spirit mountain', 'duluth'],
+        'granite_peak_wi_ski': ['granite peak', 'rib mountain', 'wausau'],
+        // Canada West
+        'big_white_bc': ['big white'],
+        'sun_peaks_bc': ['sun peaks'],
+        'fernie_bc': ['fernie', 'fernie alpine'],
+        'kicking_horse_bc': ['kicking horse', 'golden bc'],
+        'red_mountain_bc': ['red mountain', 'rossland', 'red resort'],
+        'panorama_bc': ['panorama', 'invermere'],
+        'marmot_basin_ab': ['marmot', 'marmot basin', 'jasper'],
+        'nakiska_ab': ['nakiska', 'kananaskis'],
+        // Canada East
+        'tremblant_qc': ['tremblant', 'mont tremblant'],
+        'mont_sainte_anne_qc': ['mont sainte anne', 'sainte anne', 'beaupre'],
+        'le_massif_qc': ['le massif', 'charlevoix'],
+        'blue_mountain_on': ['blue mountain', 'collingwood'],
+        // Japan
         'niseko_japan': ['niseko', 'japow'],
         'hakuba_japan': ['hakuba', 'happo one'],
+        // Europe
         'chamonix_france': ['chamonix', 'cham', 'mont blanc'],
         'zermatt_switzerland': ['zermatt', 'matterhorn'],
         'st_moritz_switzerland': ['st moritz', 'saint moritz'],
         'innsbruck_austria': ['innsbruck', 'nordkette'],
+        // Canada (existing)
         'whistler_bc': ['whistler', 'blackcomb', 'whistler blackcomb'],
         'revelstoke_bc': ['revelstoke', 'revy'],
         'banff_ab': ['banff', 'sunshine village'],
         'lake_louise_ab': ['lake louise'],
+        // Southern Hemisphere
         'queenstown_nz': ['queenstown', 'remarkables', 'coronet peak'],
     };
+
+    // ─── Region super-groups for sidebar ───
+    var REGION_GROUPS = [
+        { label: 'North America — West', regions: [
+            'us_rockies', 'us_rockies_north', 'us_rockies_utah', 'us_rockies_co_expanded',
+            'us_pacific', 'us_pacific_ski',
+            'canada_bc', 'canada_bc_ski', 'canada_ab', 'canada_ab_ski',
+        ]},
+        { label: 'North America — East', regions: [
+            'us_northeast_ski', 'us_midwest', 'us_midwest_ski', 'canada_east_ski',
+        ]},
+        { label: 'Europe', regions: [
+            'alps', 'scandinavia',
+        ]},
+        { label: 'Asia & Pacific', regions: [
+            'japan', 'oceania',
+        ]},
+        { label: 'Great Lakes / Wisconsin', regions: [
+            'great_lakes',
+        ]},
+    ];
 
     // ─── WMO weather code \u2192 emoji ───
     var WMO_ICONS = {
@@ -247,9 +332,17 @@
         }
     }
 
-    // ─── Markers (colored by futurecast) ───
+    // ─── Markers (colored by futurecast, clustered) ───
     function addMarkers() {
         var stations = stationData.stations;
+        clusterGroup = L.markerClusterGroup({
+            maxClusterRadius: 40,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            disableClusteringAtZoom: 7,
+        });
+
         for (var id in stations) {
             var s = stations[id];
             var score = stationMonthScore(s, currentMonth, currentYear);
@@ -257,7 +350,7 @@
             var marker = L.circleMarker([s.lat, s.lon], {
                 radius: 7, fillColor: color, color: '#fff',
                 weight: 1, opacity: 0.8, fillOpacity: 0.8,
-            }).addTo(map);
+            });
 
             marker.bindPopup(buildPopup(id, s));
             (function (mid) {
@@ -268,7 +361,9 @@
             })(id);
 
             markers[id] = marker;
+            clusterGroup.addLayer(marker);
         }
+        map.addLayer(clusterGroup);
     }
 
     function buildPopup(id, s) {
@@ -300,17 +395,66 @@
         return key.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
     }
 
-    // ─── Region list ───
+    // ─── Region list (grouped) ───
     function buildRegionList() {
         var ul = document.getElementById('region-list');
         var regions = stationData.regions;
         ul.innerHTML = '';
-        for (var key in regions) {
-            var r = regions[key];
-            var li = document.createElement('li');
-            li.innerHTML = '<span>' + esc(r.display_name) + '</span><span class="region-count">' + esc(r.stations.length) + '</span>';
-            (function (k) { li.addEventListener('click', function () { zoomToRegion(k); }); })(key);
-            ul.appendChild(li);
+
+        // Track which regions have been placed in a group
+        var placed = {};
+
+        for (var g = 0; g < REGION_GROUPS.length; g++) {
+            var group = REGION_GROUPS[g];
+            // Only show groups that have at least one region in the data
+            var groupRegions = [];
+            for (var ri = 0; ri < group.regions.length; ri++) {
+                if (regions[group.regions[ri]]) groupRegions.push(group.regions[ri]);
+            }
+            if (groupRegions.length === 0) continue;
+
+            // Group header
+            var header = document.createElement('li');
+            header.className = 'region-group-header';
+            var totalStations = 0;
+            for (var ri2 = 0; ri2 < groupRegions.length; ri2++) {
+                totalStations += regions[groupRegions[ri2]].stations.length;
+            }
+            header.innerHTML = '<span>' + esc(group.label) + ' (' + totalStations + ')</span><span class="group-toggle">&#9660;</span>';
+            ul.appendChild(header);
+
+            // Items container
+            var itemsDiv = document.createElement('div');
+            itemsDiv.className = 'region-group-items';
+
+            for (var ri3 = 0; ri3 < groupRegions.length; ri3++) {
+                var key = groupRegions[ri3];
+                var r = regions[key];
+                placed[key] = true;
+                var li = document.createElement('li');
+                li.innerHTML = '<span>' + esc(r.display_name) + '</span><span class="region-count">' + esc(r.stations.length) + '</span>';
+                (function (k) { li.addEventListener('click', function () { zoomToRegion(k); }); })(key);
+                itemsDiv.appendChild(li);
+            }
+            ul.appendChild(itemsDiv);
+
+            // Toggle collapse
+            (function (h, items) {
+                h.addEventListener('click', function () {
+                    h.classList.toggle('collapsed');
+                    items.classList.toggle('collapsed');
+                });
+            })(header, itemsDiv);
+        }
+
+        // Any ungrouped regions go at the bottom
+        for (var key2 in regions) {
+            if (placed[key2]) continue;
+            var r2 = regions[key2];
+            var li2 = document.createElement('li');
+            li2.innerHTML = '<span>' + esc(r2.display_name) + '</span><span class="region-count">' + esc(r2.stations.length) + '</span>';
+            (function (k) { li2.addEventListener('click', function () { zoomToRegion(k); }); })(key2);
+            ul.appendChild(li2);
         }
     }
 
@@ -534,6 +678,13 @@
         document.getElementById('detail-name-text').textContent = s.name;
         updateStarIcon(id);
         document.getElementById('detail-region').textContent = regionDisplayName(s.region);
+
+        // Data source badge
+        var srcEl = document.getElementById('detail-source');
+        var src = s.data_source || 'open-meteo';
+        var srcLabels = { 'snotel': 'SNOTEL', 'noaa': 'NOAA', 'open-meteo': 'Open-Meteo' };
+        srcEl.textContent = srcLabels[src] || src;
+        srcEl.className = 'data-source-badge source-' + src;
 
         var score = stationMonthScore(s, currentMonth, currentYear);
         var scoreEl = document.getElementById('detail-score');

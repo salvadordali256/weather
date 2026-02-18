@@ -676,9 +676,84 @@ body {
     color: #64748b;
 }
 
+/* ─── Data source badge ─── */
+.data-source-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.data-source-badge:empty { display: none; }
+
+.data-source-badge.source-snotel {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.data-source-badge.source-noaa {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.data-source-badge.source-open-meteo {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
 /* ─── Region list ─── */
 .region-list {
     list-style: none;
+}
+
+.region-group-header {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    font-weight: 700;
+    padding: 10px 12px 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.region-group-header:first-child {
+    padding-top: 0;
+}
+
+.region-group-header:hover {
+    color: #94a3b8;
+}
+
+.region-group-header .group-toggle {
+    font-size: 0.65rem;
+    color: #475569;
+    transition: transform 0.2s;
+}
+
+.region-group-header.collapsed .group-toggle {
+    transform: rotate(-90deg);
+}
+
+.region-group-items {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.region-group-items.collapsed {
+    max-height: 0 !important;
 }
 
 .region-list li {
@@ -702,6 +777,46 @@ body {
     background: rgba(255,255,255,0.06);
     padding: 2px 8px;
     border-radius: 10px;
+}
+
+/* ─── Marker clusters (dark theme override) ─── */
+.marker-cluster {
+    background: rgba(22, 33, 62, 0.8) !important;
+    border: 2px solid rgba(59, 130, 246, 0.5) !important;
+}
+
+.marker-cluster div {
+    background: rgba(59, 130, 246, 0.3) !important;
+    color: #e0e0e0 !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+
+.marker-cluster-small {
+    background: rgba(22, 33, 62, 0.8) !important;
+    border-color: rgba(99, 102, 241, 0.5) !important;
+}
+
+.marker-cluster-small div {
+    background: rgba(99, 102, 241, 0.3) !important;
+}
+
+.marker-cluster-medium {
+    background: rgba(22, 33, 62, 0.8) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.marker-cluster-medium div {
+    background: rgba(59, 130, 246, 0.3) !important;
+}
+
+.marker-cluster-large {
+    background: rgba(22, 33, 62, 0.8) !important;
+    border-color: rgba(34, 197, 94, 0.5) !important;
+}
+
+.marker-cluster-large div {
+    background: rgba(34, 197, 94, 0.3) !important;
 }
 
 /* ─── Map ─── */

@@ -594,11 +594,27 @@ def generate_all():
             # Futurecast
             futurecast = compute_futurecast(climatology, CURRENT_ENSO_PHASE)
 
+            # Determine primary data source for this station
+            try:
+                cursor.execute("""
+                    SELECT data_source, COUNT(*) as cnt
+                    FROM snowfall_daily
+                    WHERE station_id = ?
+                    GROUP BY data_source
+                    ORDER BY cnt DESC
+                    LIMIT 1
+                """, (station_id,))
+                row = cursor.fetchone()
+                data_source = row[0] if row else 'open-meteo'
+            except Exception:
+                data_source = 'open-meteo'
+
             station_data[station_id] = {
                 'name': name,
                 'region': region,
                 'lat': lat,
                 'lon': lon,
+                'data_source': data_source,
                 'forecast': forecast_dict,
                 'climatology': climatology,
                 'futurecast': futurecast,
