@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-02-19T13:49:59.798597",
-  "generated_at_human": "February 19, 2026 at 01:49 PM",
+  "generated_at": "2026-02-19T17:32:41.437236",
+  "generated_at_human": "February 19, 2026 at 05:32 PM",
   "forecast_days": 7,
   "forecasts": [
     {
@@ -11,11 +11,11 @@
       "event_type": "ALBERTA CLIPPER",
       "confidence": "HIGH",
       "lead_time": "12-48 hours",
-      "ensemble_score": 0.7,
+      "ensemble_score": 0.868,
       "regional_score": 1.0,
-      "global_score": 0.0,
+      "global_score": 0.561,
       "forecast_category": "major",
-      "active_signals": 5,
+      "active_signals": 8,
       "expected_snowfall": "20-50mm (1-2 inches)",
       "icon": "\u2744\ufe0f",
       "alert_level": "HIGH"
@@ -28,11 +28,11 @@
       "event_type": "ALBERTA CLIPPER",
       "confidence": "HIGH",
       "lead_time": "12-48 hours",
-      "ensemble_score": 0.7,
+      "ensemble_score": 0.847,
       "regional_score": 1.0,
-      "global_score": 0.0,
+      "global_score": 0.489,
       "forecast_category": "major",
-      "active_signals": 4,
+      "active_signals": 6,
       "expected_snowfall": "20-50mm (1-2 inches)",
       "icon": "\u2744\ufe0f",
       "alert_level": "HIGH"
@@ -41,104 +41,152 @@
       "date": "2026-02-22",
       "day_of_week": "Sunday",
       "day_number": 3,
-      "probability": 55,
+      "probability": 85,
       "event_type": "LAKE EFFECT",
-      "confidence": "MODERATE",
+      "confidence": "HIGH",
       "lead_time": "12-48 hours",
-      "ensemble_score": 0.271,
-      "regional_score": 0.388,
-      "global_score": 0.0,
-      "forecast_category": "significant",
-      "active_signals": 3,
-      "expected_snowfall": "10-30mm (0.5-1.5 inches)",
-      "icon": "\ud83c\udf28\ufe0f",
-      "alert_level": "MODERATE"
+      "ensemble_score": 0.648,
+      "regional_score": 0.717,
+      "global_score": 0.489,
+      "forecast_category": "major",
+      "active_signals": 5,
+      "expected_snowfall": "20-50mm (1-2 inches)",
+      "icon": "\u2744\ufe0f",
+      "alert_level": "HIGH"
     },
     {
       "date": "2026-02-23",
       "day_of_week": "Monday",
       "day_number": 4,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.228,
       "regional_score": 0.0,
-      "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "global_score": 0.761,
+      "forecast_category": "trace",
+      "active_signals": 2,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     },
     {
       "date": "2026-02-24",
       "day_of_week": "Tuesday",
       "day_number": 5,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.228,
       "regional_score": 0.0,
-      "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "global_score": 0.761,
+      "forecast_category": "trace",
+      "active_signals": 2,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     },
     {
       "date": "2026-02-25",
       "day_of_week": "Wednesday",
       "day_number": 6,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.228,
       "regional_score": 0.0,
-      "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "global_score": 0.761,
+      "forecast_category": "trace",
+      "active_signals": 2,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     },
     {
       "date": "2026-02-26",
       "day_of_week": "Thursday",
       "day_number": 7,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "5-7 days",
+      "ensemble_score": 0.186,
       "regional_score": 0.0,
-      "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "global_score": 0.619,
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     }
   ],
   "recent_observations": [
     {
+      "station": "Eagle River, WI",
+      "date": "2026-02-19",
+      "snowfall_mm": 12.6,
+      "snowfall_inches": 0.5
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-19",
+      "snowfall_mm": 20.3,
+      "snowfall_inches": 0.8
+    },
+    {
       "station": "Phelps, WI",
       "date": "2026-02-19",
-      "snowfall_mm": 1.4,
-      "snowfall_inches": 0.1
+      "snowfall_mm": 16.8,
+      "snowfall_inches": 0.7
+    },
+    {
+      "station": "Eagle River, WI",
+      "date": "2026-02-18",
+      "snowfall_mm": 51.1,
+      "snowfall_inches": 2.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-18",
+      "snowfall_mm": 53.9,
+      "snowfall_inches": 2.1
     },
     {
       "station": "Phelps, WI",
       "date": "2026-02-18",
-      "snowfall_mm": 67.9,
-      "snowfall_inches": 2.7
+      "snowfall_mm": 54.6,
+      "snowfall_inches": 2.1
+    },
+    {
+      "station": "Eagle River, WI",
+      "date": "2026-02-17",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-17",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
     },
     {
       "station": "Phelps, WI",
       "date": "2026-02-17",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Eagle River, WI",
+      "date": "2026-02-16",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-16",
       "snowfall_mm": 2.1,
       "snowfall_inches": 0.1
     },
@@ -149,14 +197,50 @@
       "snowfall_inches": 0.0
     },
     {
-      "station": "Phelps, WI",
+      "station": "Eagle River, WI",
+      "date": "2026-02-15",
+      "snowfall_mm": 1.4,
+      "snowfall_inches": 0.1
+    },
+    {
+      "station": "Land O'Lakes, WI",
       "date": "2026-02-15",
       "snowfall_mm": 0.7,
       "snowfall_inches": 0.0
     },
     {
       "station": "Phelps, WI",
+      "date": "2026-02-15",
+      "snowfall_mm": 0.7,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Eagle River, WI",
       "date": "2026-02-14",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-14",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-02-14",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Eagle River, WI",
+      "date": "2026-02-13",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-13",
       "snowfall_mm": 0.0,
       "snowfall_inches": 0.0
     },
@@ -167,13 +251,25 @@
       "snowfall_inches": 0.0
     },
     {
+      "station": "Eagle River, WI",
+      "date": "2026-02-12",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-12",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
       "station": "Phelps, WI",
       "date": "2026-02-12",
       "snowfall_mm": 0.0,
       "snowfall_inches": 0.0
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: February 19, 2026 at 01:49 PM\n\nOVERVIEW:\n  \u2022 3 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 85% on Friday, 2026-02-20\n  \u2022 Primary patterns: ALBERTA CLIPPER, LAKE EFFECT\n\nDETAILED OUTLOOK:\n\nFriday, 2026-02-20:\n  \u2744\ufe0f 85% probability - ALBERTA CLIPPER\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSaturday, 2026-02-21:\n  \u2744\ufe0f 85% probability - ALBERTA CLIPPER\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSunday, 2026-02-22:\n  \ud83c\udf28\ufe0f 55% probability - LAKE EFFECT\n  Expected: 10-30mm (0.5-1.5 inches)\n  Confidence: MODERATE\n\nMonday, 2026-02-23:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-02-24:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-02-25:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nThursday, 2026-02-26:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: February 19, 2026 at 05:32 PM\n\nOVERVIEW:\n  \u2022 7 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 85% on Friday, 2026-02-20\n  \u2022 Primary patterns: LAKE EFFECT, ALBERTA CLIPPER\n\nDETAILED OUTLOOK:\n\nFriday, 2026-02-20:\n  \u2744\ufe0f 85% probability - ALBERTA CLIPPER\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSaturday, 2026-02-21:\n  \u2744\ufe0f 85% probability - ALBERTA CLIPPER\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSunday, 2026-02-22:\n  \u2744\ufe0f 85% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nMonday, 2026-02-23:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nTuesday, 2026-02-24:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nWednesday, 2026-02-25:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nThursday, 2026-02-26:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
