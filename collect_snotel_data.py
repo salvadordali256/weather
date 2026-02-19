@@ -279,6 +279,7 @@ def insert_snotel_records(conn, station_id, records):
         tmin_c = f_to_c(rec['tmin_f'])
         tavg_c = f_to_c(rec['tavg_f'])
 
+        snwd_in = rec.get('snwd_in')
         rows.append((
             station_id,
             rec['date'],
@@ -298,6 +299,7 @@ def insert_snotel_records(conn, station_id, records):
             None,                       # precipitation_hours
             None,                       # weather_code
             None,                       # evapotranspiration
+            round(snwd_in * INCHES_TO_MM, 1) if snwd_in is not None else None,  # snow_depth_mm
         ))
 
     conn.executemany("""
@@ -308,14 +310,16 @@ def insert_snotel_records(conn, station_id, records):
          wind_speed_max, wind_gusts_max, wind_direction_dominant,
          radiation_sum, sunshine_duration,
          precipitation_hours, weather_code, evapotranspiration,
+         snow_depth_mm,
          data_source)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'snotel')
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'snotel')
         ON CONFLICT(station_id, date) DO UPDATE SET
             snowfall_mm = excluded.snowfall_mm,
             temp_mean_celsius = excluded.temp_mean_celsius,
             precipitation_mm = excluded.precipitation_mm,
             temp_max_celsius = excluded.temp_max_celsius,
             temp_min_celsius = excluded.temp_min_celsius,
+            snow_depth_mm = excluded.snow_depth_mm,
             data_source = 'snotel'
     """, rows)
 

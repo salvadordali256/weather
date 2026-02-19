@@ -121,6 +121,7 @@ def detect_schema(cursor):
     return {
         'has_temp': 'temp_max_celsius' in columns and 'temp_min_celsius' in columns,
         'has_wcode': 'weather_code' in columns,
+        'has_depth': 'snow_depth_mm' in columns,
     }
 
 
@@ -176,12 +177,15 @@ def get_recent_observations(cursor, station_id, days=7, schema=None):
 
     has_temp = schema['has_temp'] if schema else False
     has_wcode = schema['has_wcode'] if schema else False
+    has_depth = schema.get('has_depth', False) if schema else False
 
     select_cols = "date, snowfall_mm"
     if has_temp:
         select_cols += ", temp_max_celsius, temp_min_celsius"
     if has_wcode:
         select_cols += ", weather_code"
+    if has_depth:
+        select_cols += ", snow_depth_mm"
 
     cursor.execute(f"""
         SELECT {select_cols}
@@ -200,6 +204,7 @@ def get_recent_observations(cursor, station_id, days=7, schema=None):
             'temp_max_c': None,
             'temp_min_c': None,
             'weather_code': None,
+            'snow_depth_mm': None,
         }
         idx = 2
         if has_temp:
@@ -208,6 +213,9 @@ def get_recent_observations(cursor, station_id, days=7, schema=None):
             idx += 2
         if has_wcode:
             obs['weather_code'] = row[idx]
+            idx += 1
+        if has_depth:
+            obs['snow_depth_mm'] = round(row[idx], 1) if row[idx] is not None else None
         observations.append(obs)
     return observations
 
@@ -545,6 +553,17 @@ def build_region_index(all_stations):
     return regions
 
 
+def load_resort_conditions():
+    """Load resort_conditions.json if it exists. Returns empty dict on missing/error."""
+    path = Path(OUTPUT_DIR) / 'resort_conditions.json'
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        return data.get('resorts', {})
+    except Exception:
+        return {}
+
+
 def generate_all():
     """Main generation loop."""
     print(f"\n{'='*80}")
@@ -558,6 +577,9 @@ def generate_all():
     total = len(stations)
     print(f"Stations: {total}")
     print(f"{'='*80}\n")
+
+    resort_conditions = load_resort_conditions()
+    print(f"Resort conditions loaded: {len(resort_conditions)} resorts")
 
     conn = sqlite3.connect(DB_PATH, timeout=30)
     try:
@@ -609,6 +631,17 @@ def generate_all():
             except Exception:
                 data_source = 'open-meteo'
 
+            # Base depth: most recent non-null reading
+            base_depth_mm = next(
+                (o['snow_depth_mm'] for o in recent if o.get('snow_depth_mm') is not None),
+                None
+            )
+
+            # New snow aggregates from existing DB data
+            new_snow_24h = sum(o['snowfall_mm'] or 0 for o in recent[:1])
+            new_snow_48h = sum(o['snowfall_mm'] or 0 for o in recent[:2])
+            new_snow_7d  = sum(o['snowfall_mm'] or 0 for o in recent[:7])
+
             station_data[station_id] = {
                 'name': name,
                 'region': region,
@@ -620,6 +653,11 @@ def generate_all():
                 'futurecast': futurecast,
                 'recent_observations': recent,
                 'snow_score': snow_score,
+                'base_depth_mm': round(base_depth_mm, 1) if base_depth_mm is not None else None,
+                'new_snow_24h_mm': round(new_snow_24h, 1),
+                'new_snow_48h_mm': round(new_snow_48h, 1),
+                'new_snow_7d_mm': round(new_snow_7d, 1),
+                'resort_report': resort_conditions.get(station_id, None),
             }
 
             success += 1

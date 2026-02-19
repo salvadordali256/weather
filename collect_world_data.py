@@ -24,7 +24,8 @@ DAILY_VARIABLES = (
     'wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,'
     'shortwave_radiation_sum,sunshine_duration,'
     'precipitation_hours,weather_code,'
-    'et0_fao_evapotranspiration'
+    'et0_fao_evapotranspiration,'
+    'snow_depth_mean'
 )
 
 
@@ -43,6 +44,7 @@ def migrate_schema(conn):
         'radiation_sum': 'REAL', 'sunshine_duration': 'REAL',
         'precipitation_hours': 'REAL', 'weather_code': 'INTEGER',
         'evapotranspiration': 'REAL',
+        'snow_depth_mm': 'REAL',
         'data_source': "TEXT DEFAULT 'open-meteo'",
     }
 
@@ -375,6 +377,10 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
             if t_max is not None and t_min is not None:
                 temp_mean = (t_max + t_min) / 2.0
 
+            # snow_depth_mean is in meters — convert to mm
+            depth_m = get('snow_depth_mean')[i]
+            snow_depth_mm = round(depth_m * 1000, 1) if depth_m is not None else None
+
             cursor.execute("""
                 INSERT INTO snowfall_daily
                 (station_id, date, snowfall_mm, temp_mean_celsius,
@@ -383,8 +389,9 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
                  wind_speed_max, wind_gusts_max, wind_direction_dominant,
                  radiation_sum, sunshine_duration,
                  precipitation_hours, weather_code, evapotranspiration,
+                 snow_depth_mm,
                  data_source)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open-meteo')
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open-meteo')
                 ON CONFLICT(station_id, date) DO UPDATE SET
                     snowfall_mm = excluded.snowfall_mm,
                     temp_mean_celsius = excluded.temp_mean_celsius,
@@ -402,6 +409,7 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
                     precipitation_hours = excluded.precipitation_hours,
                     weather_code = excluded.weather_code,
                     evapotranspiration = excluded.evapotranspiration,
+                    snow_depth_mm = excluded.snow_depth_mm,
                     data_source = 'open-meteo'
                 WHERE snowfall_daily.data_source NOT IN ('noaa', 'snotel')
             """, (
@@ -414,6 +422,7 @@ def update_station(cursor, station_id, lat, lon, name, days_back=14):
                 get('shortwave_radiation_sum')[i], get('sunshine_duration')[i],
                 get('precipitation_hours')[i], get('weather_code')[i],
                 get('et0_fao_evapotranspiration')[i],
+                snow_depth_mm,
             ))
             records += 1
 
