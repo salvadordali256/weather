@@ -692,6 +692,7 @@
         scoreEl.className = 'snow-score-badge ' + scoreBadgeClass(score);
 
         renderStationFuturecast(id);
+        renderResortReport(s);
         renderForecastStrip(s);
         renderHistoryCard(s);
         renderRecentObs(s);
@@ -880,6 +881,136 @@
             '<div class="history-row"><span class="hist-label">Avg high / low</span><span class="hist-value">' + fmtTemp(week.avg_temp_max_c) + ' / ' + fmtTemp(week.avg_temp_min_c) + '</span></div>' +
             '<div class="history-row"><span class="hist-label">Max recorded</span><span class="hist-value">' + fmtSnowMm(week.max_recorded_snowfall_mm) + '</span></div>' +
             '<div class="history-row"><span class="hist-label">Years of data</span><span class="hist-value">' + esc(week.years_of_data) + '</span></div>';
+    }
+
+    // ─── Snow Report ───
+    function renderResortReport(s) {
+        var el = document.getElementById('snow-report-card');
+        if (!el) return;
+
+        var rr = s.resort_report || null;
+        var html = '';
+
+        // Helper: format inches or cm based on unit preference
+        function fmtDepthIn(inches) {
+            if (inches == null) return '\u2014';
+            if (useImperial) return Math.round(inches) + '"';
+            return Math.round(inches * 2.54) + ' cm';
+        }
+        function fmtSnowIn(inches) {
+            if (inches == null || inches === 0) return '\u2014';
+            if (useImperial) return inches.toFixed(1) + '"';
+            return (inches * 25.4).toFixed(0) + ' mm';
+        }
+
+        if (rr) {
+            // Resort report from live scraper
+            html += '<div class="sr-depths">';
+            if (rr.base_depth_in != null) {
+                html += '<div class="sr-depth-item"><span class="sr-depth-val">' +
+                    esc(fmtDepthIn(rr.base_depth_in)) +
+                    '</span><span class="sr-depth-label">Base</span></div>';
+            }
+            if (rr.summit_depth_in != null) {
+                html += '<div class="sr-depth-item"><span class="sr-depth-val">' +
+                    esc(fmtDepthIn(rr.summit_depth_in)) +
+                    '</span><span class="sr-depth-label">Summit</span></div>';
+            }
+            html += '</div>';
+
+            // New snow strip
+            var hasNewSnow = rr.new_snow_24h_in != null || rr.new_snow_48h_in != null || rr.new_snow_7d_in != null;
+            if (hasNewSnow) {
+                html += '<div class="sr-newsnow">';
+                html += '<span class="sr-ns-label">New snow:</span>';
+                if (rr.new_snow_24h_in != null) {
+                    html += '<span class="sr-ns-item"><span class="sr-ns-period">24h</span>' +
+                        esc(fmtSnowIn(rr.new_snow_24h_in)) + '</span>';
+                }
+                if (rr.new_snow_48h_in != null) {
+                    html += '<span class="sr-ns-item"><span class="sr-ns-period">48h</span>' +
+                        esc(fmtSnowIn(rr.new_snow_48h_in)) + '</span>';
+                }
+                if (rr.new_snow_7d_in != null) {
+                    html += '<span class="sr-ns-item"><span class="sr-ns-period">7d</span>' +
+                        esc(fmtSnowIn(rr.new_snow_7d_in)) + '</span>';
+                }
+                html += '</div>';
+            }
+
+            // Season total
+            if (rr.season_total_in != null) {
+                html += '<div class="sr-season">Season total: <strong>' +
+                    esc(fmtDepthIn(rr.season_total_in)) + '</strong></div>';
+            }
+
+            // Lifts and runs
+            var hasOps = rr.lifts_open != null || rr.runs_open != null;
+            if (hasOps) {
+                html += '<div class="sr-ops">';
+                if (rr.lifts_open != null) {
+                    var liftsTotal = rr.lifts_total ? '/' + rr.lifts_total : '';
+                    html += '<span class="sr-ops-item">' + esc(rr.lifts_open) + esc(liftsTotal) + ' lifts</span>';
+                }
+                if (rr.runs_open != null) {
+                    var runsTotal = rr.runs_total ? '/' + rr.runs_total : '';
+                    html += '<span class="sr-ops-sep">\u2022</span>';
+                    html += '<span class="sr-ops-item">' + esc(rr.runs_open) + esc(runsTotal) + ' runs</span>';
+                }
+                html += '</div>';
+            }
+
+            // Source + timestamp
+            var srcLabels = {
+                'snocountry': 'SnoCountry', 'vail_resorts': 'Vail Resorts',
+                'onthesnow': 'OnTheSnow', 'snotel': 'SNOTEL (measured)'
+            };
+            var srcLabel = srcLabels[rr.source] || rr.source || 'resort';
+            html += '<div class="sr-meta">Source: ' + esc(srcLabel);
+            if (rr.as_of) html += ' \u2014 ' + esc(rr.as_of.replace('T', ' ').replace('Z', ' UTC'));
+            html += '</div>';
+
+        } else if (s.base_depth_mm != null) {
+            // Fallback: modeled depth from Open-Meteo / SNOTEL DB
+            var depthIn = s.base_depth_mm / 25.4;
+            html += '<div class="sr-depths">';
+            html += '<div class="sr-depth-item"><span class="sr-depth-val">' +
+                esc(fmtDepthIn(depthIn)) +
+                '</span><span class="sr-depth-label">Base (modeled)</span></div>';
+            html += '</div>';
+
+            // New snow from DB aggregates
+            if (s.new_snow_24h_mm > 0 || s.new_snow_48h_mm > 0 || s.new_snow_7d_mm > 0) {
+                html += '<div class="sr-newsnow">';
+                html += '<span class="sr-ns-label">New snow (DB):</span>';
+                html += '<span class="sr-ns-item"><span class="sr-ns-period">24h</span>' +
+                    esc(fmtSnowMm(s.new_snow_24h_mm)) + '</span>';
+                html += '<span class="sr-ns-item"><span class="sr-ns-period">48h</span>' +
+                    esc(fmtSnowMm(s.new_snow_48h_mm)) + '</span>';
+                html += '<span class="sr-ns-item"><span class="sr-ns-period">7d</span>' +
+                    esc(fmtSnowMm(s.new_snow_7d_mm)) + '</span>';
+                html += '</div>';
+            }
+            html += '<div class="sr-meta">Depth from Open-Meteo model / SNOTEL — not resort-reported</div>';
+
+        } else if (s.new_snow_7d_mm > 0) {
+            // Only new snow data available
+            html += '<div class="sr-newsnow">';
+            html += '<span class="sr-ns-label">New snow:</span>';
+            html += '<span class="sr-ns-item"><span class="sr-ns-period">24h</span>' +
+                esc(fmtSnowMm(s.new_snow_24h_mm)) + '</span>';
+            html += '<span class="sr-ns-item"><span class="sr-ns-period">48h</span>' +
+                esc(fmtSnowMm(s.new_snow_48h_mm)) + '</span>';
+            html += '<span class="sr-ns-item"><span class="sr-ns-period">7d</span>' +
+                esc(fmtSnowMm(s.new_snow_7d_mm)) + '</span>';
+            html += '</div>';
+            html += '<div class="sr-meta">Base depth not available for this station</div>';
+
+        } else {
+            html = '<p class="no-data">No snow report available.</p>';
+        }
+
+        el.innerHTML = html;
     }
 
     // ─── Recent observations ───

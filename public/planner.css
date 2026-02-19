@@ -1319,3 +1319,109 @@ body {
         font-size: 0.5rem;
     }
 }
+
+/* ─── Snow Report Card ─── */
+.snow-report-card {
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sr-depths {
+    display: flex;
+    gap: 16px;
+}
+
+.sr-depth-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 16px;
+    min-width: 72px;
+}
+
+.sr-depth-val {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #60a5fa;
+    line-height: 1.1;
+}
+
+.sr-depth-label {
+    font-size: 0.68rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.sr-newsnow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.sr-ns-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sr-ns-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(96, 165, 250, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #93c5fd;
+}
+
+.sr-ns-period {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-right: 2px;
+}
+
+.sr-season {
+    font-size: 0.82rem;
+    color: #94a3b8;
+}
+
+.sr-season strong {
+    color: #e2e8f0;
+}
+
+.sr-ops {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.sr-ops-item {
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.sr-ops-sep {
+    color: #475569;
+}
+
+.sr-meta {
+    font-size: 0.68rem;
+    color: #475569;
+    margin-top: 2px;
+}
