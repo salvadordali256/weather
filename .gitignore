@@ -19,6 +19,13 @@ __pycache__/
 
 # Node modules
 node_modules/
+worker/package-lock.json
+
+# Generated SNOTEL lookup files
+snotel_all_stations.json
+snotel_station_mappings.json
 
 # Keep forecast history local
 forecast_output/forecast_*.json
+demo_global_snowfall.db
+*.pyc
