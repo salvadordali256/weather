@@ -60,7 +60,13 @@ echo "Generating forecast..." >> "$LOG_FILE"
 python daily_automated_forecast.py >> "$LOG_FILE" 2>&1
 FORECAST_STATUS=$?
 
-# Step 4.5: Generate station forecasts for trip planner
+# Step 4.5: Collect resort snow reports (base depth, lifts/runs)
+echo "" >> "$LOG_FILE"
+echo "Collecting resort snow reports..." >> "$LOG_FILE"
+python collect_resort_reports.py >> "$LOG_FILE" 2>&1
+RESORT_STATUS=$?
+
+# Step 4.6: Generate station forecasts for trip planner
 echo "" >> "$LOG_FILE"
 echo "Generating station forecasts for trip planner..." >> "$LOG_FILE"
 python generate_station_forecasts.py >> "$LOG_FILE" 2>&1
@@ -100,6 +106,7 @@ echo "SNOTEL Data: $([ $SNOTEL_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED'
 echo "NOAA Data: $([ $NOAA_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "World Data: $([ $WORLD_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Forecast Generation: $([ $FORECAST_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
+echo "Resort Reports: $([ $RESORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Station Forecasts: $([ $STATION_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "NAS Sync: $([ $NAS_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
