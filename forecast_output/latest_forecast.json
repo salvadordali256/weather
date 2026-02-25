@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-02-25T06:00:02.466790",
-  "generated_at_human": "February 25, 2026 at 06:00 AM",
+  "generated_at": "2026-02-25T17:33:15.159423",
+  "generated_at_human": "February 25, 2026 at 05:33 PM",
   "forecast_days": 7,
   "forecasts": [
     {
       "date": "2026-02-26",
       "day_of_week": "Thursday",
       "day_number": 1,
-      "probability": 85,
+      "probability": 70,
       "event_type": "LAKE EFFECT",
-      "confidence": "HIGH",
+      "confidence": "MODERATE-HIGH",
       "lead_time": "12-48 hours",
-      "ensemble_score": 0.63,
-      "regional_score": 0.754,
+      "ensemble_score": 0.592,
+      "regional_score": 0.7,
       "global_score": 0.34,
-      "forecast_category": "major",
+      "forecast_category": "significant",
       "active_signals": 8,
       "expected_snowfall": "20-50mm (1-2 inches)",
       "icon": "\u2744\ufe0f",
@@ -41,18 +41,18 @@
       "date": "2026-02-28",
       "day_of_week": "Saturday",
       "day_number": 3,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
-      "regional_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "12-48 hours",
+      "ensemble_score": 0.21,
+      "regional_score": 0.3,
       "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     },
     {
       "date": "2026-03-01",
@@ -126,20 +126,38 @@
   "recent_observations": [
     {
       "station": "Eagle River, WI",
+      "date": "2026-02-25",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-02-25",
+      "snowfall_mm": 7.7,
+      "snowfall_inches": 0.3
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-02-25",
+      "snowfall_mm": 7.0,
+      "snowfall_inches": 0.3
+    },
+    {
+      "station": "Eagle River, WI",
       "date": "2026-02-24",
-      "snowfall_mm": 17.5,
+      "snowfall_mm": 16.8,
       "snowfall_inches": 0.7
     },
     {
       "station": "Land O'Lakes, WI",
       "date": "2026-02-24",
-      "snowfall_mm": 17.5,
-      "snowfall_inches": 0.7
+      "snowfall_mm": 16.1,
+      "snowfall_inches": 0.6
     },
     {
       "station": "Phelps, WI",
       "date": "2026-02-24",
-      "snowfall_mm": 18.9,
+      "snowfall_mm": 17.5,
       "snowfall_inches": 0.7
     },
     {
@@ -251,7 +269,7 @@
       "snowfall_inches": 2.1
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: February 25, 2026 at 06:00 AM\n\nOVERVIEW:\n  \u2022 2 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 85% on Thursday, 2026-02-26\n  \u2022 Primary patterns: LAKE EFFECT\n\nDETAILED OUTLOOK:\n\nThursday, 2026-02-26:\n  \u2744\ufe0f 85% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nFriday, 2026-02-27:\n  \u2744\ufe0f 70% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: MODERATE-HIGH\n\nSaturday, 2026-02-28:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSunday, 2026-03-01:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-03-02:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-03-03:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-03-04:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: February 25, 2026 at 05:33 PM\n\nOVERVIEW:\n  \u2022 3 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 70% on Thursday, 2026-02-26\n  \u2022 Primary patterns: LAKE EFFECT\n\nDETAILED OUTLOOK:\n\nThursday, 2026-02-26:\n  \u2744\ufe0f 70% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: MODERATE-HIGH\n\nFriday, 2026-02-27:\n  \u2744\ufe0f 70% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: MODERATE-HIGH\n\nSaturday, 2026-02-28:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nSunday, 2026-03-01:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-03-02:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-03-03:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-03-04:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
