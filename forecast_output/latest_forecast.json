@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-03-18T06:00:03.401218",
-  "generated_at_human": "March 18, 2026 at 06:00 AM",
+  "generated_at": "2026-03-18T17:33:27.951046",
+  "generated_at_human": "March 18, 2026 at 05:33 PM",
   "forecast_days": 7,
   "forecasts": [
     {
       "date": "2026-03-19",
       "day_of_week": "Thursday",
       "day_number": 1,
-      "probability": 85,
+      "probability": 70,
       "event_type": "LAKE EFFECT",
-      "confidence": "HIGH",
+      "confidence": "MODERATE-HIGH",
       "lead_time": "12-48 hours",
-      "ensemble_score": 0.647,
-      "regional_score": 0.765,
+      "ensemble_score": 0.531,
+      "regional_score": 0.6,
       "global_score": 0.372,
-      "forecast_category": "major",
-      "active_signals": 3,
+      "forecast_category": "significant",
+      "active_signals": 5,
       "expected_snowfall": "20-50mm (1-2 inches)",
       "icon": "\u2744\ufe0f",
       "alert_level": "HIGH"
@@ -24,15 +24,15 @@
       "date": "2026-03-20",
       "day_of_week": "Friday",
       "day_number": 2,
-      "probability": 85,
+      "probability": 70,
       "event_type": "LAKE EFFECT",
-      "confidence": "HIGH",
+      "confidence": "MODERATE-HIGH",
       "lead_time": "12-48 hours",
-      "ensemble_score": 0.647,
-      "regional_score": 0.765,
+      "ensemble_score": 0.531,
+      "regional_score": 0.6,
       "global_score": 0.372,
-      "forecast_category": "major",
-      "active_signals": 3,
+      "forecast_category": "significant",
+      "active_signals": 5,
       "expected_snowfall": "20-50mm (1-2 inches)",
       "icon": "\u2744\ufe0f",
       "alert_level": "HIGH"
@@ -41,18 +41,18 @@
       "date": "2026-03-21",
       "day_of_week": "Saturday",
       "day_number": 3,
-      "probability": 10,
+      "probability": 70,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.033,
-      "regional_score": 0.0,
+      "confidence": "MODERATE-HIGH",
+      "lead_time": "12-48 hours",
+      "ensemble_score": 0.453,
+      "regional_score": 0.6,
       "global_score": 0.112,
-      "forecast_category": "none",
-      "active_signals": 1,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "forecast_category": "significant",
+      "active_signals": 2,
+      "expected_snowfall": "20-50mm (1-2 inches)",
+      "icon": "\u2744\ufe0f",
+      "alert_level": "HIGH"
     },
     {
       "date": "2026-03-22",
@@ -124,6 +124,24 @@
     }
   ],
   "recent_observations": [
+    {
+      "station": "Eagle River, WI",
+      "date": "2026-03-18",
+      "snowfall_mm": 5.6,
+      "snowfall_inches": 0.2
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-03-18",
+      "snowfall_mm": 6.3,
+      "snowfall_inches": 0.2
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-03-18",
+      "snowfall_mm": 4.9,
+      "snowfall_inches": 0.2
+    },
     {
       "station": "Eagle River, WI",
       "date": "2026-03-17",
@@ -251,7 +269,7 @@
       "snowfall_inches": 1.7
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: March 18, 2026 at 06:00 AM\n\nOVERVIEW:\n  \u2022 2 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 85% on Thursday, 2026-03-19\n  \u2022 Primary patterns: LAKE EFFECT\n\nDETAILED OUTLOOK:\n\nThursday, 2026-03-19:\n  \u2744\ufe0f 85% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nFriday, 2026-03-20:\n  \u2744\ufe0f 85% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSaturday, 2026-03-21:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSunday, 2026-03-22:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-03-23:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-03-24:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-03-25:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: March 18, 2026 at 05:33 PM\n\nOVERVIEW:\n  \u2022 3 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 70% on Thursday, 2026-03-19\n  \u2022 Primary patterns: LAKE EFFECT\n\nDETAILED OUTLOOK:\n\nThursday, 2026-03-19:\n  \u2744\ufe0f 70% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: MODERATE-HIGH\n\nFriday, 2026-03-20:\n  \u2744\ufe0f 70% probability - LAKE EFFECT\n  Expected: 20-50mm (1-2 inches)\n  Confidence: MODERATE-HIGH\n\nSaturday, 2026-03-21:\n  \u2744\ufe0f 70% probability - QUIET\n  Expected: 20-50mm (1-2 inches)\n  Confidence: MODERATE-HIGH\n\nSunday, 2026-03-22:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-03-23:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-03-24:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-03-25:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
