@@ -13,6 +13,7 @@ import json
 import os
 import time
 import logging
+import sqlite3
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
@@ -21,6 +22,7 @@ load_dotenv()
 
 OUTPUT_DIR = os.environ.get('FORECAST_OUTPUT_DIR', 'forecast_output')
 RAPIDAPI_KEY = os.environ.get('RAPIDAPI_KEY', '')
+DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
 BASE_URL = 'https://ski-resort-conditions.p.rapidapi.com'
 HEADERS = {
@@ -129,6 +131,52 @@ def fetch_report(resort_id, logger):
         return None
 
 
+def store_to_db(results, logger):
+    """Append today's resort readings to the SQLite database."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=30)
+        conn.execute("PRAGMA busy_timeout=30000")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS resort_conditions (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                collected_at  TEXT NOT NULL,
+                resort_id     TEXT NOT NULL,
+                base_depth_in REAL,
+                new_snow_24h_in REAL,
+                lifts_open    INTEGER,
+                lifts_total   INTEGER,
+                runs_open     INTEGER,
+                runs_total    INTEGER,
+                UNIQUE(collected_at, resort_id)
+            )
+        """)
+        collected_at = datetime.utcnow().strftime('%Y-%m-%d')
+        rows = [
+            (
+                collected_at,
+                resort_id,
+                d.get('base_depth_in'),
+                d.get('new_snow_24h_in'),
+                d.get('lifts_open'),
+                d.get('lifts_total'),
+                d.get('runs_open'),
+                d.get('runs_total'),
+            )
+            for resort_id, d in results.items()
+        ]
+        conn.executemany("""
+            INSERT OR IGNORE INTO resort_conditions
+            (collected_at, resort_id, base_depth_in, new_snow_24h_in,
+             lifts_open, lifts_total, runs_open, runs_total)
+            VALUES (?,?,?,?,?,?,?,?)
+        """, rows)
+        conn.commit()
+        conn.close()
+        logger.info(f'DB: {len(rows)} rows written to resort_conditions ({DB_PATH})')
+    except Exception as e:
+        logger.warning(f'DB write failed: {e}')
+
+
 def collect_resort_reports(rate_limit=0.3):
     logger = setup_logging()
 
@@ -179,6 +227,8 @@ def collect_resort_reports(rate_limit=0.3):
     }
     with open(out_file, 'w') as f:
         json.dump(output, f, separators=(',', ':'))
+
+    store_to_db(results, logger)
 
     logger.info('')
     logger.info('=' * 70)
