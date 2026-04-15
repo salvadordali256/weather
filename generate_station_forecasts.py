@@ -18,11 +18,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).parent / '.env')
 
 from collect_world_data import WORLD_STATIONS
 
-DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
+DB_PATH = os.environ.get('DB_PATH', 'global_snowfall.db')
 OUTPUT_DIR = os.environ.get('FORECAST_OUTPUT_DIR', 'forecast_output')
 
 # Current ENSO phase for the 2025-2026 winter season
