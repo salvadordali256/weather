@@ -136,12 +136,12 @@ def get_climatology(cursor, station_id, schema=None):
 
     cursor.execute(f"""
         SELECT
-            CAST(strftime('%%W', date) AS INTEGER) as week_num,
+            CAST(strftime('%W', date) AS INTEGER) as week_num,
             AVG(snowfall_mm) as avg_daily_snowfall_mm,
             AVG(CASE WHEN snowfall_mm > 1.0 THEN 1.0 ELSE 0.0 END) as snow_day_probability,
             {temp_select}
             MAX(snowfall_mm) as max_recorded_snowfall_mm,
-            COUNT(DISTINCT strftime('%%Y', date)) as years_of_data
+            COUNT(DISTINCT strftime('%Y', date)) as years_of_data
         FROM snowfall_daily
         WHERE station_id = ?
           AND snowfall_mm IS NOT NULL
