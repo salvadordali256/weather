@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-16T06:00:03.274347",
-  "generated_at_human": "April 16, 2026 at 06:00 AM",
+  "generated_at": "2026-04-16T17:32:59.585177",
+  "generated_at_human": "April 16, 2026 at 05:32 PM",
   "forecast_days": 7,
   "forecasts": [
     {
@@ -24,35 +24,35 @@
       "date": "2026-04-18",
       "day_of_week": "Saturday",
       "day_number": 2,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
-      "regional_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "12-48 hours",
+      "ensemble_score": 0.21,
+      "regional_score": 0.3,
       "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     },
     {
       "date": "2026-04-19",
       "day_of_week": "Sunday",
       "day_number": 3,
-      "probability": 10,
+      "probability": 40,
       "event_type": "QUIET",
-      "confidence": "LOW",
-      "lead_time": "N/A",
-      "ensemble_score": 0.0,
-      "regional_score": 0.0,
+      "confidence": "MODERATE",
+      "lead_time": "12-48 hours",
+      "ensemble_score": 0.21,
+      "regional_score": 0.3,
       "global_score": 0.0,
-      "forecast_category": "none",
-      "active_signals": 0,
-      "expected_snowfall": "0-5mm (trace or none)",
-      "icon": "\u26aa",
-      "alert_level": "MINIMAL"
+      "forecast_category": "trace",
+      "active_signals": 1,
+      "expected_snowfall": "5-20mm (trace-1 inch)",
+      "icon": "\u2601\ufe0f",
+      "alert_level": "LOW"
     },
     {
       "date": "2026-04-20",
@@ -124,6 +124,24 @@
     }
   ],
   "recent_observations": [
+    {
+      "station": "Eagle River, WI",
+      "date": "2026-04-16",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Land O'Lakes, WI",
+      "date": "2026-04-16",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
+    {
+      "station": "Phelps, WI",
+      "date": "2026-04-16",
+      "snowfall_mm": 0.0,
+      "snowfall_inches": 0.0
+    },
     {
       "station": "Eagle River, WI",
       "date": "2026-04-15",
@@ -251,7 +269,7 @@
       "snowfall_inches": 0.0
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: April 16, 2026 at 06:00 AM\n\nOVERVIEW:\n  \u2022 1 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 85% on Friday, 2026-04-17\n  \u2022 Primary patterns: ALBERTA CLIPPER\n\nDETAILED OUTLOOK:\n\nFriday, 2026-04-17:\n  \u2744\ufe0f 85% probability - ALBERTA CLIPPER\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSaturday, 2026-04-18:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSunday, 2026-04-19:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-04-20:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-04-21:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-04-22:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nThursday, 2026-04-23:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: April 16, 2026 at 05:32 PM\n\nOVERVIEW:\n  \u2022 3 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 85% on Friday, 2026-04-17\n  \u2022 Primary patterns: ALBERTA CLIPPER\n\nDETAILED OUTLOOK:\n\nFriday, 2026-04-17:\n  \u2744\ufe0f 85% probability - ALBERTA CLIPPER\n  Expected: 20-50mm (1-2 inches)\n  Confidence: HIGH\n\nSaturday, 2026-04-18:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nSunday, 2026-04-19:\n  \u2601\ufe0f 40% probability - QUIET\n  Expected: 5-20mm (trace-1 inch)\n  Confidence: MODERATE\n\nMonday, 2026-04-20:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-04-21:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nWednesday, 2026-04-22:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nThursday, 2026-04-23:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
