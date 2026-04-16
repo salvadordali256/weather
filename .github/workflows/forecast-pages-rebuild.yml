@@ -1,8 +1,9 @@
 name: Refresh forecast content
 
 on:
-  schedule:
-    - cron: "30 12 * * *"
+  # schedule disabled — NAS cron handles all pipeline runs
+  # schedule:
+  #   - cron: "30 12 * * *"
   workflow_dispatch:
 
 permissions:
