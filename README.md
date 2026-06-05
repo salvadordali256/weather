@@ -10,7 +10,7 @@ Live site: [weather.salvadordali256.net](https://weather.salvadordali256.net)
 NAS (Synology/Pi) ── cron ──> collect data ──> generate forecast ──> git push ──> Cloudflare Pages
 ```
 
-- **NAS (10.144.150.177)**: Primary runner. Synology NAS powered by Raspberry Pi running Debian.
+- **NAS (10.0.0.249)**: Primary runner. Synology NAS powered by Raspberry Pi running Debian.
 - **Mac**: Development only. No scheduled jobs.
 - **Data source**: Open-Meteo API (60+ global weather stations)
 - **Database**: SQLite (`demo_global_snowfall.db`, ~970K records)
