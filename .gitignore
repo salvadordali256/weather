@@ -29,3 +29,8 @@ snotel_station_mappings.json
 forecast_output/forecast_*.json
 demo_global_snowfall.db
 *.pyc
+
+# AI agent config files
+.claude/
+.openai/
+.grok/
