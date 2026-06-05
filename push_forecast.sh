@@ -32,6 +32,6 @@ esac
 git diff --cached --quiet && { echo "No changes to push"; exit 0; }
 
 git commit -m "Update forecast $(date '+%Y-%m-%d %H:%M')"
-git push origin master
+git push origin master || { echo "❌ Git push failed"; exit 1; }
 
 echo "Forecast pushed to GitHub"

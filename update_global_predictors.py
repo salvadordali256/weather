@@ -51,8 +51,11 @@ def update_station(station_id, lat, lon, name):
                 conn.execute("PRAGMA journal_mode=DELETE")
                 cursor = conn.cursor()
                 cursor.executemany("""
-                    INSERT OR REPLACE INTO snowfall_daily (station_id, date, snowfall_mm)
+                    INSERT INTO snowfall_daily (station_id, date, snowfall_mm)
                     VALUES (?, ?, ?)
+                    ON CONFLICT(station_id, date) DO UPDATE SET
+                        snowfall_mm = excluded.snowfall_mm
+                    WHERE snowfall_daily.data_source NOT IN ('noaa', 'snotel')
                 """, records)
                 conn.commit()
             finally:

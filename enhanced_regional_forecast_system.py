@@ -99,25 +99,25 @@ class EnhancedRegionalForecastSystem:
         Returns: (avg_snow, max_snow)
         """
         conn = sqlite3.connect(self.db_path, timeout=30)
+        try:
+            start_date = target_date - timedelta(days=window_days)
+            end_date = target_date + timedelta(days=window_days)
 
-        start_date = target_date - timedelta(days=window_days)
-        end_date = target_date + timedelta(days=window_days)
+            query = """
+                SELECT AVG(snowfall_mm) as avg_snow, MAX(snowfall_mm) as max_snow
+                FROM snowfall_daily
+                WHERE station_id = ?
+                  AND date >= ?
+                  AND date <= ?
+            """
 
-        query = """
-            SELECT AVG(snowfall_mm) as avg_snow, MAX(snowfall_mm) as max_snow
-            FROM snowfall_daily
-            WHERE station_id = ?
-              AND date >= ?
-              AND date <= ?
-        """
-
-        df = pd.read_sql_query(query, conn, params=(
-            station_id,
-            start_date.strftime('%Y-%m-%d'),
-            end_date.strftime('%Y-%m-%d')
-        ))
-
-        conn.close()
+            df = pd.read_sql_query(query, conn, params=(
+                station_id,
+                start_date.strftime('%Y-%m-%d'),
+                end_date.strftime('%Y-%m-%d')
+            ))
+        finally:
+            conn.close()
 
         if not df.empty and pd.notna(df.iloc[0]['avg_snow']):
             return df.iloc[0]['avg_snow'], df.iloc[0]['max_snow']
@@ -255,6 +255,10 @@ class EnhancedRegionalForecastSystem:
         global_result = self.check_global_predictors(event_date)
         regional_result = self.check_regional_predictors(event_date)
 
+        # Detect whether any station returned real data
+        has_data = bool(global_result['signals'] or regional_result['signals'])
+        data_quality = 'ok' if has_data else 'no_data'
+
         # Weighted ensemble
         # Regional predictors get more weight (70%) for Wisconsin
         # Global predictors provide long-range context (30%)
@@ -315,7 +319,8 @@ class EnhancedRegionalForecastSystem:
             'regional_score': regional_result['score'],
             'global_signals': global_result['signals'],
             'regional_signals': regional_result['signals'],
-            'total_active_signals': len(global_result['signals']) + len(regional_result['signals'])
+            'total_active_signals': len(global_result['signals']) + len(regional_result['signals']),
+            'data_quality': data_quality,
         }
 
     def display_forecast(self, event_date: datetime, actual_snow: float = None):

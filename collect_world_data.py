@@ -484,8 +484,9 @@ def collect_world_data(days_back=14, rate_limit=0.3):
                     fail_count += 1
                     print(f"❌ Error: {result}")
 
-                conn.commit()
                 time.sleep(rate_limit)
+
+        conn.commit()  # commit once at end, not per-station
     finally:
         conn.close()
 

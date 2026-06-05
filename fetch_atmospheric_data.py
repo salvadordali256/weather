@@ -6,13 +6,19 @@ Adds temperature, pressure, wind, humidity, and cloud data to existing stations
 
 import requests
 import sqlite3
+import os
 from datetime import datetime, timedelta
 import time
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
 def setup_atmospheric_table():
     """Create table for atmospheric variables"""
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Create atmospheric data table
@@ -51,7 +57,7 @@ def setup_atmospheric_table():
 
 def get_existing_stations():
     """Get list of stations that already have snowfall data"""
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -110,7 +116,6 @@ def get_station_coordinates():
         'sault_ste_marie_mi': (46.50, -84.35),
         'mammoth_mountain_ca': (37.63, -119.03),
         'yakutsk_russia': (62.03, 129.73),
-        'land_o\'lakes_wi': (46.15, -89.34),  # Alternative spelling
     }
 
 def fetch_atmospheric_data_for_station(station_id, lat, lon, start_year=2005):
@@ -121,7 +126,7 @@ def fetch_atmospheric_data_for_station(station_id, lat, lon, start_year=2005):
     print(f"Coordinates: {lat}, {lon}")
     print(f"{'='*80}")
 
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Check existing data
@@ -289,16 +294,15 @@ def main():
     print(f"{'#'*80}")
     print(f"Stations processed: {completed}/{total_stations}")
     print(f"Total atmospheric records: {total_records:,}")
-    print(f"Database: demo_global_snowfall.db")
+    print(f"Database: {DB_PATH}")
     print(f"{'#'*80}\n")
 
     # Show database size
-    import os
-    db_size = os.path.getsize('demo_global_snowfall.db')
+    db_size = os.path.getsize(DB_PATH)
     print(f"Database size: {db_size / (1024*1024):.1f} MB")
 
     # Show sample data
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     print(f"\n{'─'*80}")

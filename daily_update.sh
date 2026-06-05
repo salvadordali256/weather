@@ -72,6 +72,12 @@ echo "Generating station forecasts for trip planner..." >> "$LOG_FILE"
 python generate_station_forecasts.py >> "$LOG_FILE" 2>&1
 STATION_STATUS=$?
 
+# Step 4.7: Generate daily executive report
+echo "" >> "$LOG_FILE"
+echo "Generating daily report..." >> "$LOG_FILE"
+python generate_daily_report.py >> "$LOG_FILE" 2>&1
+REPORT_STATUS=$?
+
 # Step 5: Sync to NAS (if available)
 echo "" >> "$LOG_FILE"
 echo "Syncing to NAS..." >> "$LOG_FILE"
@@ -108,12 +114,13 @@ echo "World Data: $([ $WORLD_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')"
 echo "Forecast Generation: $([ $FORECAST_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Resort Reports: $([ $RESORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Station Forecasts: $([ $STATION_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
+echo "Daily Report: $([ $REPORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "NAS Sync: $([ $NAS_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "========================================" >> "$LOG_FILE"
 
 # Exit with error if critical steps failed
-if [ $REGIONAL_STATUS -ne 0 ] || [ $FORECAST_STATUS -ne 0 ]; then
+if [ $REGIONAL_STATUS -ne 0 ] || [ $FORECAST_STATUS -ne 0 ] || [ $NOAA_STATUS -ne 0 ] || [ $WORLD_STATUS -ne 0 ]; then
     exit 1
 fi
 
