@@ -1,7 +1,8 @@
 #!/bin/bash
 # Push latest forecast to GitHub for Cloudflare Pages
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
+# Run from repo root: this script lives at scripts/shell/, two levels down.
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
 # Source .env for FORECAST_OUTPUT_DIR
 if [ -f .env ]; then
