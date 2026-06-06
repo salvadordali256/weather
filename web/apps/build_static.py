@@ -12,9 +12,9 @@ import os
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-ROOT = Path(__file__).resolve().parent
-TEMPLATES = ROOT / "templates"
-STATIC = ROOT / "static"
+ROOT = Path(__file__).resolve().parents[2]
+TEMPLATES = ROOT / "web" / "templates"
+STATIC = ROOT / "web" / "static"
 FORECAST_DIR = ROOT / "forecast_output"
 DIST = ROOT / "dist"
 

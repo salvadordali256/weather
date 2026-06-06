@@ -13,12 +13,18 @@ import json
 from datetime import datetime
 import os
 
-app = Flask(__name__)
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+app = Flask(
+    __name__,
+    template_folder=str(REPO_ROOT / "web" / "templates"),
+    static_folder=str(REPO_ROOT / "web" / "static"),
+)
 
 # Configuration
-FORECAST_DIR = Path('forecast_output')
-TEMPLATE_DIR = Path('templates')
-STATIC_DIR = Path('static')
+FORECAST_DIR = REPO_ROOT / "forecast_output"
+TEMPLATE_DIR = REPO_ROOT / "web" / "templates"
+STATIC_DIR = REPO_ROOT / "web" / "static"
 
 # Create directories if they don't exist
 FORECAST_DIR.mkdir(exist_ok=True)

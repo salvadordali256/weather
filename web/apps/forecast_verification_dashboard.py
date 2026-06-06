@@ -29,8 +29,9 @@ class ForecastVerificationDashboard:
     """Tracks and displays forecast verification metrics"""
 
     def __init__(self):
-        self.history_file = Path('enhanced_forecast_history.json')
-        self.db_path = 'northwoods_snowfall.db'  # Actual observations
+        repo_root = Path(__file__).resolve().parents[2]
+        self.history_file = repo_root / 'enhanced_forecast_history.json'
+        self.db_path = str(repo_root / 'northwoods_snowfall.db')  # Actual observations
 
         # Event threshold (what counts as "snow event")
         self.EVENT_THRESHOLD_MM = 5.0  # 5mm+ = snow event
