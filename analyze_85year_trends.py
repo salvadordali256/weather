@@ -3,7 +3,7 @@
 Northern Wisconsin Snowfall (1940-2025)
 """
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 import pandas as pd
 
 engine = SnowfallDuckDB("./northwoods_full_history.db")

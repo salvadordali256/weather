@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from noaa_weather_fetcher import NOAAWeatherFetcher
+from snowforecast.fetchers.noaa_weather_fetcher import NOAAWeatherFetcher
 import json
 
 def check_noaa_coverage():

@@ -22,7 +22,7 @@ from pathlib import Path
 # Load .env file
 load_dotenv()
 
-from enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
+from snowforecast.engines.enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
 
 # Default paths, can be overridden via environment variables
 DEFAULT_DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')

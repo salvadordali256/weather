@@ -318,7 +318,7 @@ class JetStreamAnalyzer:
         print(f"INTEGRATED FORECAST: JET STREAM + SNOW PREDICTORS")
         print(f"{'='*80}\n")
 
-        # Snow predictor input (from major_event_predictor.py)
+        # Snow predictor input (from snowforecast.engines.major_event_predictor.py)
         print(f"SNOW PREDICTOR SIGNALS:")
         print(f"  Mt Baker: {snow_predictors.get('mt_baker', 0):.1f}mm")
         print(f"  Lake Tahoe: {snow_predictors.get('lake_tahoe', 0):.1f}mm")
@@ -432,7 +432,7 @@ def main():
         'lake_tahoe': 23.7,
         'thunder_bay': 6.2,
         'sapporo': 5.9,
-        'probability': 85.5  # Raw probability from major_event_predictor
+        'probability': 85.5  # Raw probability from snowforecast.engines.major_event_predictor
     }
 
     integrated = analyzer.combine_with_snow_predictors(pattern, snow_signals)

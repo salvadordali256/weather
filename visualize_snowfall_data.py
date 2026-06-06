@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates

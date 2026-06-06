@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
+from snowforecast.fetchers.openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
 from datetime import datetime, timedelta
 import pandas as pd
 
@@ -374,7 +374,7 @@ def test_database_query():
     """Test 7: Query Existing Database - 85 years of data"""
     print_section("TEST 7: DATABASE QUERIES - Your 85-Year Dataset")
 
-    from snowfall_duckdb import SnowfallDuckDB
+    from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 
     db_path = "./northwoods_full_history.db"
 

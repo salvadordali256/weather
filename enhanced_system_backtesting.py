@@ -10,7 +10,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
+from snowforecast.engines.enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
 import json
 
 class EnhancedSystemBacktest:

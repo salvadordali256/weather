@@ -5,7 +5,7 @@ Northern Wisconsin Snowfall Analysis
 Analyze snowfall patterns in the Wisconsin Northwoods region
 """
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 import pandas as pd
 
 # Initialize DuckDB engine

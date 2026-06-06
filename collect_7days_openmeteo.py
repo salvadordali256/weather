@@ -16,7 +16,7 @@ from pathlib import Path
 # Add current directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
+from snowforecast.fetchers.openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
 
 logging.basicConfig(
     level=logging.INFO,
@@ -235,7 +235,7 @@ def collect_7day_data(db_path: str):
     logger.info("")
     logger.info("Next steps:")
     logger.info("  1. View data: sqlite3 snowfall_7day.db")
-    logger.info("  2. Analyze with DuckDB: ./venv/bin/python -c \"from snowfall_duckdb import SnowfallDuckDB; engine = SnowfallDuckDB('./snowfall_7day.db'); print(engine.snowfall_by_state())\"")
+    logger.info("  2. Analyze with DuckDB: ./venv/bin/python -c \"from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB; engine = SnowfallDuckDB('./snowfall_7day.db'); print(engine.snowfall_by_state())\"")
     logger.info("")
 
     return total_stations, total_records

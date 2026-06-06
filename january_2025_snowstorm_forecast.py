@@ -6,7 +6,7 @@ Detailed week-by-week and day-by-day analysis for January 2025
 Based on historical patterns, polar vortex analysis, and ski resort data
 """
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 import pandas as pd
 from datetime import datetime, timedelta
 

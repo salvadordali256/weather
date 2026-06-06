@@ -13,8 +13,8 @@ from pathlib import Path
 # Add current directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from noaa_weather_fetcher import NOAAWeatherFetcher
-from openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
+from snowforecast.fetchers.noaa_weather_fetcher import NOAAWeatherFetcher
+from snowforecast.fetchers.openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
 import sqlite3
 import logging
 

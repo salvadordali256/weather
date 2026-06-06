@@ -10,7 +10,7 @@ Based on:
 - Ski resort validation data
 """
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 import pandas as pd
 from datetime import datetime
 

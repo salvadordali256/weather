@@ -58,7 +58,7 @@ class DailyForecastRunner:
 
     def run_all_models(self):
         """Run all forecast models"""
-        from integrated_forecast_system import IntegratedForecastSystem
+        from snowforecast.engines.integrated_forecast_system import IntegratedForecastSystem
 
         print(f"\n{'='*80}")
         print(f"🌨️  AUTOMATED DAILY FORECAST")

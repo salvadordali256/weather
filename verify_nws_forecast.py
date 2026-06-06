@@ -314,7 +314,7 @@ class NWSForecastVerifier:
         print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'='*80}")
 
-        # Our model prediction (from major_event_predictor.py output)
+        # Our model prediction (from snowforecast.engines.major_event_predictor.py output)
         model_prediction = {
             'risk_level': '🔴 HIGH RISK - Major event likely within 0-3 days',
             'probability': 85.5,

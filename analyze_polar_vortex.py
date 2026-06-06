@@ -6,7 +6,7 @@ Identify polar vortex conditions and associated snowfall patterns
 for Phelps WI, Land O'Lakes WI, and Watersmeet MI area
 """
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 import pandas as pd
 
 # Initialize DuckDB engine

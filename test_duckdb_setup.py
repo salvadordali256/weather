@@ -195,7 +195,7 @@ def test_duckdb_queries(db_path: str):
     print("="*80)
 
     try:
-        from snowfall_duckdb import SnowfallDuckDB
+        from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 
         # Initialize DuckDB engine
         engine = SnowfallDuckDB(db_path)

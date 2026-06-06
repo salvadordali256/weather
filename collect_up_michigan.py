@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
+from snowforecast.fetchers.openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
 
 logging.basicConfig(
     level=logging.INFO,

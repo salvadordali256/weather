@@ -57,7 +57,7 @@ class ComprehensiveForecastSystem:
 
     def run_global_models(self):
         """Run global-scale prediction models"""
-        from integrated_forecast_system import IntegratedForecastSystem
+        from snowforecast.engines.integrated_forecast_system import IntegratedForecastSystem
 
         print(f"{'─'*80}")
         print(f"GLOBAL MODELS")
@@ -97,7 +97,7 @@ class ComprehensiveForecastSystem:
 
     def run_local_models(self):
         """Run local/regional detection models"""
-        from local_event_analyzer import LocalEventDetector
+        from snowforecast.analysis.local_event_analyzer import LocalEventDetector
 
         print(f"{'─'*80}")
         print(f"LOCAL/REGIONAL MODELS")

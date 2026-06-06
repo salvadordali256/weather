@@ -41,7 +41,7 @@ print("""
 
 3. Quick Data Exploration:
    
-   from snowfall_duckdb import SnowfallDuckDB
+   from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
    engine = SnowfallDuckDB("./northwoods_full_history.db")
    
    # Get data for any year
@@ -100,7 +100,7 @@ Tests:
    Top 20 snowstorms from 1940-2025 included in analysis
    
 6. EXPORT TO CSV/EXCEL
-   from snowfall_duckdb import SnowfallDuckDB
+   from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
    engine = SnowfallDuckDB("./northwoods_full_history.db")
    df = engine.query("SELECT * FROM snowfall.snowfall_daily")
    df.to_csv("my_data.csv")
@@ -148,7 +148,7 @@ But Open-Meteo has MORE history for Northern Wisconsin!
 💡 EXAMPLE QUERIES
 ================================================================================
 
-from snowfall_duckdb import SnowfallDuckDB
+from snowforecast.storage.snowfall_duckdb import SnowfallDuckDB
 
 engine = SnowfallDuckDB("./northwoods_full_history.db")
 

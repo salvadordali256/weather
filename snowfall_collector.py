@@ -22,8 +22,8 @@ from tqdm import tqdm
 import time
 import json
 
-from noaa_weather_fetcher import NOAAWeatherFetcher
-from openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
+from snowforecast.fetchers.noaa_weather_fetcher import NOAAWeatherFetcher
+from snowforecast.fetchers.openmeteo_weather_fetcher import OpenMeteoWeatherFetcher
 
 logging.basicConfig(
     level=logging.INFO,

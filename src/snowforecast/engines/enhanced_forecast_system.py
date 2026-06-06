@@ -13,8 +13,8 @@ New additions:
 import sys
 sys.path.append('/Users/kyle.jurgens/weather')
 
-from gfs_atmospheric_fetcher import GFSAtmosphericFetcher
-from comprehensive_forecast_system import ComprehensiveForecastSystem
+from snowforecast.fetchers.gfs_atmospheric_fetcher import GFSAtmosphericFetcher
+from snowforecast.engines.comprehensive_forecast_system import ComprehensiveForecastSystem
 from datetime import datetime
 import json
 

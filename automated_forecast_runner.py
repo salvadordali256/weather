@@ -21,7 +21,7 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
-from enhanced_forecast_system import EnhancedForecastSystem
+from snowforecast.engines.enhanced_forecast_system import EnhancedForecastSystem
 
 
 class AlertConfig:
