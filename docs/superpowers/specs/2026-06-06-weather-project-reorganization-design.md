@@ -235,10 +235,20 @@ Shimmed entrypoints (from README + `.sh` scripts):
 `update_recent_data.py`, `update_global_predictors.py`, `collect_world_data.py`,
 `daily_automated_forecast.py`, and `push_forecast.sh`.
 
-> Implementation note: each target script must expose a callable `main()` (or
-> equivalent) for the shim to import. Where a script currently runs everything
-> at module top level, wrap that body in a `main()` function guarded by
-> `if __name__ == "__main__"`. This refactor must preserve existing behavior.
+> Implementation note (revised): shims use `runpy` rather than importing
+> `main()`, because not all entrypoints expose a `main()` (e.g.
+> `collect_world_data.py` parses `argparse` under `__main__`). A `runpy` shim
+> re-executes the relocated module's `__main__` block with `sys.argv` intact, so
+> argparse and top-level scripts both work with **zero refactoring**:
+>
+> ```python
+> # daily_automated_forecast.py  (root shim)
+> import runpy
+> runpy.run_module("scripts.pipeline.daily_automated_forecast",
+>                  run_name="__main__", alter_sys=True)
+> ```
+>
+> `scripts/` and its subpackages get `__init__.py` so the module path resolves.
 
 ### 6.2 `push_forecast.sh`
 
@@ -257,24 +267,39 @@ The root shim preserves the old invocation path for cron.
 `.github/workflows/forecast-pages-rebuild.yml` path references are updated to
 the new locations.
 
-## 7. Git Hygiene
+## 7. Git Hygiene — Untrack In Place (REVISED)
 
-`git rm --cached` (files remain on disk) + `.gitignore` rules for:
+**Correctness fix:** DB and output paths are hardcoded relative to the repo root
+in 32+ files (e.g. `sqlite3.connect('demo_global_snowfall.db')`,
+`SnowfallDuckDB("./northwoods_full_history.db")`). The cron runs from the repo
+root, so **physically moving these files would break the live pipeline**. The
+git-hygiene goal (no merge churn) does not require moving them.
 
-- `*.db` (the 7 databases) → live under `data/databases/`
+Therefore: generated/binary files are **untracked in place** — they stay at
+their current root locations, and we `git rm --cached` (files remain on disk) +
+add `.gitignore` rules. No `data/` reorg for these, no code edits.
+
+`git rm --cached` + `.gitignore` for:
+
+- `*.db` (the 7 databases, at their current root locations)
 - `__pycache__/`, `*.pyc`
 - `.DS_Store` (all)
 - `dist/` (build artifact of `build_static.py`)
-- `logs/` and `data/logs/`
-- generated outputs: `data/output/**` (forecast_output, forecast_reports,
-  generated `*.json` / `*.csv` / `*.txt` results)
+- `logs/`
+- `forecast_output/`, `forecast_reports/`
+- generated result files at root: `*.csv`, `*.json` results, and `*.txt`
+  summaries that are pipeline output (NOT docs — see below)
 
 **Stays tracked (deployed data the site reads):**
 `web/public/latest_forecast.json`, `web/public/station_data.json`,
 `web/public/daily_report.json`. The pipeline overwrites these each run — intended.
 
 **Stays tracked (input reference data):**
-`data/reference/weather_data/stations_GHCND_*.csv`.
+`weather_data/stations_GHCND_*.csv` stays at root (referenced by relative path).
+
+> Consequence for §4: there is **no `data/` directory**. Databases, outputs,
+> logs, and `weather_data/` remain at the repo root (gitignored where generated).
+> The §4 tree's `data/` block is superseded by this section.
 
 ## 8. Requirements Consolidation
 
@@ -287,14 +312,14 @@ same dependency set.
 
 1. **Scaffold:** add `pyproject.toml`, package dirs + `__init__.py`, expanded
    `.gitignore`. Commit.
-2. **Git hygiene + data move:** `git rm --cached` binaries/outputs/caches;
-   `git mv` data into `data/**`. Commit. *(files stay on disk)*
-3. **Library:** `git mv` shared modules into `src/snowforecast/**`; fix the ~27
+2. **Git hygiene (untrack in place):** `git rm --cached` the binaries/outputs/
+   caches and add `.gitignore` rules. Commit. *(files stay on disk at root; no
+   data move — see §7)*
+3. **Library:** `git mv` shared modules into `src/snowforecast/**`; fix the 27
    imports; `pip install -e .`; smoke-test canonical engine + fetcher imports.
    Commit.
-4. **Scripts:** `git mv` runnable scripts into `scripts/**`; add root shims;
-   wrap top-level bodies in `main()` as needed; update `push_forecast.sh` +
-   GitHub workflow paths. Commit.
+4. **Scripts:** `git mv` runnable scripts into `scripts/**`; add `runpy` root
+   shims; update `push_forecast.sh` + GitHub workflow paths. Commit.
 5. **Web / analysis / docs:** `git mv` web assets into `web/**`, one-offs into
    `analysis/**`, docs into `docs/**`. Commit.
 6. **Verify + document:** run the daily pipeline locally end-to-end (collect →
