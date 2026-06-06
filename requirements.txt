@@ -1,21 +1,45 @@
-# Wisconsin Snowfall Forecast System - Python Dependencies
+# Weather Forecast System — Python Dependencies
 
-# Core dependencies
+# Core
 flask>=2.3.0
-pandas>=2.0.0
 numpy>=1.24.0
+pandas>=2.1.0
 requests>=2.31.0
 python-dotenv>=1.0.0
 
-# Optional for production
+# Production server
 gunicorn>=21.2.0
-
-# Database (included with Python)
-# sqlite3 - Built-in
 
 # Radiosonde / upper-air data
 siphon>=0.9.0
 
-# Already installed from previous work
-# matplotlib>=3.7.0  # For visualizations (already have)
-# scipy>=1.10.0      # For statistics (if needed)
+# Storage formats (Parquet)
+pyarrow>=14.0.0
+fastparquet>=2023.10.0
+
+# Retry and rate limiting
+tenacity>=8.2.3
+
+# Progress bars
+tqdm>=4.66.0
+
+# SQL / database connectivity
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+pymongo>=4.5.0
+
+# High-performance analytical database (optional but recommended)
+duckdb>=0.9.0
+
+# Time series database (optional)
+influxdb-client>=1.38.0
+
+# Data quality / validation (optional)
+great-expectations>=0.18.0
+
+# Visualization (optional)
+matplotlib>=3.8.0
+plotly>=5.18.0
+
+# Performance monitoring (optional)
+psutil>=5.9.0
