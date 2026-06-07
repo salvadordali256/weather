@@ -1,0 +1,78 @@
+# CLAUDE.md
+
+Guidance for Claude Code (and humans) working in this repo.
+
+## What this is
+
+A Wisconsin snowfall forecast system. A scheduled pipeline collects weather data,
+generates a 7-day snowfall probability forecast, and publishes a static site to
+Cloudflare Pages.
+
+Pipeline: `NAS cron → collect data → generate forecast → git push → Cloudflare Pages`.
+Live site: https://weather.salvadordali256.net
+
+## Layout (post-reorg — see MIGRATION.md)
+
+```
+src/snowforecast/        Installable library (import as `snowforecast`)
+  config.py
+  fetchers/              Data-source clients (openmeteo, noaa, gfs, global_snowfall)
+  engines/               Forecast engines — enhanced_regional_forecast_system is CANONICAL
+  storage/               snowfall_duckdb, duckdb_queries, migrate_data_source
+  analysis/              Reusable analysis (jetstream, correlations, local_event)
+scripts/                 Runnable jobs (import the library)
+  pipeline/              The cron-driven daily flow
+  collect/ generate/ backtest/ storage/ shell/
+analysis/                One-off & dated explorations (seasonal/, visualize/)
+web/                     The website
+  public/                Static site served by Cloudflare Pages (build output dir)
+  templates/ static/ worker/ apps/
+docs/                    guides/, reports/, superpowers/ (specs + plans)
+tests/
+<root>                   Config, README, MIGRATION.md, and cron shims
+```
+
+## Setup / commands
+
+```bash
+pip install -r requirements.txt
+pip install -e .                       # REQUIRED — makes `import snowforecast` work
+python -m pytest tests/                 # tests (some need a local DB and will skip/fail offline)
+python web/apps/forecast_web_dashboard.py   # local Flask preview on :5000
+python web/apps/build_static.py             # build the static site into ./dist
+```
+
+Canonical engine import:
+`from snowforecast.engines.enhanced_regional_forecast_system import EnhancedRegionalForecastSystem`
+
+## Critical conventions — read before changing structure
+
+- **Root `runpy` shims are intentional.** `daily_automated_forecast.py`,
+  `update_recent_data.py`, `update_global_predictors.py`, `collect_world_data.py`,
+  and `push_forecast.sh` at the repo root are thin wrappers that forward to
+  `scripts/`. They exist so the NAS crontab keeps working unchanged. **Do not
+  delete them** unless you also update the crontab (see MIGRATION.md §5).
+- **Databases and generated outputs are gitignored but live at the repo root.**
+  Scripts open them by root-relative paths (`sqlite3.connect('demo_global_snowfall.db')`,
+  `forecast_output/...`). The cron runs from the repo root, so these files must
+  stay at the root. **Do not "tidy" them into a `data/` folder** without first
+  centralizing the ~32 hardcoded paths behind a `DATA_DIR`.
+- **SQLite on the NAS needs a timeout.** Any new cron-path `sqlite3.connect()`
+  must pass `timeout=30` to avoid "database is locked" on the NAS filesystem.
+- **`web/public/*.json` stays tracked.** It's the deployed forecast data the site
+  reads; the pipeline overwrites it each run (intended).
+- **Cloudflare Pages build output dir is `web/public`** (not the repo root).
+
+## Two external systems depend on file locations
+
+- **NAS venv:** run `pip install -e .` once after pulling a reorganized tree.
+- **Cloudflare Pages:** build output directory must be `web/public`.
+
+See `MIGRATION.md` for the full details.
+
+## Workflow notes
+
+- Do real work on a feature branch, not `master`. Cloudflare deploys on push to
+  `master`, so merging is a deploy.
+- Design specs and implementation plans live in `docs/superpowers/`.
+- `agents.md` / `gemini.md` are configs for other AI tools; this file is Claude's.

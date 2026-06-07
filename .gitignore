@@ -31,7 +31,8 @@ demo_global_snowfall.db
 *.pyc
 
 # AI agent config files
-.claude/
+# Note: .claude/ is selectively tracked — shared settings.json is committed,
+# personal settings.local.json is ignored (see the Claude Code section below).
 .openai/
 .grok/
 
@@ -75,3 +76,10 @@ snowfall_graphs/
 /storage_estimates.json
 /backtesting_results_2000_2025.csv
 /enhanced_system_backtest_results.csv
+
+graphify-out/cost.json
+graphify-out/cache/
+
+# --- Claude Code ---
+# Personal, per-user settings (permission allowlist, etc.) — never commit.
+.claude/settings.local.json 
