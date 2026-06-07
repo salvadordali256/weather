@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-06-06-weather-project-reorganization-design.md`
 
-**Conventions for every command:** run from the repo root `c:\Users\cwirk\projects\weather` using the Bash tool (git-bash). Use `git mv` for all relocations to preserve history. Commit after each task.
+**Conventions for every command:** run from the repo root `~\projects\weather` using the Bash tool (git-bash). Use `git mv` for all relocations to preserve history. Commit after each task.
 
 ---
 
