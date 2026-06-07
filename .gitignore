@@ -79,6 +79,10 @@ snowfall_graphs/
 
 graphify-out/cost.json
 graphify-out/cache/
+# Local-only: contain absolute machine paths / build cache — keep out of git
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/manifest.json
 
 # --- Claude Code ---
 # Personal, per-user settings (permission allowlist, etc.) — never commit.
