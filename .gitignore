@@ -36,3 +36,55 @@ demo_global_snowfall.db
 .claude/settings.local.json
 .openai/
 .grok/
+
+# --- Reorg: Python & build ---
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+.venv/
+venv/
+
+# --- Reorg: OS noise ---
+.DS_Store
+
+# --- Reorg: build artifacts ---
+dist/
+
+# --- Reorg: databases (untracked in place) ---
+*.db
+
+# --- Reorg: logs ---
+logs/
+*.log
+
+# --- Reorg: generated pipeline outputs ---
+forecast_output/
+forecast_reports/
+snowfall_graphs/
+
+# --- Reorg: generated result files (root) ---
+/backtesting_diagnostic_summary.json
+/backtesting_metrics_2000_2025.json
+/daily_forecast_history.json
+/daily_update_history.json
+/demo_correlation_results.json
+/enhanced_forecast_history.json
+/enhanced_system_metrics.json
+/forecast_jan15_20_2026.json
+/realtime_jan2026_data.json
+/security_report.json
+/storage_estimates.json
+/backtesting_results_2000_2025.csv
+/enhanced_system_backtest_results.csv
+
+graphify-out/cost.json
+graphify-out/cache/
+# Local-only: contain absolute machine paths / build cache — keep out of git
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/manifest.json
+
+# --- Claude Code ---
+# Personal, per-user settings (permission allowlist, etc.) — never commit.
+.claude/settings.local.json 
