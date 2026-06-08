@@ -31,6 +31,8 @@ demo_global_snowfall.db
 *.pyc
 
 # AI agent config files
-.claude/
+# .claude/settings.json is tracked (shared project settings)
+# .claude/settings.local.json is ignored (personal/per-machine)
+.claude/settings.local.json
 .openai/
 .grok/
