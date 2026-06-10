@@ -37,6 +37,8 @@ fi
 
 # Git operations
 git add "$PUBLIC_DIR/latest_forecast.json" "$PUBLIC_DIR/station_data.json" "$PUBLIC_DIR/daily_report.json" 2>/dev/null
+# Pipeline health files written by check_pipeline_health.sh (if it ran)
+git add PIPELINE_STATUS.md pipeline_status.json 2>/dev/null
 # Only track forecast_output if it's inside the repo (relative path)
 case "$FORECAST_DIR" in
     /*) ;; # absolute path, skip git add
