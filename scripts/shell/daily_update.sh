@@ -2,9 +2,11 @@
 # Daily Automated Weather Data Update & Forecast Generation
 # Runs at 17:30 daily via cron
 
-# Change to script directory (works on Mac or Pi)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+# Run from the repo root. After the reorg this script lives at scripts/shell/,
+# two levels below the root; the pipeline (DBs, forecast_output, web/public,
+# .env, venv) is all rooted there.
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT"
 
 # Load environment variables from .env file
 if [ -f .env ]; then
@@ -39,13 +41,13 @@ GLOBAL_STATUS=$?
 # Step 2.5: Collect SNOTEL data (western US mountain stations)
 echo "" >> "$LOG_FILE"
 echo "Collecting SNOTEL data (mountain stations)..." >> "$LOG_FILE"
-python collect_snotel_data.py --mode daily --days 14 >> "$LOG_FILE" 2>&1
+python scripts/collect/collect_snotel_data.py --mode daily --days 14 >> "$LOG_FILE" 2>&1
 SNOTEL_STATUS=$?
 
 # Step 2.6: Collect NOAA data (NA stations, recent 14 days)
 echo "" >> "$LOG_FILE"
 echo "Collecting NOAA data (North America)..." >> "$LOG_FILE"
-python collect_noaa_data.py --mode daily --days 14 >> "$LOG_FILE" 2>&1
+python scripts/collect/collect_noaa_data.py --mode daily --days 14 >> "$LOG_FILE" 2>&1
 NOAA_STATUS=$?
 
 # Step 3: Collect world data (all stations — won't overwrite NOAA/SNOTEL records)
@@ -63,26 +65,26 @@ FORECAST_STATUS=$?
 # Step 4.5: Collect resort snow reports (base depth, lifts/runs)
 echo "" >> "$LOG_FILE"
 echo "Collecting resort snow reports..." >> "$LOG_FILE"
-python collect_resort_reports.py >> "$LOG_FILE" 2>&1
+python scripts/collect/collect_resort_reports.py >> "$LOG_FILE" 2>&1
 RESORT_STATUS=$?
 
 # Step 4.6: Generate station forecasts for trip planner
 echo "" >> "$LOG_FILE"
 echo "Generating station forecasts for trip planner..." >> "$LOG_FILE"
-python generate_station_forecasts.py >> "$LOG_FILE" 2>&1
+python scripts/generate/generate_station_forecasts.py >> "$LOG_FILE" 2>&1
 STATION_STATUS=$?
 
 # Step 4.7: Generate daily executive report
 echo "" >> "$LOG_FILE"
 echo "Generating daily report..." >> "$LOG_FILE"
-python generate_daily_report.py >> "$LOG_FILE" 2>&1
+python scripts/generate/generate_daily_report.py >> "$LOG_FILE" 2>&1
 REPORT_STATUS=$?
 
 # Step 5: Sync to NAS (if available)
 echo "" >> "$LOG_FILE"
 echo "Syncing to NAS..." >> "$LOG_FILE"
-if [ -f sync_to_nas.sh ]; then
-    bash sync_to_nas.sh >> "$LOG_FILE" 2>&1
+if [ -f scripts/shell/sync_to_nas.sh ]; then
+    bash scripts/shell/sync_to_nas.sh >> "$LOG_FILE" 2>&1
     NAS_STATUS=$?
 else
     echo "sync_to_nas.sh not found, skipping NAS sync" >> "$LOG_FILE"
@@ -93,8 +95,8 @@ fi
 echo "" >> "$LOG_FILE"
 echo "Pushing to GitHub..." >> "$LOG_FILE"
 if [ -f push_forecast.sh ]; then
-    # Copy latest forecast to public folder first
-    cp forecast_output/latest_forecast.json public/ 2>/dev/null
+    # push_forecast.sh copies forecast_output/*.json into web/public/ and
+    # commits/pushes them; no manual copy needed here.
     bash push_forecast.sh >> "$LOG_FILE" 2>&1
     GIT_STATUS=$?
 else
@@ -116,12 +118,4 @@ echo "Resort Reports: $([ $RESORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAIL
 echo "Station Forecasts: $([ $STATION_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Daily Report: $([ $REPORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "NAS Sync: $([ $NAS_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
-echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
-echo "========================================" >> "$LOG_FILE"
-
-# Exit with error if critical steps failed
-if [ $REGIONAL_STATUS -ne 0 ] || [ $FORECAST_STATUS -ne 0 ] || [ $NOAA_STATUS -ne 0 ] || [ $WORLD_STATUS -ne 0 ]; then
-    exit 1
-fi
-
-exit 0
+echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" 

@@ -36,7 +36,6 @@ ENV/
 # Data files
 weather_data/
 snowfall_graphs/
+forecast_output/
 
-# Other Python scripts not needed for dashboard
-*.py
-!forecast_web_dashboard.py
+# NOTE: do NOT blanket-ignore *.py here. The image installs the s

@@ -11,9 +11,6 @@ Features:
 - Forecast history tracking
 """
 
-import sys
-sys.path.append('/Users/kyle.jurgens/weather')
-
 import json
 import smtplib
 import subprocess
@@ -317,3 +314,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+                                                              

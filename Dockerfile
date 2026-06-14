@@ -2,20 +2,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt .
+# ---- Python deps -------------------------------------------------------------
+# Copy only the dependency manifests first so this layer is cached across
+# source-only changes.
+COPY requirements.txt pyproject.toml ./
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
-COPY forecast_web_dashboard.py .
-COPY templates/ templates/
-COPY forecast_output/ forecast_output/
-
-# Create directories that might be needed
-RUN mkdir -p static forecast_output
-
-# Expose Flask port
-EXPOSE 5000
-
-# Run the dashboard
-CMD ["python", "forecast_web_dashboard.py"]
+# ---- Application source -------------------------------------------------------
+# After the reorg the importable library lives in src/snowforecast a
