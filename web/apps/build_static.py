@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Build static HTML + JSON for Cloudflare Pages."""
+"""DEPRECATED — local preview only. Builds static HTML + JSON into ./dist.
+
+This is NOT the deployed site. Cloudflare Pages serves the hand-authored
+web/public/ directory, published by scripts/shell/push_forecast.sh. The ./dist
+output of this script is gitignored and never ships. Kept for local preview /
+reference only; do not wire it into CI or the publish flow. See web/README.md.
+"""
 
 from __future__ import annotations
 
@@ -115,6 +121,10 @@ def write_json(path: Path, payload):
 
 
 def build():
+    print(
+        "WARNING: build_static.py is deprecated. It writes ./dist, which is\n"
+        "         NOT deployed. The live site is web/public/ (see web/README.md).",
+    )
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir(parents=True, exist_ok=True)

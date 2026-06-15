@@ -39,7 +39,7 @@ pip install -r requirements.txt
 pip install -e .                       # REQUIRED — makes `import snowforecast` work
 python -m pytest tests/                 # tests (some need a local DB and will skip/fail offline)
 python web/apps/forecast_web_dashboard.py   # local Flask preview on :5000
-python web/apps/build_static.py             # build the static site into ./dist
+python web/apps/build_static.py             # DEPRECATED local preview -> ./dist (NOT deployed; see web/README.md)
 ```
 
 Canonical engine import:
@@ -59,6 +59,11 @@ Canonical engine import:
   centralizing the ~32 hardcoded paths behind a `DATA_DIR`.
 - **SQLite on the NAS needs a timeout.** Any new cron-path `sqlite3.connect()`
   must pass `timeout=30` to avoid "database is locked" on the NAS filesystem.
+- **`web/public/` is the single source of truth for the website.** It is the
+  hand-authored static site Cloudflare Pages deploys; the pipeline publishes by
+  copying `forecast_output/*.json` into it (`scripts/shell/push_forecast.sh`).
+  `web/apps/build_static.py` (-> `./dist`) and the Flask dashboard are
+  local-preview only and are NOT deployed. See `web/README.md`.
 - **`web/public/*.json` stays tracked.** It's the deployed forecast data the site
   reads; the pipeline overwrites it each run (intended).
 - **Cloudflare Pages build output dir is `web/public`** (not the repo root).

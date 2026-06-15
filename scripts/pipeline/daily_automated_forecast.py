@@ -100,7 +100,8 @@ class DailyForecastRunner:
                 'regional_score': round(forecast['regional_score'], 3),
                 'global_score': round(forecast['global_score'], 3),
                 'forecast_category': forecast['forecast_category'],
-                'active_signals': forecast['total_active_signals']
+                'active_signals': forecast['total_active_signals'],
+                'data_quality': forecast.get('data_quality', 'unknown')
             }
 
             # Add expected snowfall range
@@ -267,6 +268,29 @@ Lead times:
 
         # Generate 7-day forecast
         forecasts = self.generate_multi_day_forecast(days_ahead=7)
+
+        # --- Data-quality guard (F7) ----------------------------------------
+        # The engine sets data_quality='no_data' for any day where NO predictor
+        # station returned observations. If the DB is missing or empty (it is
+        # gitignored and absent on fresh checkouts / CI / containers) every day
+        # silently returns a plausible-looking 10% "MINIMAL" forecast. Publishing
+        # that would overwrite a good latest_forecast.json with garbage, so we
+        # refuse to publish unless at least one day actually had data.
+        has_data = any(f.get('data_quality') == 'ok' for f in forecasts)
+        allow_empty = os.environ.get('ALLOW_EMPTY_FORECAST', '').lower() in {'1', 'true', 'yes'}
+        if not has_data and not allow_empty:
+            msg = (
+                "ABORTING: no predictor station returned data for ANY "
+                "forecast day. This usually means the snowfall database is "
+                "missing or empty (DB path: %s). Refusing to overwrite "
+                "latest_forecast.json with an empty forecast. Run the data "
+                "collectors first, or set ALLOW_EMPTY_FORECAST=1 to publish "
+                "anyway." % self.db_path
+            )
+            print("\n" + "!" * 80)
+            print(msg)
+            print("!" * 80 + "\n")
+            raise SystemExit(2)
 
         # Get recent observations
         print("Loading recent observations...")

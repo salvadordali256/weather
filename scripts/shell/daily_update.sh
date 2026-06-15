@@ -118,4 +118,12 @@ echo "Resort Reports: $([ $RESORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAIL
 echo "Station Forecasts: $([ $STATION_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "Daily Report: $([ $REPORT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "NAS Sync: $([ $NAS_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
-echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" 
+echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
+echo "========================================" >> "$LOG_FILE"
+
+# Exit with error if critical steps failed
+if [ $REGIONAL_STATUS -ne 0 ] || [ $FORECAST_STATUS -ne 0 ] || [ $NOAA_STATUS -ne 0 ] || [ $WORLD_STATUS -ne 0 ]; then
+    exit 1
+fi
+
+exit 0

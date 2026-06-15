@@ -311,6 +311,24 @@ Examples:
         orchestrator.step4_generate_report()
     elif args.full:
         if args.force_collect and os.path.exists(args.db):
+            # Guard: --force-collect deletes the database. Back it up first and
+            # require explicit confirmation so a stray flag can't wipe a
+            # production DB (e.g. demo_global_snowfall.db).
+            import shutil, time
+            allow_wipe = os.environ.get("ALLOW_DB_WIPE", "").lower() in {"1", "true", "yes"}
+            protected = {"demo_global_snowfall.db"}
+            if os.path.basename(args.db) in protected and not allow_wipe:
+                print(f"✗ Refusing to wipe '{args.db}' — it looks like a production database.")
+                print("  Use a different --db path, or set ALLOW_DB_WIPE=1 if you really mean it.")
+                sys.exit(1)
+            if sys.stdin.isatty() and not allow_wipe:
+                resp = input(f"This will DELETE '{args.db}' and re-collect from scratch. Type 'yes' to confirm: ")
+                if resp.strip().lower() != "yes":
+                    print("Aborted; database left intact.")
+                    sys.exit(1)
+            backup = f"{args.db}.bak_{time.strftime('%Y%m%d_%H%M%S')}"
+            shutil.copy2(args.db, backup)
+            print(f"✓ Backed up existing database to {backup}")
             os.remove(args.db)
             print(f"✓ Removed existing database for fresh collection")
         orchestrator.run_full_pipeline(args.start, args.max_lag, args.rate_limit)
