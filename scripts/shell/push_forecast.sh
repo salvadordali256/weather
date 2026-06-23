@@ -1,38 +1,4 @@
-#!/bin/bash
-# Push latest forecast to GitHub for Cloudflare Pages
-
-# Run from repo root: this script lives at scripts/shell/, two levels down.
-cd "$(dirname "${BASH_SOURCE[0]}")/../.."
-
-# Source .env for FORECAST_OUTPUT_DIR
-if [ -f .env ]; then
-    set -a
-    source .env
-    set +a
-fi
-FORECAST_DIR="${FORECAST_OUTPUT_DIR:-forecast_output}"
-
-# Copy forecast to public folder
-if [ -f "$FORECAST_DIR/latest_forecast.json" ]; then
-    cp "$FORECAST_DIR/latest_forecast.json" web/public/
-fi
-if [ -f "$FORECAST_DIR/station_data.json" ]; then
-    cp "$FORECAST_DIR/station_data.json" web/public/
-fi
-if [ -f "$FORECAST_DIR/daily_report.json" ]; then
-    cp "$FORECAST_DIR/daily_report.json" web/public/
-fi
-
-# Git operations
-git add web/public/latest_forecast.json web/public/station_data.json web/public/daily_report.json 2>/dev/null
-# Only track forecast_output if it's inside the repo (relative path)
-case "$FORECAST_DIR" in
-    /*) ;; # absolute path, skip git add
-    *)  git add "$FORECAST_DIR/latest_forecast.json" "$FORECAST_DIR/station_data.json" "$FORECAST_DIR/daily_report.json" 2>/dev/null ;;
-esac
-git diff --cached --quiet && { echo "No changes to push"; exit 0; }
-
-git commit -m "Update forecast $(date '+%Y-%m-%d %H:%M')"
-git push origin master || { echo "❌ Git push failed"; exit 1; }
-
-echo "Forecast pushed to GitHub"
+#!/usr/bin/env bash
+# Shim — the real push_forecast.sh now lives at the repo root.
+# Kept so anything referencing this path keeps working.
+exec "$(dirname "${BASH_SOURCE[0]}")/../../push_forecast.sh" "$@"

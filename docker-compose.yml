@@ -1,14 +1,15 @@
-version: '3.8'
-
 services:
   dashboard:
     build: .
     ports:
       - "5000:5000"
+    # ./forecast_output is gitignored and may be empty; the image seeds a
+    # forecast from web/public so the container also works standalone.
     volumes:
-      # Mount forecast output so updates appear in real-time
       - ./forecast_output:/app/forecast_output
-      - ./templates:/app/templates
+      - ./web/templates:/app/web/templates
+      - ./web/static:/app/web/static
     environment:
-      - FLASK_ENV=development
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5000
     restart: unless-stopped
