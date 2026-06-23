@@ -30,7 +30,7 @@ HOURLY_VARIABLES = (
     'soil_temperature_0cm,soil_moisture_0_to_1cm'
 )
 
-from collect_world_data import WORLD_STATIONS, migrate_schema
+from scripts.pipeline.collect_world_data import WORLD_STATIONS, migrate_schema
 
 
 def setup_logging():

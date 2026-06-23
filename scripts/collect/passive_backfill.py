@@ -33,7 +33,7 @@ DAILY_VARIABLES = (
 NUM_VARIABLES = 17
 
 # Import station list from collect_world_data
-from collect_world_data import WORLD_STATIONS, migrate_schema
+from scripts.pipeline.collect_world_data import WORLD_STATIONS, migrate_schema
 
 
 def setup_logging():
