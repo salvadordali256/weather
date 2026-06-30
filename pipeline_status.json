@@ -1,10 +1,10 @@
 {
-  "checked_at": "2026-06-30T09:52:51-05:00",
+  "checked_at": "2026-06-30T14:03:16-05:00",
   "date": "2026-06-30",
-  "overall": "fail",
-  "tracebacks": 24,
-  "stale_outputs": 4,
-  "today_db_rows": 0,
-  "last_forecast_commit": "2026-06-30 06:06:58 -0500",
+  "overall": "ok",
+  "tracebacks": 0,
+  "stale_outputs": 0,
+  "today_db_rows": 148,
+  "last_forecast_commit": "2026-06-30 13:53:16 -0500",
   "db_path": "/home/kylej/weather/global_snowfall.db"
 }

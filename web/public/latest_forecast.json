@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-30T13:50:58.730492",
-  "generated_at_human": "June 30, 2026 at 01:50 PM",
+  "generated_at": "2026-06-30T17:34:40.355598",
+  "generated_at_human": "June 30, 2026 at 05:34 PM",
   "forecast_days": 7,
   "forecasts": [
     {
@@ -276,7 +276,7 @@
       "snowfall_inches": 0.0
     }
   ],
-  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: June 30, 2026 at 01:50 PM\n\nOVERVIEW:\n  \u2022 0 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 10% on Wednesday, 2026-07-01\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nWednesday, 2026-07-01:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nThursday, 2026-07-02:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nFriday, 2026-07-03:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSaturday, 2026-07-04:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSunday, 2026-07-05:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-07-06:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-07-07:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
+  "summary_text": "\n7-DAY FORECAST SUMMARY for Northern Wisconsin\nGenerated: June 30, 2026 at 05:34 PM\n\nOVERVIEW:\n  \u2022 0 day(s) with snow potential (\u226530% probability)\n  \u2022 Highest probability: 10% on Wednesday, 2026-07-01\n  \u2022 Primary patterns: Quiet conditions\n\nDETAILED OUTLOOK:\n\nWednesday, 2026-07-01:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nThursday, 2026-07-02:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nFriday, 2026-07-03:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSaturday, 2026-07-04:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nSunday, 2026-07-05:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nMonday, 2026-07-06:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nTuesday, 2026-07-07:\n  \u26aa 10% probability - QUIET\n  Expected: 0-5mm (trace or none)\n  Confidence: LOW\n\nALERT LEVELS:\n  \u2744\ufe0f  HIGH (\u226570%) - Major snow likely\n  \ud83c\udf28\ufe0f  MODERATE (50-69%) - Significant snow possible\n  \u2601\ufe0f  LOW (30-49%) - Light snow possible\n  \u26aa MINIMAL (<30%) - Little to no snow expected\n\nLead times:\n  \u2022 Short-range (12-48h): Alberta Clippers, Lake Effect\n  \u2022 Long-range (5-7d): Global atmospheric patterns\n",
   "locations": {
     "phelps_wi": {
       "name": "Phelps, WI",
