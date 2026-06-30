@@ -147,12 +147,14 @@ class EnhancedRegionalForecastSystem:
         global_score = 0.0
         total_weight = 0.0
         active_signals = []
+        stations_with_data = 0  # stations that returned a DB row (snow or not)
 
         for station_id, config in self.global_predictors.items():
             check_date = event_date - timedelta(days=config['lag'])
             avg_snow, max_snow = self.get_station_snow(station_id, check_date)
 
             if avg_snow is not None:
+                stations_with_data += 1
                 category, activity = self.categorize_activity(avg_snow)
                 contribution = config['weight'] * activity
                 global_score += contribution
@@ -171,7 +173,8 @@ class EnhancedRegionalForecastSystem:
 
         return {
             'score': normalized_score,
-            'signals': active_signals
+            'signals': active_signals,
+            'stations_with_data': stations_with_data
         }
 
     def check_regional_predictors(self, event_date: datetime) -> Dict:
@@ -181,6 +184,7 @@ class EnhancedRegionalForecastSystem:
         regional_score = 0.0
         total_weight = 0.0
         active_signals = []
+        stations_with_data = 0  # stations that returned a DB row (snow or not)
 
         # Track event types detected
         clipper_signal = 0.0
@@ -192,18 +196,23 @@ class EnhancedRegionalForecastSystem:
             max_activity = 0.0
             best_lag = None
             best_snow = None
+            station_has_data = False
 
             for lag in config['lags']:
                 check_date = event_date - timedelta(days=lag)
                 avg_snow, max_snow = self.get_station_snow(station_id, check_date)
 
                 if max_snow is not None:
+                    station_has_data = True
                     category, activity = self.categorize_activity(max_snow)
 
                     if activity > max_activity:
                         max_activity = activity
                         best_lag = lag
                         best_snow = max_snow
+
+            if station_has_data:
+                stations_with_data += 1
 
             # Score this predictor
             if max_activity > 0:
@@ -241,6 +250,7 @@ class EnhancedRegionalForecastSystem:
         return {
             'score': normalized_score,
             'signals': active_signals,
+            'stations_with_data': stations_with_data,
             'event_type': event_type,
             'clipper_signal': clipper_signal,
             'lake_effect_signal': lake_effect_signal,
@@ -255,8 +265,14 @@ class EnhancedRegionalForecastSystem:
         global_result = self.check_global_predictors(event_date)
         regional_result = self.check_regional_predictors(event_date)
 
-        # Detect whether any station returned real data
-        has_data = bool(global_result['signals'] or regional_result['signals'])
+        # Detect whether any station returned real data. Count DB rows
+        # returned, NOT snow signals: a station reporting zero snow (e.g. the
+        # entire off-season) still proves the database has data. Keying off
+        # signals here made every snowless day look like an empty/missing DB.
+        has_data = bool(
+            global_result.get('stations_with_data', 0)
+            or regional_result.get('stations_with_data', 0)
+        )
         data_quality = 'ok' if has_data else 'no_data'
 
         # Weighted ensemble
