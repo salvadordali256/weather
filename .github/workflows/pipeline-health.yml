@@ -1,0 +1,169 @@
+name: Pipeline health
+
+# Host-level detector. Catches cases the NAS-side detector can't:
+# the NAS itself is down, cron is disabled, or no commits have landed at all.
+#
+# Reads pipeline_status.json (written by scripts/shell/check_pipeline_health.sh)
+# and checks the freshness of the last "Update forecast" commit.
+
+on:
+  schedule:
+    - cron: '15 */6 * * *'   # every 6h at :15
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Audit pipeline freshness
+        id: audit
+        run: |
+          set -u
+          now_epoch=$(date +%s)
+
+          # 1. Last "Update forecast" commit age
+          last_commit_ts=$(git log -1 --grep='^Update forecast' --format='%at' || echo 0)
+          if [ "$last_commit_ts" = "0" ]; then
+            commit_age_hours=999
+            last_commit_human="never found"
+          else
+            commit_age_hours=$(( (now_epoch - last_commit_ts) / 3600 ))
+            last_commit_human=$(git log -1 --grep='^Update forecast' --format='%ai')
+          fi
+
+          # 2. pipeline_status.json from the NAS-side detector
+          if [ -f pipeline_status.json ]; then
+            nas_overall=$(jq -r '.overall // "unknown"' pipeline_status.json)
+            nas_checked=$(jq -r '.checked_at // "unknown"' pipeline_status.json)
+            nas_tracebacks=$(jq -r '.tracebacks // 0' pipeline_status.json)
+            nas_stale=$(jq -r '.stale_outputs // 0' pipeline_status.json)
+            nas_today_rows=$(jq -r '.today_db_rows // 0' pipeline_status.json)
+          else
+            nas_overall="not-reporting"
+            nas_checked="never"
+            nas_tracebacks=0
+            nas_stale=0
+            nas_today_rows=0
+          fi
+
+          # 3. Verdict
+          status="ok"
+          reasons=""
+          if [ "$commit_age_hours" -gt 24 ]; then
+            status="fail"
+            reasons="${reasons}- No forecast commit in ${commit_age_hours}h (last: ${last_commit_human})\n"
+          fi
+          if [ "$nas_overall" = "fail" ]; then
+            status="fail"
+            reasons="${reasons}- NAS-side detector reports fail at ${nas_checked} (tracebacks=${nas_tracebacks}, stale=${nas_stale})\n"
+          fi
+          if [ "$nas_overall" = "not-reporting" ]; then
+            status="fail"
+            reasons="${reasons}- pipeline_status.json missing — NAS detector has never run\n"
+          fi
+
+          # Emit step summary
+          {
+            echo "## Pipeline health: \`$status\`"
+            echo
+            echo "- Last forecast commit: \`$last_commit_human\` (${commit_age_hours}h ago)"
+            echo "- NAS detector overall: \`$nas_overall\` at \`$nas_checked\`"
+            echo "- NAS tracebacks today: $nas_tracebacks"
+            echo "- NAS stale outputs: $nas_stale"
+            echo "- NAS DB rows today: $nas_today_rows"
+            if [ -n "$reasons" ]; then
+              echo
+              echo "### Problems"
+              printf "%b" "$reasons"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Emit outputs for the next step
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<HEREDOC"
+            echo "Pipeline health check at \`$(date -u +%Y-%m-%dT%H:%M:%SZ)\`"
+            echo
+            echo "- Last forecast commit: \`$last_commit_human\` (${commit_age_hours}h ago)"
+            echo "- NAS detector overall: \`$nas_overall\` at \`$nas_checked\`"
+            echo "- Tracebacks: $nas_tracebacks, Stale outputs: $nas_stale, Today rows: $nas_today_rows"
+            echo
+            if [ -n "$reasons" ]; then
+              echo "### Problems"
+              printf "%b" "$reasons"
+            fi
+            echo
+            echo "_Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}_"
+            echo "HEREDOC"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open or close tracking issue
+        uses: actions/github-script@v7
+        env:
+          AUDIT_STATUS: ${{ steps.audit.outputs.status }}
+          AUDIT_BODY: ${{ steps.audit.outputs.body }}
+        with:
+          script: |
+            const status = process.env.AUDIT_STATUS;
+            const body = process.env.AUDIT_BODY;
+            const title = 'Pipeline health: degraded';
+            const label = 'pipeline-health';
+
+            // Find an existing open tracking issue
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: label,
+              per_page: 50,
+            });
+            const existing = issues.find(i => i.title === title);
+
+            if (status === 'fail') {
+              if (existing) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body,
+                });
+              } else {
+                // Ensure label exists; ignore if it already does
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                    color: 'd93f0b',
+                  });
+                } catch (e) { /* label likely exists */ }
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                  labels: [label],
+                });
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Resolved — health check returned \`ok\`.\n\n${body}`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'closed',
+              });
+            }
