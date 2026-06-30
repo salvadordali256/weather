@@ -64,7 +64,7 @@ source venv/bin/activate
 ### Step 2: Generate First Forecast
 
 ```bash
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 **Output:** Creates `forecast_output/latest_forecast.json`
@@ -139,7 +139,7 @@ ls -lh forecast_output/
 ### Manual Forecast Generation
 
 ```bash
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 ---
@@ -325,7 +325,7 @@ Day 3: 2026-01-25 (Sunday)
 source venv/bin/activate
 
 # Generate today's forecast
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 
 # Start web dashboard
 python3 forecast_web_dashboard.py
@@ -393,7 +393,7 @@ curl http://localhost:5000/api/forecast | jq '.forecasts[] | select(.probability
 1. **Test the system:**
    ```bash
    source venv/bin/activate
-   python3 daily_automated_forecast.py
+   python3 scripts/pipeline/daily_automated_forecast.py
    python3 forecast_web_dashboard.py
    ```
 
@@ -429,7 +429,7 @@ curl http://localhost:5000/api/forecast | jq '.forecasts[] | select(.probability
 **Solution:**
 ```bash
 # Generate a forecast
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 
 # Refresh browser
 ```
@@ -459,7 +459,7 @@ tail -f forecast_cron.log
 
 # Test manual run
 cd /Users/kyle.jurgens/weather
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 ---
@@ -525,7 +525,7 @@ You now have a complete operational forecast system:
 ```bash
 cd /Users/kyle.jurgens/weather
 source venv/bin/activate
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 ### Start Dashboard

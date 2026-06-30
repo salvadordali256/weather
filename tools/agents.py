@@ -6,7 +6,7 @@ Lightweight AST-based security scanners for Python code.
 Detects common security pitfalls in API-oriented code.
 
 Usage:
-    python agents.py /path/to/source
+    python tools/agents.py /path/to/source
 
 Checks:
 - Hardcoded secrets (API keys, passwords, tokens)
@@ -389,12 +389,12 @@ class SecurityScanner:
 def main():
     """Main entry point"""
     if len(sys.argv) < 2:
-        print("Usage: python agents.py /path/to/source [--json]")
+        print("Usage: python tools/agents.py /path/to/source [--json]")
         print()
         print("Examples:")
-        print("  python agents.py .")
-        print("  python agents.py noaa_weather_fetcher.py")
-        print("  python agents.py . --json")
+        print("  python tools/agents.py .")
+        print("  python tools/agents.py noaa_weather_fetcher.py")
+        print("  python tools/agents.py . --json")
         sys.exit(1)
 
     target_path = sys.argv[1]

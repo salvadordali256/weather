@@ -21,7 +21,7 @@ pip3 install flask pandas numpy
 ### Step 2: Generate First Forecast
 
 ```bash
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 This will generate:
@@ -47,7 +47,7 @@ Then visit: **http://localhost:5000**
 
 **Usage:**
 ```bash
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 **Output:**
@@ -116,7 +116,7 @@ If you prefer manual setup, add this to your crontab (`crontab -e`):
 
 ```cron
 # Run Wisconsin snowfall forecast daily at 6 AM
-0 6 * * * cd /Users/kyle.jurgens/weather && python3 daily_automated_forecast.py >> forecast_cron.log 2>&1
+0 6 * * * cd /Users/kyle.jurgens/weather && python3 scripts/pipeline/daily_automated_forecast.py >> forecast_cron.log 2>&1
 ```
 
 **Verify Cron Job:**
@@ -361,7 +361,7 @@ tail -f forecast_cron.log
 ### Test Forecast Generation
 
 ```bash
-python3 daily_automated_forecast.py
+python3 scripts/pipeline/daily_automated_forecast.py
 ```
 
 ### Verify Web Dashboard
@@ -390,7 +390,7 @@ sqlite3 demo_global_snowfall.db "SELECT COUNT(*) FROM snowfall_daily;"
 
 2. Generate a forecast manually:
    ```bash
-   python3 daily_automated_forecast.py
+   python3 scripts/pipeline/daily_automated_forecast.py
    ```
 
 3. Refresh the web dashboard
@@ -410,7 +410,7 @@ sqlite3 demo_global_snowfall.db "SELECT COUNT(*) FROM snowfall_daily;"
 
 3. Test manual run:
    ```bash
-   cd /Users/kyle.jurgens/weather && python3 daily_automated_forecast.py
+   cd /Users/kyle.jurgens/weather && python3 scripts/pipeline/daily_automated_forecast.py
    ```
 
 ### Problem: Web dashboard won't start

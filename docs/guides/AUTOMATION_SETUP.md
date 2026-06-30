@@ -49,9 +49,9 @@ cd /Users/kyle.jurgens/weather
 Run individual components:
 ```bash
 source venv/bin/activate
-python update_recent_data.py           # Regional stations only
-python update_global_predictors.py     # Global predictors only
-python daily_automated_forecast.py     # Forecast generation only
+python scripts/pipeline/update_recent_data.py           # Regional stations only
+python scripts/pipeline/update_global_predictors.py     # Global predictors only
+python scripts/pipeline/daily_automated_forecast.py     # Forecast generation only
 ```
 
 ### Managing the Cron Job

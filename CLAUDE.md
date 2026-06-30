@@ -11,25 +11,33 @@ Cloudflare Pages.
 Pipeline: `NAS cron → collect data → generate forecast → git push → Cloudflare Pages`.
 Live site: https://weather.salvadordali256.net
 
-## Layout (post-reorg — see MIGRATION.md)
+## Layout (post-reorg — see docs/MIGRATION.md)
+
+The tree is organized into three areas — **Frontend** (`web/`), **Backend** (forecast
+logic), and **Data Retrieval** (data clients, DB access, collection) — laid over the
+Python convention of an installable library (`src/`) plus runnable `scripts/`. See the
+README "Project layout" table for the full mapping.
 
 ```
 src/snowforecast/        Installable library (import as `snowforecast`)
   config.py
-  fetchers/              Data-source clients (openmeteo, noaa, gfs, global_snowfall)
-  engines/               Forecast engines — enhanced_regional_forecast_system is CANONICAL
-  storage/               snowfall_duckdb, duckdb_queries, migrate_data_source
-  analysis/              Reusable analysis (jetstream, correlations, local_event)
+  fetchers/              Data Retrieval — source clients (openmeteo, noaa, gfs, global_snowfall)
+  engines/               Backend — forecast engines; enhanced_regional_forecast_system is CANONICAL
+  storage/               Data Retrieval — snowfall_duckdb, duckdb_queries, migrate_data_source
+  analysis/              Backend — reusable analysis (jetstream, correlations, local_event)
 scripts/                 Runnable jobs (import the library)
-  pipeline/              The cron-driven daily flow
-  collect/ generate/ backtest/ storage/ shell/
-analysis/                One-off & dated explorations (seasonal/, visualize/)
-web/                     The website
+  pipeline/              Backend — the cron-driven daily flow
+  collect/               Data Retrieval — collection jobs
+  generate/ backtest/    Backend — forecast generation & validation
+  storage/ shell/ ci/
+explorations/            One-off & dated studies (seasonal/, visualize/) — not imported
+web/                     Frontend — the website
   public/                Static site served by Cloudflare Pages (build output dir)
   templates/ static/ worker/ apps/
-docs/                    guides/, reports/, superpowers/ (specs + plans)
+tools/                   Dev tooling (agents.py security scanner)
+docs/                    guides/, reports/, superpowers/ (specs + plans), MIGRATION.md
 tests/
-<root>                   Config, README, MIGRATION.md, and cron shims
+<root>                   Config, README, dependency & build files
 ```
 
 ## Setup / commands
@@ -47,11 +55,14 @@ Canonical engine import:
 
 ## Critical conventions — read before changing structure
 
-- **Root `runpy` shims are intentional.** `daily_automated_forecast.py`,
-  `update_recent_data.py`, `update_global_predictors.py`, `collect_world_data.py`,
-  and `push_forecast.sh` at the repo root are thin wrappers that forward to
-  `scripts/`. They exist so the NAS crontab keeps working unchanged. **Do not
-  delete them** unless you also update the crontab (see MIGRATION.md §5).
+- **The pipeline lives under `scripts/`; there are no root shims.** The NAS
+  crontab invokes the entry points directly by path — e.g.
+  `python scripts/pipeline/daily_automated_forecast.py` and
+  `bash scripts/shell/push_forecast.sh`. (The old `runpy` wrappers at the repo
+  root were removed once the crontab was updated; see docs/MIGRATION.md §5.)
+  When adding a new cron-run entry point, put it under `scripts/` and point the
+  crontab at that path. The cron still runs **from the repo root**, so
+  root-relative data paths keep resolving.
 - **Databases and generated outputs are gitignored but live at the repo root.**
   Scripts open them by root-relative paths (`sqlite3.connect('demo_global_snowfall.db')`,
   `forecast_output/...`). The cron runs from the repo root, so these files must
@@ -73,7 +84,7 @@ Canonical engine import:
 - **NAS venv:** run `pip install -e .` once after pulling a reorganized tree.
 - **Cloudflare Pages:** build output directory must be `web/public`.
 
-See `MIGRATION.md` for the full details.
+See `docs/MIGRATION.md` for the full details.
 
 ## Workflow notes
 
