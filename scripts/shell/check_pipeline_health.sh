@@ -58,9 +58,28 @@ for f in $expected; do
 done
 
 # 3. Did collectors write rows for today?
+#    Count via Python's sqlite3, not the `sqlite3` CLI: the NAS has no CLI
+#    installed, and the pipeline itself uses the Python module — so this stays
+#    accurate everywhere the pipeline can run. Prefer the project venv.
 today_rows=0
 if [ -f "$DB" ]; then
-    today_rows=$(sqlite3 "$DB" "SELECT COUNT(*) FROM snowfall_daily WHERE date = '$TODAY';" 2>/dev/null || echo 0)
+    PY=./venv/bin/python
+    [ -x "$PY" ] || PY="$(command -v python3 || command -v python)"
+    if [ -n "$PY" ]; then
+        today_rows=$("$PY" - "$DB" "$TODAY" <<'PYEOF'
+import sqlite3, sys
+try:
+    conn = sqlite3.connect(sys.argv[1], timeout=30)
+    print(conn.execute(
+        "SELECT COUNT(*) FROM snowfall_daily WHERE date = ?", (sys.argv[2],)
+    ).fetchone()[0])
+except Exception:
+    print(0)
+PYEOF
+)
+    fi
+    # Guard against an empty result (e.g. no Python at all)
+    [ -n "$today_rows" ] || today_rows=0
 fi
 
 # 4. Last "Update forecast" commit (used by GH Action; we surface locally too)
