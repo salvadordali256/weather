@@ -18,7 +18,7 @@ DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
 def setup_atmospheric_table():
     """Create table for atmospheric variables"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     # Create atmospheric data table
@@ -57,7 +57,7 @@ def setup_atmospheric_table():
 
 def get_existing_stations():
     """Get list of stations that already have snowfall data"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -126,7 +126,7 @@ def fetch_atmospheric_data_for_station(station_id, lat, lon, start_year=2005):
     print(f"Coordinates: {lat}, {lon}")
     print(f"{'='*80}")
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     # Check existing data
@@ -302,7 +302,7 @@ def main():
     print(f"Database size: {db_size / (1024*1024):.1f} MB")
 
     # Show sample data
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     print(f"\n{'─'*80}")

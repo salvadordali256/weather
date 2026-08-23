@@ -225,8 +225,11 @@ def collect_resort_reports(rate_limit=0.3):
         'resort_count': len(results),
         'resorts': results,
     }
-    with open(out_file, 'w') as f:
+    # Atomic write so a crash can't leave a truncated file (audit SEV-012).
+    tmp_file = str(out_file) + '.tmp'
+    with open(tmp_file, 'w') as f:
         json.dump(output, f, separators=(',', ':'))
+    os.replace(tmp_file, out_file)
 
     store_to_db(results, logger)
 

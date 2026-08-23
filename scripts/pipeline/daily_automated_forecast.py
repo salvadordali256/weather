@@ -244,15 +244,21 @@ Lead times:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         output_file = self.output_dir / f'forecast_{timestamp}.json'
 
-        with open(output_file, 'w') as f:
+        # Atomic write: a crash mid-write must not leave a truncated JSON file
+        # for push_forecast.sh to publish (audit SEV-012).
+        tmp_file = str(output_file) + '.tmp'
+        with open(tmp_file, 'w') as f:
             json.dump(output, f, indent=2)
+        os.replace(tmp_file, output_file)
 
         print(f"✅ Forecast saved to: {output_file}")
 
         # Also save as "latest" for web dashboard
         latest_file = self.output_dir / 'latest_forecast.json'
-        with open(latest_file, 'w') as f:
+        latest_tmp = str(latest_file) + '.tmp'
+        with open(latest_tmp, 'w') as f:
             json.dump(output, f, indent=2)
+        os.replace(latest_tmp, latest_file)  # atomic write (audit SEV-012)
 
         print(f"✅ Latest forecast saved to: {latest_file}")
 

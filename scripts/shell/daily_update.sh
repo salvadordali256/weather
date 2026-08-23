@@ -121,9 +121,16 @@ echo "NAS Sync: $([ $NAS_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> 
 echo "Git Push: $([ $GIT_STATUS -eq 0 ] && echo 'SUCCESS' || echo 'FAILED')" >> "$LOG_FILE"
 echo "========================================" >> "$LOG_FILE"
 
-# Exit with error if critical steps failed
-if [ $REGIONAL_STATUS -ne 0 ] || [ $FORECAST_STATUS -ne 0 ] || [ $NOAA_STATUS -ne 0 ] || [ $WORLD_STATUS -ne 0 ]; then
-    exit 1
-fi
+# Exit non-zero if ANY step failed, so cron (and any dead-man/health check)
+# can detect it. Previously only 4 of the 11 statuses were checked, so a failed
+# NAS sync, git push, or station-forecast generation exited 0 and looked healthy
+# (audit SEV-009).
+OVERALL_STATUS=0
+for _s in "${REGIONAL_STATUS:-1}" "${GLOBAL_STATUS:-1}" "${SNOTEL_STATUS:-1}" \
+          "${NOAA_STATUS:-1}" "${WORLD_STATUS:-1}" "${FORECAST_STATUS:-1}" \
+          "${RESORT_STATUS:-1}" "${STATION_STATUS:-1}" "${REPORT_STATUS:-1}" \
+          "${NAS_STATUS:-1}" "${GIT_STATUS:-1}"; do
+    [ "$_s" -ne 0 ] && OVERALL_STATUS=1
+done
 
-exit 0
+exit $OVERALL_STATUS
