@@ -18,6 +18,17 @@ fi
 FORECAST_DIR="${FORECAST_OUTPUT_DIR:-forecast_output}"
 PUBLIC_DIR="web/public"   # Cloudflare Pages build output dir (was: public/)
 
+# Reconcile with the remote BEFORE publishing so a diverged local branch
+# (a rejected push, or a commit made elsewhere) can't silently wedge the
+# pipeline into repeatedly reporting "No changes to push" (audit SEV-008).
+# The three published JSON files are fully regenerated each run, so discarding
+# any un-pushed local commits here is safe.
+if ! git fetch --quiet origin master; then
+    echo "❌ git fetch failed — aborting push." >&2
+    exit 1
+fi
+git reset --hard origin/master
+
 # Copy the published forecast JSON into the deployed site folder.
 for f in latest_forecast.json station_data.json daily_report.json; do
     if [ -f "$FORECAST_DIR/$f" ]; then
@@ -48,6 +59,17 @@ esac
 git diff --cached --quiet && { echo "No changes to push"; exit 0; }
 
 git commit -m "Update forecast $(date '+%Y-%m-%d %H:%M')"
-git push origin master || { echo "❌ Git push failed"; exit 1; }
+
+# Push, and if the remote advanced between our fetch and our push (a race with
+# another run or a manual push), reconcile once and retry rather than leaving an
+# un-pushed local commit behind.
+if ! git push origin master; then
+    echo "⚠️  push rejected — reconciling with origin/master and retrying once." >&2
+    if ! { git fetch --quiet origin master && git rebase origin/master; }; then
+        echo "❌ reconcile failed — aborting." >&2
+        exit 1
+    fi
+    git push origin master || { echo "❌ Git push failed after retry"; exit 1; }
+fi
 
 echo "Forecast pushed to GitHub"

@@ -34,7 +34,7 @@ db_row_count() {
     python3 - "$1" <<'PY' 2>/dev/null
 import sqlite3, sys
 try:
-    c = sqlite3.connect(sys.argv[1])
+    c = sqlite3.connect(sys.argv[1], timeout=30)
     c.execute("PRAGMA integrity_check")
     print(c.execute("SELECT COUNT(*) FROM snowfall_daily").fetchone()[0])
 except Exception:

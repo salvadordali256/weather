@@ -267,8 +267,11 @@ def generate_report():
     out_dir = Path(OUTPUT_DIR)
     out_dir.mkdir(exist_ok=True)
     out_file = out_dir / 'daily_report.json'
-    with open(out_file, 'w') as f:
+    # Atomic write so a crash can't leave a truncated file (audit SEV-012).
+    tmp_file = str(out_file) + '.tmp'
+    with open(tmp_file, 'w') as f:
         json.dump(report, f, separators=(',', ':'))
+    os.replace(tmp_file, out_file)
 
     file_size = out_file.stat().st_size
     print(f"\nReport written: {out_file} ({file_size / 1024:.1f} KB)")

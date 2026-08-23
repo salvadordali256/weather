@@ -4,15 +4,21 @@ Add Lake Superior Snow Belt Stations
 Strategic stations for enhanced lake effect coverage
 """
 
+import os
 import requests
 import sqlite3
 from datetime import datetime, timedelta
 import time
 import sys
 
+# Honor DB_PATH (this runs on the 04:30 NAS cron); default matches every other
+# module. Cron-path connects use timeout=30 to avoid "database is locked"
+# (audit SEV-026).
+DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
+
 def add_station_to_database(station_id, name, lat, lon):
     """Add station to stations table if not exists"""
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -35,7 +41,7 @@ def fetch_station_data(station_id, name, lat, lon, start_year=1940):
     # Add to stations table
     add_station_to_database(station_id, name, lat, lon)
 
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     # Check existing data
@@ -178,7 +184,7 @@ def main():
     print(f"{'#'*80}\n")
 
     # Show summary
-    conn = sqlite3.connect('demo_global_snowfall.db')
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     print("LAKE SUPERIOR COVERAGE SUMMARY:")
