@@ -20,8 +20,8 @@ NAS (Synology/Pi) ── cron ──> collect data ──> generate forecast ─
 
 | Time (CST) | What runs |
 |---|---|
-| **5:30 PM** | `update_recent_data.py` → `update_global_predictors.py` → `collect_world_data.py --days 7` → `daily_automated_forecast.py` → `push_forecast.sh` |
-| **6:00 AM** | `daily_automated_forecast.py` → `push_forecast.sh` |
+| **5:30 PM** | `scripts/pipeline/update_recent_data.py` → `scripts/pipeline/update_global_predictors.py` → `scripts/pipeline/collect_world_data.py --days 7` → `scripts/pipeline/daily_automated_forecast.py` → `scripts/shell/push_forecast.sh` |
+| **6:00 AM** | `scripts/pipeline/daily_automated_forecast.py` → `scripts/shell/push_forecast.sh` |
 
 The 5:30 PM run collects fresh data from all stations and generates a new forecast. The 6:00 AM run refreshes the forecast with any overnight pattern changes.
 
@@ -29,11 +29,11 @@ The 5:30 PM run collects fresh data from all stations and generates a new foreca
 
 | Script | Purpose |
 |---|---|
-| `update_recent_data.py` | Updates 7 days of regional station data (8 stations) — cron calls root shim → `scripts/pipeline/` |
-| `update_global_predictors.py` | Updates 14 days of global lead indicators (Sapporo, Chamonix, etc.) — cron calls root shim → `scripts/pipeline/` |
-| `collect_world_data.py` | Collects data for 60+ global weather stations — cron calls root shim → `scripts/pipeline/` |
-| `daily_automated_forecast.py` | Generates 7-day ensemble forecast as JSON — cron calls root shim → `scripts/pipeline/` |
-| `push_forecast.sh` | Copies forecast to `web/public/`, commits, and pushes to GitHub — root shim → `scripts/shell/push_forecast.sh` |
+| `scripts/pipeline/update_recent_data.py` | Updates 7 days of regional station data (8 stations) |
+| `scripts/pipeline/update_global_predictors.py` | Updates 14 days of global lead indicators (Sapporo, Chamonix, etc.) |
+| `scripts/pipeline/collect_world_data.py` | Collects data for 60+ global weather stations |
+| `scripts/pipeline/daily_automated_forecast.py` | Generates 7-day ensemble forecast as JSON |
+| `scripts/shell/push_forecast.sh` | Copies forecast to `web/public/`, commits, and pushes to GitHub |
 | `src/snowforecast/engines/enhanced_regional_forecast_system.py` | Core forecast engine (regional + global ensemble) |
 
 ## Setup
@@ -89,28 +89,36 @@ python web/apps/forecast_web_dashboard.py    # Flask app on localhost:5000
 
 ## Project layout
 
+The codebase is organized into three areas — **Frontend**, **Backend**, and **Data Retrieval** — laid over a conventional Python structure (an installable `snowforecast` library in `src/`, thin runnable `scripts/`, and the `web/` site). Use this table to find things:
+
+| Area | Where | What |
+|---|---|---|
+| **Frontend** | `web/` | `public/` = deployed static site (Cloudflare Pages); `templates/` + `static/` + `apps/` = local-preview Flask; `worker/` = Cloudflare worker |
+| **Backend** (forecast logic) | `src/snowforecast/engines/`, `src/snowforecast/analysis/`, `src/snowforecast/config.py`; `scripts/generate/`, `scripts/pipeline/`, `scripts/backtest/` | Forecast models, orchestration, and the cron pipeline. There is no live app server — production is a static site fed by a batch cron pipeline. |
+| **Data Retrieval** | `src/snowforecast/fetchers/`, `src/snowforecast/storage/`; `scripts/collect/` | Weather-API clients, DB access/queries, and the collection jobs |
+| *Shared / global* | repo root, `docs/`, `tests/`, `tools/` | config, dependencies, Docker, cron shims, docs, tests, dev tooling |
+
+`src/snowforecast/` is the reusable, importable, testable core; `scripts/` are thin runnable entry points (and the cron pipeline) that import it.
+
 ```
 weather/
-├── src/snowforecast/          # Library package (config, fetchers, engines, storage, analysis)
-├── scripts/                   # Pipeline jobs and shell scripts
-│   ├── pipeline/              # Python pipeline modules (daily forecast, data collection, etc.)
-│   ├── shell/                 # Shell scripts (push_forecast.sh)
-│   ├── collect/, generate/, backtest/, storage/
+├── src/snowforecast/          # Library package: config, fetchers, engines, storage, analysis
+├── scripts/                   # Runnable jobs and shell scripts
+│   ├── pipeline/              # Cron-driven daily flow (forecast, data collection)
+│   ├── collect/               # Data-retrieval collection jobs
+│   ├── generate/ backtest/    # Backend forecast generation & validation
+│   ├── shell/ storage/ ci/    # Shell scripts, capacity utilities, CI checks
 │   └── setup_guide.py
-├── web/                       # Web site
+├── web/                       # Frontend: the website
 │   ├── public/                # Cloudflare Pages build output (tracked JSON/HTML)
-│   ├── templates/, static/    # Flask templates and assets
-│   ├── apps/                  # Flask apps (forecast_web_dashboard.py, build_static.py)
+│   ├── templates/ static/     # Flask templates and assets
+│   ├── apps/                  # Local-preview Flask apps
 │   └── worker/                # Cloudflare Worker scripts
-├── analysis/                  # One-off seasonal and visualization scripts
+├── explorations/              # One-off seasonal & visualization studies (not imported)
+├── tools/                     # Dev tooling (agents.py security scanner)
 ├── tests/                     # Test suite
-├── docs/                      # Guides, reports, specs, and plans
-├── daily_automated_forecast.py     # Root shim → scripts/pipeline/
-├── update_recent_data.py           # Root shim → scripts/pipeline/
-├── update_global_predictors.py     # Root shim → scripts/pipeline/
-├── collect_world_data.py           # Root shim → scripts/pipeline/
-└── push_forecast.sh                # Root shim → scripts/shell/push_forecast.sh
+└── docs/                      # Guides, reports, specs, plans, MIGRATION.md
 ```
 
-Root shims exist so the NAS cron commands require no changes after the reorg.
-See [MIGRATION.md](MIGRATION.md) for one-time update steps required on the NAS and Cloudflare Pages.
+The pipeline is invoked directly under `scripts/` (e.g. `python scripts/pipeline/daily_automated_forecast.py`, `bash scripts/shell/push_forecast.sh`) — the root no longer carries shim wrappers, so the NAS crontab points at these paths.
+See [docs/MIGRATION.md](docs/MIGRATION.md) for the NAS crontab and Cloudflare Pages setup steps.

@@ -1,7 +1,8 @@
 # Migration Notes — Project Reorganization (2026-06-06)
 
-The repo was reorganized into a `snowforecast` package. The live pipeline keeps
-working via root shims, but two **external** systems need a one-time update.
+The repo was reorganized into a `snowforecast` package. The pipeline now lives
+under `scripts/` (the root shims were removed — §5), and external systems
+(NAS crontab, Cloudflare Pages) need a one-time update.
 
 ## 1. NAS venv — install the package (REQUIRED)
 
@@ -13,9 +14,8 @@ source venv/bin/activate     # or use ./venv/bin/pip directly
 pip install -e .
 ```
 
-The cron commands do **not** change — root shims (`daily_automated_forecast.py`,
-`update_recent_data.py`, `update_global_predictors.py`, `collect_world_data.py`,
-`push_forecast.sh`) still live at the repo root and forward to `scripts/`.
+The cron commands changed when the root shims were removed — update the NAS
+crontab to invoke the pipeline directly under `scripts/` (see §5).
 
 ## 2. Cloudflare Pages — change the build output directory (REQUIRED)
 
@@ -42,19 +42,25 @@ calls `python web/apps/build_static.py`. Its commit step uses a single
 is disabled by default (manual `workflow_dispatch` only); the NAS cron is the
 primary pipeline.
 
-## 5. Optional later cleanup — drop the root shims
+## 5. Root shims removed — point cron at `scripts/` (REQUIRED)
 
-To point cron directly at the new paths and remove the shims:
+The root shims have been removed. Update the NAS crontab to call the entry
+points directly by path (the cron still runs **from the repo root**, so
+root-relative data paths keep resolving):
 
-```bash
-# in the NAS crontab, replace e.g.
-#   python daily_automated_forecast.py
-# with
-#   python -m scripts.pipeline.daily_automated_forecast
-# and for the shell shim:
-#   bash scripts/shell/push_forecast.sh
-```
-Then delete the 4 `.py` shims and the `push_forecast.sh` shim from the repo root.
+| Old (root shim) | New (direct path) |
+|---|---|
+| `python update_recent_data.py` | `python scripts/pipeline/update_recent_data.py` |
+| `python update_global_predictors.py` | `python scripts/pipeline/update_global_predictors.py` |
+| `python collect_world_data.py --days 7` | `python scripts/pipeline/collect_world_data.py --days 7` |
+| `python daily_automated_forecast.py` | `python scripts/pipeline/daily_automated_forecast.py` |
+| `bash push_forecast.sh` | `bash scripts/shell/push_forecast.sh` |
+
+The remaining entry points moved similarly: `collect_hourly_data.py`,
+`collect_noaa_data.py`, `collect_radiosonde.py`, `collect_resort_reports.py`,
+and `passive_backfill.py` now live under `scripts/collect/`;
+`generate_daily_report.py` and `generate_station_forecasts.py` under
+`scripts/generate/`.
 
 ## New layout
 

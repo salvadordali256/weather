@@ -29,13 +29,13 @@ echo "========================================" >> "$LOG_FILE"
 # Step 1: Update regional station data
 echo "" >> "$LOG_FILE"
 echo "Updating regional stations..." >> "$LOG_FILE"
-python update_recent_data.py >> "$LOG_FILE" 2>&1
+python scripts/pipeline/update_recent_data.py >> "$LOG_FILE" 2>&1
 REGIONAL_STATUS=$?
 
 # Step 2: Update global predictor stations (quick update - 5 key stations)
 echo "" >> "$LOG_FILE"
 echo "Updating global predictor stations..." >> "$LOG_FILE"
-python update_global_predictors.py >> "$LOG_FILE" 2>&1
+python scripts/pipeline/update_global_predictors.py >> "$LOG_FILE" 2>&1
 GLOBAL_STATUS=$?
 
 # Step 2.5: Collect SNOTEL data (western US mountain stations)
@@ -53,13 +53,13 @@ NOAA_STATUS=$?
 # Step 3: Collect world data (all stations — won't overwrite NOAA/SNOTEL records)
 echo "" >> "$LOG_FILE"
 echo "Collecting world data (all stations)..." >> "$LOG_FILE"
-python collect_world_data.py --days 7 >> "$LOG_FILE" 2>&1
+python scripts/pipeline/collect_world_data.py --days 7 >> "$LOG_FILE" 2>&1
 WORLD_STATUS=$?
 
 # Step 4: Generate new forecast
 echo "" >> "$LOG_FILE"
 echo "Generating forecast..." >> "$LOG_FILE"
-python daily_automated_forecast.py >> "$LOG_FILE" 2>&1
+python scripts/pipeline/daily_automated_forecast.py >> "$LOG_FILE" 2>&1
 FORECAST_STATUS=$?
 
 # Step 4.5: Collect resort snow reports (base depth, lifts/runs)
@@ -94,13 +94,13 @@ fi
 # Step 6: Push forecast to GitHub (if configured)
 echo "" >> "$LOG_FILE"
 echo "Pushing to GitHub..." >> "$LOG_FILE"
-if [ -f push_forecast.sh ]; then
+if [ -f scripts/shell/push_forecast.sh ]; then
     # push_forecast.sh copies forecast_output/*.json into web/public/ and
     # commits/pushes them; no manual copy needed here.
-    bash push_forecast.sh >> "$LOG_FILE" 2>&1
+    bash scripts/shell/push_forecast.sh >> "$LOG_FILE" 2>&1
     GIT_STATUS=$?
 else
-    echo "push_forecast.sh not found, skipping git push" >> "$LOG_FILE"
+    echo "scripts/shell/push_forecast.sh not found, skipping git push" >> "$LOG_FILE"
     GIT_STATUS=0
 fi
 
