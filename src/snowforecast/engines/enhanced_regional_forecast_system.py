@@ -11,7 +11,6 @@ Detection capabilities:
   - Regional systems (12-36 hour lead time)
 """
 
-import sqlite3
 import pandas as pd
 import numpy as np
 import os
@@ -19,6 +18,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 import json
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
 
 # Load .env file
 load_dotenv()
@@ -32,9 +32,14 @@ class EnhancedRegionalForecastSystem:
     """
 
     def __init__(self, db_path=None):
+        # Explicit db_path (tests, backtests) gets its own isolated SQLite
+        # engine; the default path routes through the shared engine in
+        # storage/db.py, which points at Postgres in prod via DATABASE_URL.
+        self._explicit_db_path = db_path is not None
         if db_path is None:
             db_path = DEFAULT_DB_PATH
         self.db_path = db_path
+        self._engine = None
 
         # Global predictors (long-range, 5-7 day lead time)
         self.global_predictors = {
@@ -93,31 +98,46 @@ class EnhancedRegionalForecastSystem:
         self.MODERATE_THRESHOLD = 15.0
         self.LIGHT_THRESHOLD = 5.0
 
+    def _get_engine(self):
+        """Return the SQLAlchemy engine to query against.
+
+        An explicit db_path (tests, backtests) always gets its own SQLite
+        engine, so callers pointing at an isolated temp DB stay isolated.
+        Otherwise this defers to storage/db.get_engine(), the process-wide
+        engine that resolves to Postgres in prod via DATABASE_URL.
+        """
+        if self._engine is not None:
+            return self._engine
+        if self._explicit_db_path:
+            self._engine = create_engine(
+                f"sqlite:///{self.db_path}", connect_args={"timeout": 30}
+            )
+        else:
+            from snowforecast.storage.db import get_engine
+            self._engine = get_engine()
+        return self._engine
+
     def get_station_snow(self, station_id: str, target_date: datetime, window_days: int = 1) -> Tuple[float, float]:
         """
         Get snowfall at a station around target date
         Returns: (avg_snow, max_snow)
         """
-        conn = sqlite3.connect(self.db_path, timeout=30)
-        try:
-            start_date = target_date - timedelta(days=window_days)
-            end_date = target_date + timedelta(days=window_days)
+        start_date = target_date - timedelta(days=window_days)
+        end_date = target_date + timedelta(days=window_days)
 
-            query = """
-                SELECT AVG(snowfall_mm) as avg_snow, MAX(snowfall_mm) as max_snow
-                FROM snowfall_daily
-                WHERE station_id = ?
-                  AND date >= ?
-                  AND date <= ?
-            """
+        query = text("""
+            SELECT AVG(snowfall_mm) as avg_snow, MAX(snowfall_mm) as max_snow
+            FROM snowfall_daily
+            WHERE station_id = :station_id
+              AND date >= :start_date
+              AND date <= :end_date
+        """)
 
-            df = pd.read_sql_query(query, conn, params=(
-                station_id,
-                start_date.strftime('%Y-%m-%d'),
-                end_date.strftime('%Y-%m-%d')
-            ))
-        finally:
-            conn.close()
+        df = pd.read_sql_query(query, self._get_engine(), params={
+            "station_id": station_id,
+            "start_date": start_date.strftime('%Y-%m-%d'),
+            "end_date": end_date.strftime('%Y-%m-%d'),
+        })
 
         if not df.empty and pd.notna(df.iloc[0]['avg_snow']):
             return df.iloc[0]['avg_snow'], df.iloc[0]['max_snow']

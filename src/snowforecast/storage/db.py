@@ -44,7 +44,9 @@ def database_url() -> str:
     url = os.environ.get("DATABASE_URL")
     if url:
         return url
-    db_path = os.environ.get("DB_PATH", "global_snowfall.db")
+    # Matches DEFAULT_DB_PATH in the pipeline scripts (daily_automated_forecast.py,
+    # update_recent_data.py, update_global_predictors.py, enhanced_regional_forecast_system.py).
+    db_path = os.environ.get("DB_PATH", "demo_global_snowfall.db")
     return f"sqlite:///{db_path}"
 
 
