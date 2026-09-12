@@ -44,9 +44,12 @@ def database_url() -> str:
     url = os.environ.get("DATABASE_URL")
     if url:
         return url
-    # Matches DEFAULT_DB_PATH in the pipeline scripts (daily_automated_forecast.py,
-    # update_recent_data.py, update_global_predictors.py, enhanced_regional_forecast_system.py).
-    db_path = os.environ.get("DB_PATH", "demo_global_snowfall.db")
+    # global_snowfall.db is the real, populated production file on the NAS
+    # (confirmed directly: demo_global_snowfall.db is an empty stub there,
+    # despite matching the DEFAULT_DB_PATH literal hardcoded in several
+    # pipeline scripts -- those scripts' real runs must resolve DB_PATH via
+    # env/.env override, not their own Python fallback literal).
+    db_path = os.environ.get("DB_PATH", "global_snowfall.db")
     return f"sqlite:///{db_path}"
 
 
