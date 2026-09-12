@@ -97,12 +97,16 @@ def fetch_noaa_snow(ghcnd_id: str, start_date: str, end_date: str) -> dict:
 
 
 def fetch_our_open_meteo_snow(engine, station_id: str, start_date: str, end_date: str) -> dict:
+    # Include NULL data_source too -- migrate_data_source.py only backfilled
+    # NULLs to 'open-meteo' as a one-time pass; anything inserted afterward
+    # without explicit tagging could still be untagged, and open-meteo is
+    # the only source that would insert without setting it explicitly.
     query = text(
         """
         SELECT date, snowfall_mm
         FROM snowfall_daily
         WHERE station_id = :station_id
-          AND data_source = 'open-meteo'
+          AND (data_source = 'open-meteo' OR data_source IS NULL)
           AND date >= :start_date AND date <= :end_date
         """
     )
