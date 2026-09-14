@@ -76,12 +76,19 @@ def get_target_series(engine) -> pd.Series:
     return combined.mean(axis=1, skipna=True)
 
 
-def best_lag_correlation(predictor: pd.Series, target: pd.Series, max_lag: int):
-    """Search lags 0..max_lag, return (best_lag, correlation, p_value, n) for
-    the lag with the strongest |correlation|. predictor value on day D is
-    tested against target value on day D+lag (predictor leads target)."""
+def best_lag_correlation(predictor: pd.Series, target: pd.Series, max_lag: int, min_lag: int = 1):
+    """Search lags min_lag..max_lag, return (best_lag, correlation, p_value, n)
+    for the lag with the strongest |correlation|. predictor value on day D is
+    tested against target value on day D+lag (predictor leads target).
+
+    min_lag defaults to 1, not 0: lag=0 is same-day correlation, which
+    mostly reflects nearby stations getting hit by the same storm
+    simultaneously, not a genuine advance-warning signal -- a forecast
+    issued using prior days' predictor data can't use a same-day value
+    that doesn't exist yet at issuance time.
+    """
     best = None
-    for lag in range(0, max_lag + 1):
+    for lag in range(min_lag, max_lag + 1):
         shifted_target = target.shift(-lag)
         aligned = pd.concat([predictor, shifted_target], axis=1, join="inner").dropna()
         if len(aligned) < 30:
@@ -95,6 +102,7 @@ def best_lag_correlation(predictor: pd.Series, target: pd.Series, max_lag: int):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--max-lag", type=int, default=10)
+    parser.add_argument("--min-lag", type=int, default=1, help="Minimum lag to consider (0 = same-day, excluded by default -- see best_lag_correlation docstring)")
     args = parser.parse_args()
 
     engine = get_engine()
@@ -107,7 +115,7 @@ def main():
         if predictor.empty:
             print(f"\n{station_id}: NO DATA -- skipping")
             continue
-        result = best_lag_correlation(predictor, target, args.max_lag)
+        result = best_lag_correlation(predictor, target, args.max_lag, args.min_lag)
         if result is None:
             print(f"\n{station_id}: insufficient overlapping data -- skipping")
             continue
