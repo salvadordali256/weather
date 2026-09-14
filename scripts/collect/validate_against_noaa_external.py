@@ -45,6 +45,10 @@ VALIDATION_STATIONS = {
     "iron_mountain_mi": "USW00094892",
     "granite_peak_wi": "USC00478905",
     "duluth_mn": "USW00014839",
+    "marquette_mi": "USW00014858",
+    "green_bay_wi": "USW00014898",
+    "lutsen_mn": "USC00214884",
+    "spirit_mountain_mn": "USC00218477",
 }
 
 
@@ -117,10 +121,32 @@ def fetch_our_open_meteo_snow(engine, station_id: str, start_date: str, end_date
     return {r.date: r.snowfall_mm for r in rows}
 
 
+def find_open_meteo_window(engine, station_id: str, window_days: int = 180):
+    """Find the most recent block of open-meteo/NULL-sourced rows for this
+    station -- the window to test, rather than assuming a fixed winter
+    works for every station (it doesn't; granite_peak_wi's most recent
+    winter turned out to be a noaa-only period for that station, not
+    open-meteo at all)."""
+    query = text(
+        """
+        SELECT date
+        FROM snowfall_daily
+        WHERE station_id = :sid AND (data_source = 'open-meteo' OR data_source IS NULL)
+        ORDER BY date DESC
+        LIMIT :n
+        """
+    )
+    with engine.connect() as conn:
+        rows = conn.execute(query, {"sid": station_id, "n": window_days}).fetchall()
+    if not rows:
+        return None
+    dates = sorted(r.date for r in rows)
+    return dates[0], dates[-1]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--start", default="2023-11-01")
-    parser.add_argument("--end", default="2024-04-30")
+    parser.add_argument("--window-days", type=int, default=180, help="How many open-meteo-sourced days to pull per station")
     args = parser.parse_args()
 
     if not NOAA_TOKEN or "YOUR_" in NOAA_TOKEN:
@@ -130,15 +156,22 @@ def main():
     engine = get_engine()
 
     print("=" * 90)
-    print(f"EXTERNAL NOAA VALIDATION: {args.start} to {args.end}")
+    print(f"EXTERNAL NOAA VALIDATION -- per-station dynamic windows (most recent {args.window_days} open-meteo days)")
     print("=" * 90)
 
     for station_id, ghcnd_id in VALIDATION_STATIONS.items():
         print(f"\n{station_id} (GHCND:{ghcnd_id})")
         print("-" * 90)
 
-        noaa = fetch_noaa_snow(ghcnd_id, args.start, args.end)
-        ours = fetch_our_open_meteo_snow(engine, station_id, args.start, args.end)
+        window = find_open_meteo_window(engine, station_id, args.window_days)
+        if window is None:
+            print("  No open-meteo/NULL-sourced rows for this station at all -- skipping.")
+            continue
+        start_date, end_date = window
+        print(f"  Testing window: {start_date} to {end_date} ({args.window_days}-day open-meteo block found in our DB)")
+
+        noaa = fetch_noaa_snow(ghcnd_id, start_date, end_date)
+        ours = fetch_our_open_meteo_snow(engine, station_id, start_date, end_date)
 
         overlap_dates = sorted(set(noaa) & set(ours))
         if not overlap_dates:
