@@ -65,7 +65,11 @@ def main():
             "This is a historical base-rate outlook, not a day-specific forecast. "
             "It does not account for current-year signals (ENSO phase, current "
             "snowpack, etc.) -- it only reflects what this calendar month has "
-            "looked like across the years of station data on file."
+            "looked like across the years of station data on file. The underlying "
+            "data is mostly ERA5 reanalysis, not direct observations; validation "
+            "against fresh NOAA pulls found no stable bias correction applies -- "
+            "accuracy varies by season and station rather than following a fixed "
+            "factor, so treat these totals as indicative, not precise."
         ),
     }
 

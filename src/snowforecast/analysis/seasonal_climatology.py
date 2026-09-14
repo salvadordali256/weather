@@ -18,6 +18,18 @@ outlooks (above/near/below normal), not a specific-day prediction.
 Does not condition on current-year signals (ENSO phase, current snowpack,
 etc.) -- this is pure historical climatology. Conditioning on ENSO would
 be a natural follow-up if/when an ENSO index is added as a data source.
+
+DATA ACCURACY CAVEAT: the underlying snowfall_daily figures this draws on
+are mostly ERA5 reanalysis (Open-Meteo), not direct station observations.
+validate_against_noaa_external.py compared several stations against fresh
+NOAA pulls for the same dates and found no stable bias -- the same station
+(duluth_mn) came back within 8% of NOAA one winter and 34% off (opposite
+direction from another station's discrepancy) a different winter. So this
+isn't a case of "apply a correction factor" -- the accuracy varies by
+season and station in a way that isn't captured here. See
+check_data_completeness.py's now-corrected note for the investigation
+history (it originally claimed a stable ~65% low bias from one hand-typed
+comparison; that claim didn't hold up under rigorous testing).
 """
 
 from __future__ import annotations
