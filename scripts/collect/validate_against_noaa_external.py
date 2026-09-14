@@ -20,12 +20,13 @@ Requires NOAA_API_TOKEN in .env (same one collect_noaa_data.py uses).
 
 Usage:
     python scripts/collect/validate_against_noaa_external.py
-    python scripts/collect/validate_against_noaa_external.py --start 2023-11-01 --end 2024-04-30
+    python scripts/collect/validate_against_noaa_external.py --window-days 90 --lag-days 60
 """
 
 import argparse
 import os
 import time
+from datetime import datetime, timedelta
 
 import requests
 from dotenv import load_dotenv
@@ -121,32 +122,43 @@ def fetch_our_open_meteo_snow(engine, station_id: str, start_date: str, end_date
     return {r.date: r.snowfall_mm for r in rows}
 
 
-def find_open_meteo_window(engine, station_id: str, window_days: int = 180):
-    """Find the most recent block of open-meteo/NULL-sourced rows for this
-    station -- the window to test, rather than assuming a fixed winter
-    works for every station (it doesn't; granite_peak_wi's most recent
-    winter turned out to be a noaa-only period for that station, not
-    open-meteo at all)."""
+def find_open_meteo_window(engine, station_id: str, window_days: int = 180, lag_days: int = 90):
+    """Find a window_days-sized *calendar* window of open-meteo/NULL-sourced
+    data for this station, ending at least lag_days before today.
+
+    Two bugs this fixes vs. a naive "most recent N rows" approach:
+    1. Sparse row density means "most recent N rows" can span years of
+       calendar time, not N days -- blew past NOAA's per-request date-range
+       limit (400 errors) for lutsen_mn/spirit_mountain_mn.
+    2. NOAA's official GHCND archive lags real-time by weeks-to-months, so
+       a window ending near "today" returns nothing even when our own
+       open-meteo data exists right up to the present (iron_mountain_mi,
+       granite_peak_wi, marquette_mi all failed this way).
+    """
+    cutoff = (datetime.now() - timedelta(days=lag_days)).strftime("%Y-%m-%d")
     query = text(
         """
         SELECT date
         FROM snowfall_daily
         WHERE station_id = :sid AND (data_source = 'open-meteo' OR data_source IS NULL)
+          AND date <= :cutoff
         ORDER BY date DESC
-        LIMIT :n
+        LIMIT 1
         """
     )
     with engine.connect() as conn:
-        rows = conn.execute(query, {"sid": station_id, "n": window_days}).fetchall()
-    if not rows:
+        row = conn.execute(query, {"sid": station_id, "cutoff": cutoff}).fetchone()
+    if not row:
         return None
-    dates = sorted(r.date for r in rows)
-    return dates[0], dates[-1]
+    end_date = datetime.strptime(row.date, "%Y-%m-%d")
+    start_date = end_date - timedelta(days=window_days)
+    return start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--window-days", type=int, default=180, help="How many open-meteo-sourced days to pull per station")
+    parser.add_argument("--window-days", type=int, default=180, help="Size of the calendar window to test per station")
+    parser.add_argument("--lag-days", type=int, default=90, help="Window end must be at least this many days before today (NOAA archive processing lag)")
     args = parser.parse_args()
 
     if not NOAA_TOKEN or "YOUR_" in NOAA_TOKEN:
@@ -163,7 +175,7 @@ def main():
         print(f"\n{station_id} (GHCND:{ghcnd_id})")
         print("-" * 90)
 
-        window = find_open_meteo_window(engine, station_id, args.window_days)
+        window = find_open_meteo_window(engine, station_id, args.window_days, args.lag_days)
         if window is None:
             print("  No open-meteo/NULL-sourced rows for this station at all -- skipping.")
             continue
