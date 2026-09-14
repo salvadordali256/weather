@@ -111,6 +111,21 @@ def diagnose_eagle_river(engine):
         for r in sample:
             print(f"  date={r.date!r} snowfall_mm={r.snowfall_mm} data_source={r.data_source!r}")
 
+        # Value-agreement check across ALL duplicate pairs, not just the sample
+        mismatches = conn.execute(
+            text(
+                """
+                SELECT COUNT(*) as n FROM (
+                    SELECT SUBSTR(date, 1, 10) as norm_date
+                    FROM snowfall_daily WHERE station_id = 'eagle_river_wi'
+                    GROUP BY norm_date
+                    HAVING COUNT(*) > 1 AND COUNT(DISTINCT snowfall_mm) > 1
+                )
+                """
+            )
+        ).fetchone()
+        print(f"\nDuplicate-date pairs where snowfall_mm DISAGREES between formats: {mismatches.n} (out of {normalized_dupes.n} duplicate dates)")
+
 
 def diagnose_land_o_lakes(engine):
     print()
@@ -143,6 +158,21 @@ def diagnose_land_o_lakes(engine):
             )
         ).fetchone()
         print(f"\nDates present in BOTH variants (would conflict on a straight rename): {overlap.n}")
+
+        value_mismatches = conn.execute(
+            text(
+                """
+                SELECT COUNT(*) as n FROM (
+                    SELECT a.date FROM snowfall_daily a
+                    JOIN snowfall_daily b ON a.date = b.date
+                    WHERE a.station_id = 'land_o_lakes_wi'
+                      AND b.station_id = 'land_o''lakes_wi'
+                      AND a.snowfall_mm != b.snowfall_mm
+                )
+                """
+            )
+        ).fetchone()
+        print(f"Overlapping dates where snowfall_mm DISAGREES between the two variants: {value_mismatches.n} (out of {overlap.n})")
 
         # Also check the 'stations' metadata table for both ids
         stations = conn.execute(
