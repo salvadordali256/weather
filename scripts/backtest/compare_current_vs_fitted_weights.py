@@ -35,7 +35,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import bindparam, text
 
 from snowforecast.engines.enhanced_regional_forecast_system import EnhancedRegionalForecastSystem
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 TARGET_STATIONS = ("phelps_wi", "land_o_lakes_wi", "eagle_river_wi")
 
@@ -100,10 +100,12 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--start-year", type=int, default=1945)  # avoid lag edge effects near 1940 start
     parser.add_argument("--end-year", type=int, default=2026)
+    add_db_path_arg(parser)
     args = parser.parse_args()
 
     random.seed(args.seed)
-    engine = get_engine()
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
 
     start = datetime(args.start_year, 1, 1)
     end = datetime(args.end_year, 12, 31)
@@ -114,8 +116,8 @@ def main():
 
     actuals = get_target_actuals(engine, sample_dates)
 
-    current_system = EnhancedRegionalForecastSystem()
-    fitted_system = EnhancedRegionalForecastSystem()
+    current_system = EnhancedRegionalForecastSystem(db_path=args.db_path)
+    fitted_system = EnhancedRegionalForecastSystem(db_path=args.db_path)
     fitted_system.global_predictors = FITTED_GLOBAL_PREDICTORS
     fitted_system.regional_predictors = FITTED_REGIONAL_PREDICTORS
 
