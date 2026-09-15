@@ -36,54 +36,62 @@ class EnhancedRegionalForecastSystem:
             db_path = DEFAULT_DB_PATH
         self.db_path = db_path
 
-        # Global predictors (long-range, 5-7 day lead time)
+        # Global predictors (long-range lead time). Weights/lags fit
+        # empirically against real outcomes (Pearson correlation, lag >= 1
+        # only -- lag 0 is same-day and not available at forecast-issuance
+        # time) via scripts/backtest/fit_predictor_weights.py, and confirmed
+        # to improve real forecast skill via scripts/backtest/compare_current_vs_fitted_weights.py
+        # (Brier score 0.2072 -> 0.1726, false-positive rate 41.3% -> 37.0%,
+        # hit rate 97.4% -> 96.1%, on a 500-date sample). Previous hand-tuned
+        # values are preserved in that script's CURRENT_PREDICTORS for reference.
         self.global_predictors = {
-            'sapporo_japan': {'name': 'Sapporo', 'lag': 6, 'weight': 0.120},
-            'chamonix_france': {'name': 'Chamonix', 'lag': 5, 'weight': 0.115},
-            'irkutsk_russia': {'name': 'Irkutsk', 'lag': 7, 'weight': 0.074},
+            'sapporo_japan': {'name': 'Sapporo', 'lag': 3, 'weight': 0.092},
+            'chamonix_france': {'name': 'Chamonix', 'lag': 1, 'weight': 0.075},
+            'irkutsk_russia': {'name': 'Irkutsk', 'lag': 3, 'weight': 0.048},
         }
 
-        # Regional predictors (short-range, 0-2 day lead time)
+        # Regional predictors (short-range lead time). Same fitting/validation
+        # as global_predictors above.
         self.regional_predictors = {
             # Alberta Clipper indicators
             'winnipeg_mb': {
                 'name': 'Winnipeg',
-                'lags': [0, 1, 2],
-                'weight': 0.50,  # Strong indicator
+                'lags': [1],
+                'weight': 0.146,
                 'type': 'clipper'
             },
             'thunder_bay_on': {
                 'name': 'Thunder Bay',
-                'lags': [0, 1],
-                'weight': 0.468,  # Strongest predictor
+                'lags': [2],
+                'weight': 0.098,
                 'type': 'regional'
             },
 
             # Lake Effect indicators
             'duluth_mn': {
                 'name': 'Duluth',
-                'lags': [0, 1, 2],
-                'weight': 0.35,
+                'lags': [1],
+                'weight': 0.096,
                 'type': 'lake_effect'
             },
             'marquette_mi': {
                 'name': 'Marquette',
-                'lags': [0, 1, 2],
-                'weight': 0.35,
+                'lags': [1],
+                'weight': 0.127,
                 'type': 'lake_effect'
             },
 
             # Regional system indicators
             'green_bay_wi': {
                 'name': 'Green Bay',
-                'lags': [0, 1],
-                'weight': 0.30,
+                'lags': [1],
+                'weight': 0.172,  # strongest predictor of the 9, empirically
                 'type': 'regional'
             },
             'iron_mountain_mi': {
                 'name': 'Iron Mountain',
-                'lags': [0, 1],
-                'weight': 0.25,
+                'lags': [1],
+                'weight': 0.145,
                 'type': 'regional'
             },
         }
