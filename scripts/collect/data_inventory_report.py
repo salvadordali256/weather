@@ -19,15 +19,17 @@ import argparse
 
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--min-years", type=int, default=10, help="Threshold to flag as 'climatology-viable'")
+    add_db_path_arg(parser)
     args = parser.parse_args()
 
-    engine = get_engine()
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
 
     query = text(
         """

@@ -23,7 +23,7 @@ import argparse
 
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 
 def report_source_breakdown(engine):
@@ -112,9 +112,11 @@ def compare_same_day(engine, station_id):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--station", help="Check one specific station_id instead of the full dual-sourced list")
+    add_db_path_arg(parser)
     args = parser.parse_args()
 
-    engine = get_engine()
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
 
     if args.station:
         compare_same_day(engine, args.station)

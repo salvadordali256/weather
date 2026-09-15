@@ -30,7 +30,7 @@ import argparse
 
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 STATION_ID = "eagle_river_wi"
 
@@ -103,9 +103,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--execute", action="store_true", help="Actually delete rows (default: dry run, no changes)")
     parser.add_argument("--force-disagreeing", action="store_true", help="Also delete the disagreeing date's duplicate (picks the 10-char row's value)")
+    add_db_path_arg(parser)
     args = parser.parse_args()
 
-    engine = get_engine()
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
 
     with engine.connect() as conn:
         disagreeing = find_disagreeing_dates(conn)

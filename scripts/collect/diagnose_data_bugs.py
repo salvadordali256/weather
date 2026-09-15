@@ -20,9 +20,11 @@ Diagnose the exact shape of two known data bugs before writing any fix:
 Read-only. Does not modify anything.
 """
 
+import argparse
+
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 
 def diagnose_eagle_river(engine):
@@ -184,7 +186,12 @@ def diagnose_land_o_lakes(engine):
 
 
 def main():
-    engine = get_engine()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    add_db_path_arg(parser)
+    args = parser.parse_args()
+
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
     diagnose_eagle_river(engine)
     diagnose_land_o_lakes(engine)
 

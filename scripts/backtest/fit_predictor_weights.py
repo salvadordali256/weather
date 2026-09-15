@@ -34,7 +34,7 @@ import pandas as pd
 from scipy import stats
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 TARGET_STATIONS = ("phelps_wi", "land_o_lakes_wi", "eagle_river_wi")
 
@@ -103,9 +103,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--max-lag", type=int, default=10)
     parser.add_argument("--min-lag", type=int, default=1, help="Minimum lag to consider (0 = same-day, excluded by default -- see best_lag_correlation docstring)")
+    add_db_path_arg(parser)
     args = parser.parse_args()
 
-    engine = get_engine()
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
     target = get_target_series(engine)
     print(f"Target series: {len(target)} days, {target.index.min()} to {target.index.max()}")
 

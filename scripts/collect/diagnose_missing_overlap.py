@@ -6,9 +6,11 @@ independently -- does NOAA return data for this station/window at all, and
 does our own DB have ANY rows (any data_source) for it in this window.
 """
 
+import argparse
+
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 from validate_against_noaa_external import fetch_noaa_snow
 
 STATIONS = [
@@ -20,7 +22,12 @@ START, END = "2023-11-01", "2024-04-30"
 
 
 def main():
-    engine = get_engine()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    add_db_path_arg(parser)
+    args = parser.parse_args()
+
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
     for station_id, ghcnd_id in STATIONS:
         noaa = fetch_noaa_snow(ghcnd_id, START, END)
         print(f"{station_id}: NOAA returned {len(noaa)} days")

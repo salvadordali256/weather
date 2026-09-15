@@ -32,7 +32,7 @@ import requests
 from dotenv import load_dotenv
 from sqlalchemy import text
 
-from snowforecast.storage.db import get_engine
+from snowforecast.storage.db import add_db_path_arg, describe_engine, get_engine
 
 load_dotenv()
 
@@ -159,13 +159,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--window-days", type=int, default=180, help="Size of the calendar window to test per station")
     parser.add_argument("--lag-days", type=int, default=90, help="Window end must be at least this many days before today (NOAA archive processing lag)")
+    add_db_path_arg(parser)
     args = parser.parse_args()
 
     if not NOAA_TOKEN or "YOUR_" in NOAA_TOKEN:
         print("NOAA_API_TOKEN not set in .env -- cannot pull real NOAA data. Aborting.")
         return
 
-    engine = get_engine()
+    engine = get_engine(args.db_path)
+    print(f"Target database: {describe_engine(engine)}")
 
     print("=" * 90)
     print(f"EXTERNAL NOAA VALIDATION -- per-station dynamic windows (most recent {args.window_days} open-meteo days)")
