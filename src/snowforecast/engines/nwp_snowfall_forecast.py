@@ -14,14 +14,13 @@ the same window a COOP observer's snow-board reading covers. Matching that
 window verified far better than calendar days (day-1 AUC 0.92 vs 0.86).
 
 Probability for lead k:
-    p_model = logistic(intercept_k + slope_k * log1p(forecast_mm)
-                       + clim_coef_k * logit(climatology(day_of_year)))
+    p_model = logistic(intercept_k + slope_k * log1p(forecast_mm))
     p       = w_k * p_model + (1 - w_k) * climatology(day_of_year)
-The climatology term lets a zero-snow forecast mean "near zero" in a month
-that rarely snows, instead of carrying a mid-winter base rate year-round.
-Both the term and w_k are chosen by leave-one-winter-out cross-validation,
-so leads with little NWP skill fall back toward climatology instead of
-publishing false confidence.
+The slope comes from 20 winters of GEFSv12 reforecasts; the intercept and
+climatology blend weight w_k from Open-Meteo's own archived forecasts, so leads
+with little NWP skill fall back toward climatology instead of publishing false
+confidence. Outside the calibrated months, and at leads with no archived
+forecasts, the engine publishes climatology and labels it as such.
 """
 
 from __future__ import annotations
@@ -52,11 +51,6 @@ def period_bounds_utc(day: date) -> tuple[datetime, datetime]:
     end = datetime.combine(day, time(PERIOD_END_HOUR), LOCAL_TZ)
     start = datetime.combine(day - timedelta(days=1), time(PERIOD_END_HOUR), LOCAL_TZ)
     return start.astimezone(ZoneInfo("UTC")), end.astimezone(ZoneInfo("UTC"))
-
-
-def logit(p: float, eps: float = 1e-3) -> float:
-    p = min(max(p, eps), 1 - eps)
-    return math.log(p / (1 - p))
 
 
 def sum_period(hourly_times: list[datetime], hourly_mm: list[float | None], day: date,
@@ -110,8 +104,7 @@ class NwpSnowfallForecast:
         # snowfall is still reported alongside, so off-season storms stay visible.
         if day.month not in self.calibration.get("calibrated_months", range(1, 13)):
             return clim, "climatology (outside calibrated season)"
-        z = (cal["intercept"] + cal["slope"] * math.log1p(max(forecast_mm, 0.0))
-             + cal.get("clim_coef", 0.0) * logit(clim))
+        z = cal["intercept"] + cal["slope"] * math.log1p(max(forecast_mm, 0.0))
         p_model = 1.0 / (1.0 + math.exp(-z))
         w = cal["blend_weight"]
         return w * p_model + (1 - w) * clim, "nwp" if w >= 0.5 else "nwp+climatology"
