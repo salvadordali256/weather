@@ -16,9 +16,30 @@ load_dotenv()
 
 DB_PATH = os.environ.get('DB_PATH', 'demo_global_snowfall.db')
 
+# atmospheric_daily column -> Open-Meteo archive daily variable. Single source of
+# truth for both the request and the row mapping, so they can't drift apart again:
+# the archive API does provide pressure/humidity/dewpoint/cloud, but this script
+# used to hardcode them to None and never requested wind direction, gusts or rain,
+# leaving those columns empty on every row.
+ATMOSPHERIC_VARIABLES = {
+    'temp_min_c': 'temperature_2m_min',
+    'temp_max_c': 'temperature_2m_max',
+    'temp_mean_c': 'temperature_2m_mean',
+    'pressure_msl_hpa': 'pressure_msl_mean',
+    'pressure_surface_hpa': 'surface_pressure_mean',
+    'wind_speed_max_kmh': 'wind_speed_10m_max',
+    'wind_direction_dominant': 'wind_direction_10m_dominant',
+    'wind_gusts_max_kmh': 'wind_gusts_10m_max',
+    'relative_humidity_mean': 'relative_humidity_2m_mean',
+    'dewpoint_mean_c': 'dew_point_2m_mean',
+    'cloud_cover_mean': 'cloud_cover_mean',
+    'precipitation_sum_mm': 'precipitation_sum',
+    'rain_sum_mm': 'rain_sum',
+}
+
 def setup_atmospheric_table():
     """Create table for atmospheric variables"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     # Create atmospheric data table
@@ -57,7 +78,7 @@ def setup_atmospheric_table():
 
 def get_existing_stations():
     """Get list of stations that already have snowfall data"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -126,7 +147,7 @@ def fetch_atmospheric_data_for_station(station_id, lat, lon, start_year=2005):
     print(f"Coordinates: {lat}, {lon}")
     print(f"{'='*80}")
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     # Check existing data
@@ -161,7 +182,7 @@ def fetch_atmospheric_data_for_station(station_id, lat, lon, start_year=2005):
             'longitude': lon,
             'start_date': start_date,
             'end_date': end_date,
-            'daily': 'temperature_2m_max,temperature_2m_min,temperature_2m_mean,wind_speed_10m_max,precipitation_sum',
+            'daily': ','.join(ATMOSPHERIC_VARIABLES.values()),
             'timezone': 'UTC'
         }
 
@@ -171,27 +192,15 @@ def fetch_atmospheric_data_for_station(station_id, lat, lon, start_year=2005):
             data = response.json()
 
             if 'daily' in data and 'time' in data['daily']:
-                dates = data['daily']['time']
+                daily = data['daily']
+                dates = daily['time']
+                missing = [None] * len(dates)
 
                 records = []
                 for i, date in enumerate(dates):
-                    record = {
-                        'station_id': station_id,
-                        'date': date,
-                        'temp_min_c': data['daily'].get('temperature_2m_min', [None]*len(dates))[i],
-                        'temp_max_c': data['daily'].get('temperature_2m_max', [None]*len(dates))[i],
-                        'temp_mean_c': data['daily'].get('temperature_2m_mean', [None]*len(dates))[i],
-                        'pressure_msl_hpa': None,  # Not available in archive API
-                        'pressure_surface_hpa': None,  # Not available in archive API
-                        'wind_speed_max_kmh': data['daily'].get('wind_speed_10m_max', [None]*len(dates))[i],
-                        'wind_direction_dominant': data['daily'].get('wind_direction_10m_dominant', [None]*len(dates))[i],
-                        'wind_gusts_max_kmh': data['daily'].get('wind_gusts_10m_max', [None]*len(dates))[i],
-                        'relative_humidity_mean': None,  # Not available in archive API
-                        'dewpoint_mean_c': None,  # Not available in archive API
-                        'cloud_cover_mean': None,  # Not available in archive API
-                        'precipitation_sum_mm': data['daily'].get('precipitation_sum', [None]*len(dates))[i],
-                        'rain_sum_mm': data['daily'].get('rain_sum', [None]*len(dates))[i],
-                    }
+                    record = {'station_id': station_id, 'date': date}
+                    for column, variable in ATMOSPHERIC_VARIABLES.items():
+                        record[column] = daily.get(variable, missing)[i]
                     records.append(record)
 
                 if records:
@@ -302,7 +311,7 @@ def main():
     print(f"Database size: {db_size / (1024*1024):.1f} MB")
 
     # Show sample data
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     cursor = conn.cursor()
 
     print(f"\n{'─'*80}")
