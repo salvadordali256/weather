@@ -39,6 +39,14 @@ LOCAL_TZ = ZoneInfo("America/Chicago")
 PERIOD_END_HOUR = 7  # local; COOP observation time
 MEASURABLE_MM = 5.0
 
+# Snowfall is the mean across these models. Verified against measured COOP
+# snowfall (leave-one-winter-out, 2023-26): the 3-model mean beat best_match
+# alone in every winter, lifting mean Brier skill vs climatology at days 1-6
+# from 28% to 38%, with the largest gains at days 4-6 (see
+# scripts/backtest/fit_nwp_calibration.py). Models are averaged per hour over
+# whichever are present -- ICON's horizon is ~8 days, so it drops out late.
+MODELS = ("best_match", "jma_seamless", "icon_seamless")
+
 TARGET_STATIONS = {
     "phelps_wi": (46.0638, -89.0787),
     "land_o_lakes_wi": (46.1535, -89.3207),
@@ -70,17 +78,26 @@ class NwpSnowfallForecast:
         self.session = session or requests
 
     def fetch_hourly_snowfall(self) -> tuple[list[datetime], list[float | None]]:
-        """Hourly snowfall (mm), averaged across the target stations, UTC timestamps."""
+        """Hourly snowfall (mm): mean over MODELS per station, then mean across
+        the target stations. UTC timestamps."""
         per_station = []
         for lat, lon in TARGET_STATIONS.values():
             r = self.session.get(FORECAST_URL, params={
                 "latitude": lat, "longitude": lon, "hourly": "snowfall",
+                "models": ",".join(MODELS),
                 "past_days": 1, "forecast_days": 9, "timezone": "UTC",
             }, timeout=30)
             r.raise_for_status()
             h = r.json()["hourly"]
             times = [datetime.fromisoformat(t).replace(tzinfo=ZoneInfo("UTC")) for t in h["time"]]
-            per_station.append(dict(zip(times, h["snowfall"])))
+            # Multi-model responses are keyed snowfall_<model>; a single-model
+            # response is keyed plain "snowfall". Average whatever models exist.
+            model_series = [h[k] for k in h if k == "snowfall" or k.startswith("snowfall_")]
+            station = {}
+            for i, t in enumerate(times):
+                vals = [s[i] for s in model_series if s[i] is not None]
+                station[t] = sum(vals) / len(vals) if vals else None
+            per_station.append(station)
 
         times = sorted(set().union(*per_station))
         mean_mm = []
@@ -133,6 +150,7 @@ class NwpSnowfallForecast:
             })
         return {
             "engine": "nwp_snowfall_forecast",
+            "models": list(MODELS),
             "generated_at": datetime.now(LOCAL_TZ).isoformat(),
             "measurable_threshold_mm": MEASURABLE_MM,
             "target_stations": list(TARGET_STATIONS),

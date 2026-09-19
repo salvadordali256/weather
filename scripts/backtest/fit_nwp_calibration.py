@@ -14,18 +14,29 @@ Inputs:
 For each lead k (forecast = 3-station mean snowfall over the 24h ending 7 AM
 local, via the engine's own sum_period; label = measured 3-station mean >= 5mm):
 
-  slope      from GEFS when --gefs-dir is given: 20 winters, ~14x the data
-             Open-Meteo has. Otherwise fit on Open-Meteo.
-  intercept  refit on Open-Meteo with the slope held fixed, so it absorbs
-             Open-Meteo's own bias. (GEFS snowfall is derived from precip +
-             2m temperature, not the same quantity.)
+  forecast   mean over MODELS (best_match, jma_seamless, icon_seamless) per
+             station-hour, then the 3-station mean -- exactly as the engine
+             computes it. Chosen by leave-one-winter-out review against
+             measured snowfall: the 3-model mean beat best_match alone in
+             every winter (mean skill days 1-6: 28% -> 36%), while extra
+             variables (temperature, liquid precip), per-station max,
+             earlier-lead agreement and gradient boosting added <=1 point
+             or hurt. Only models with archive coverage matching best_match
+             qualify; GEM and GFS have large holes and were excluded.
+  slope      fit on Open-Meteo by default. --gefs-dir instead takes it from
+             the GEFSv12 reforecast (20 winters) with the intercept refit on
+             Open-Meteo. With the single-model input that matched
+             Open-Meteo-only overall; with the 3-model input it is slightly
+             worse at 5 of 6 leads (mean 34.8% vs 35.6%), because the GEFS
+             slope describes a single derived quantity, not a model mean.
+             The shipped calibration therefore uses Open-Meteo slopes.
+  intercept  fit on Open-Meteo (refit with slope held fixed when GEFS is used).
   blend w    climatology blend weight minimizing Brier score on Open-Meteo.
 
-Reported skill is leave-one-Open-Meteo-winter-out with the intercept and blend
-weight tuned only on the training winters, so nothing is scored on data it was
-tuned on. Compared on held-out winters, GEFS slope + Open-Meteo intercept
-matched Open-Meteo-only overall (+28.5% vs +27.9% mean skill, days 1-6) and
-helped most at days 4-6, where Open-Meteo's archive is least informative.
+Reported skill is leave-one-Open-Meteo-winter-out with every coefficient and
+the blend weight tuned only on the training winters. The archive's winter
+2023-24 is mostly missing for best_match (Nov-Dec empty, January half); JMA
+covers it, so the model mean has ~427 usable days per lead rather than ~345.
 
 Climatology = smoothed day-of-year rate of measurable snow, measured before the
 Open-Meteo archive begins (no overlap with the scored winters).
@@ -50,7 +61,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss, roc_auc_score
 
 from snowforecast.engines.nwp_snowfall_forecast import (
-    CALIBRATION_PATH, MEASURABLE_MM, TARGET_STATIONS, sum_period,
+    CALIBRATION_PATH, MEASURABLE_MM, MODELS, TARGET_STATIONS, sum_period,
 )
 
 PREVIOUS_RUNS_URL = "https://previous-runs-api.open-meteo.com/v1/forecast"
@@ -61,13 +72,17 @@ BLEND_GRID = np.round(np.arange(0, 1.0001, 0.05), 2)
 WINTER_MONTHS = [11, 12, 1, 2, 3]
 
 
-def fetch_previous_runs(sid, lat, lon, winter, cache_dir):
-    path = os.path.join(cache_dir, f"prev_{sid}_{winter}-11-01.json")
+def fetch_previous_runs(sid, lat, lon, winter, cache_dir, model="best_match"):
+    # best_match keeps the original cache name; other models are prefixed
+    tag = "" if model == "best_match" else f"{model}_"
+    path = os.path.join(cache_dir, f"prev_{tag}{sid}_{winter}-11-01.json")
     if not os.path.exists(path):
         # one day either side so windows at the season edges are complete
         params = {"latitude": lat, "longitude": lon, "timezone": "UTC",
                   "hourly": ",".join(f"snowfall_previous_day{k}" for k in LEADS),
                   "start_date": f"{winter}-10-31", "end_date": f"{winter + 1}-04-01"}
+        if model != "best_match":
+            params["models"] = model
         for attempt in range(10):
             r = requests.get(PREVIOUS_RUNS_URL, params=params, timeout=180)
             if r.status_code != 429:
@@ -82,15 +97,20 @@ def fetch_previous_runs(sid, lat, lon, winter, cache_dir):
 
 
 def forecast_windows(winters, cache_dir):
-    """DataFrame indexed by period date, one column per lead: 3-station mean forecast mm."""
+    """DataFrame indexed by period date, one column per lead: 3-station mean forecast mm,
+    where each station's hourly value is the mean over MODELS (as the engine computes it)."""
     per_station = []
     for sid, (lat, lon) in TARGET_STATIONS.items():
-        frames = []
-        for w in winters:
-            h = pd.DataFrame(fetch_previous_runs(sid, lat, lon, w, cache_dir))
-            h["time"] = pd.to_datetime(h["time"]).dt.tz_localize("UTC")
-            frames.append(h.set_index("time"))
-        per_station.append(pd.concat(frames).groupby(level=0).first())
+        per_model = []
+        for model in MODELS:
+            frames = []
+            for w in winters:
+                h = pd.DataFrame(fetch_previous_runs(sid, lat, lon, w, cache_dir, model))
+                h["time"] = pd.to_datetime(h["time"]).dt.tz_localize("UTC")
+                frames.append(h.set_index("time"))
+            per_model.append(pd.concat(frames).groupby(level=0).first())
+        # mean over whichever models have a value that hour (matches the engine)
+        per_station.append(pd.concat(per_model, keys=range(len(per_model))).groupby(level=1).mean())
     stacked = pd.concat(per_station, keys=range(len(per_station)))
     counts = stacked.groupby(level=1).count()
     hourly = stacked.groupby(level=1).mean() * 10.0  # cm -> mm
@@ -149,7 +169,8 @@ def climatology(label):
 
 
 def labeled_frame(series, label, clim):
-    d = pd.DataFrame({"f": series, "y": label.reindex(series.index)}).dropna()
+    # clip at 0 to match the engine: some models emit tiny negative snowfall
+    d = pd.DataFrame({"f": series.clip(lower=0), "y": label.reindex(series.index)}).dropna()
     d = d[d.index.month.isin(WINTER_MONTHS)]
     d["winter"] = np.where(d.index.month >= 7, d.index.year, d.index.year - 1)
     d["clim"] = clim[d.index.dayofyear - 1]
@@ -246,7 +267,8 @@ def main():
                         "P(measured 3-station mean >= 5mm) over the 24h ending 7 AM local, blended with "
                         "day-of-year climatology. Slope from GEFSv12 reforecast where available, "
                         "intercept and blend weight from Open-Meteo. Skill is leave-one-winter-out."),
-        "nwp_source": "Open-Meteo previous-runs API (best_match)",
+        "nwp_source": f"Open-Meteo previous-runs API, mean of {', '.join(MODELS)}",
+        "models": list(MODELS),
         "slope_source": "NOAA GEFSv12 reforecast control member, 2000-2019" if gefs else "Open-Meteo",
         "truth_source": "NWS COOP / CoCoRaHS via RCC-ACIS (scripts/collect/build_coop_truth.py)",
         "cv_winters": [f"{w}-{w + 1}" for w in winters],

@@ -115,19 +115,34 @@ class FakeResponse:
 
 
 class FakeSession:
-    """Every station forecasts 0.2 cm/hour for the whole range."""
+    """Multi-model response: best_match 0.1 cm/h, jma 0.3 cm/h, icon 0.2 cm/h
+    (mean 0.2 cm/h). ICON stops after 7 days, as the real one does."""
 
     def __init__(self, start):
         self.start = start
         self.calls = 0
+        self.params = []
 
     def get(self, url, params, timeout):
         self.calls += 1
-        hours = [self.start + timedelta(hours=h) for h in range(24 * 10)]
+        self.params.append(params)
+        n = 24 * 10
+        hours = [self.start + timedelta(hours=h) for h in range(n)]
         return FakeResponse({"hourly": {
             "time": [t.strftime("%Y-%m-%dT%H:%M") for t in hours],
-            "snowfall": [0.2] * len(hours),
+            "snowfall_best_match": [0.1] * n,
+            "snowfall_jma_seamless": [0.3] * n,
+            "snowfall_icon_seamless": [0.2] * (24 * 7) + [None] * (n - 24 * 7),
         }})
+
+
+def test_fetch_averages_models_and_tolerates_a_model_dropping_out(calibration):
+    session = FakeSession(datetime(2026, 1, 9, 0, tzinfo=UTC))
+    times, mm = NwpSnowfallForecast(calibration, session=session).fetch_hourly_snowfall()
+    assert all("jma_seamless" in p["models"] for p in session.params)
+    assert mm[0] == pytest.approx(2.0)          # mean(0.1, 0.3, 0.2) cm -> mm, all three present
+    assert mm[-1] == pytest.approx(2.0)         # ICON gone: mean(0.1, 0.3) cm -> mm, still a value
+    assert None not in mm
 
 
 def test_generate_end_to_end_with_fake_session(calibration):
@@ -139,7 +154,8 @@ def test_generate_end_to_end_with_fake_session(calibration):
     days = out["forecasts"]
     assert [d["day_number"] for d in days] == list(range(1, 8))
     assert days[0]["date"] == "2026-01-11"
-    assert days[0]["forecast_snowfall_mm"] == pytest.approx(48.0)  # 0.2 cm/h * 24h -> mm
+    assert days[0]["forecast_snowfall_mm"] == pytest.approx(48.0)  # model-mean 0.2 cm/h * 24h -> mm
+    assert out["models"] == ["best_match", "jma_seamless", "icon_seamless"]
     assert days[0]["basis"] == "nwp"
     assert all(d["basis"] == "climatology" for d in days[1:])  # only lead 1 calibrated in fixture
     assert all(0 <= d["probability"] <= 100 for d in days)

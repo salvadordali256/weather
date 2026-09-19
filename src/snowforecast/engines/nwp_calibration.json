@@ -1,8 +1,13 @@
 {
-  "generated_at": "2026-09-16T10:10:54-05:00",
+  "generated_at": "2026-09-18T22:41:58-05:00",
   "description": "Per-lead logistic calibration of 3-station mean NWP snowfall (log1p mm) to P(measured 3-station mean >= 5mm) over the 24h ending 7 AM local, blended with day-of-year climatology. Slope from GEFSv12 reforecast where available, intercept and blend weight from Open-Meteo. Skill is leave-one-winter-out.",
-  "nwp_source": "Open-Meteo previous-runs API (best_match)",
-  "slope_source": "NOAA GEFSv12 reforecast control member, 2000-2019",
+  "nwp_source": "Open-Meteo previous-runs API, mean of best_match, jma_seamless, icon_seamless",
+  "models": [
+    "best_match",
+    "jma_seamless",
+    "icon_seamless"
+  ],
+  "slope_source": "Open-Meteo",
   "truth_source": "NWS COOP / CoCoRaHS via RCC-ACIS (scripts/collect/build_coop_truth.py)",
   "cv_winters": [
     "2023-2024",
@@ -22,64 +27,64 @@
   ],
   "leads": {
     "1": {
-      "intercept": -2.44531,
-      "slope": 1.26448,
-      "slope_source": "gefs_reforecast",
+      "intercept": -3.49012,
+      "slope": 1.76689,
+      "slope_source": "open_meteo",
       "blend_weight": 1.0,
-      "cv_auc": 0.924,
-      "cv_brier_skill": 0.547,
-      "n_days": 345,
-      "n_gefs_days": 964
+      "cv_auc": 0.932,
+      "cv_brier_skill": 0.575,
+      "n_days": 427,
+      "n_gefs_days": 0
     },
     "2": {
-      "intercept": -2.36898,
-      "slope": 1.14498,
-      "slope_source": "gefs_reforecast",
+      "intercept": -3.35954,
+      "slope": 1.63852,
+      "slope_source": "open_meteo",
       "blend_weight": 1.0,
-      "cv_auc": 0.876,
-      "cv_brier_skill": 0.436,
-      "n_days": 344,
-      "n_gefs_days": 964
+      "cv_auc": 0.912,
+      "cv_brier_skill": 0.515,
+      "n_days": 427,
+      "n_gefs_days": 0
     },
     "3": {
-      "intercept": -2.12644,
-      "slope": 0.95756,
-      "slope_source": "gefs_reforecast",
+      "intercept": -2.94445,
+      "slope": 1.38106,
+      "slope_source": "open_meteo",
       "blend_weight": 1.0,
-      "cv_auc": 0.822,
-      "cv_brier_skill": 0.334,
-      "n_days": 343,
-      "n_gefs_days": 953
+      "cv_auc": 0.878,
+      "cv_brier_skill": 0.426,
+      "n_days": 427,
+      "n_gefs_days": 0
     },
     "4": {
-      "intercept": -1.69558,
-      "slope": 0.60657,
-      "slope_source": "gefs_reforecast",
-      "blend_weight": 1.0,
-      "cv_auc": 0.78,
-      "cv_brier_skill": 0.199,
-      "n_days": 342,
-      "n_gefs_days": 947
+      "intercept": -2.52668,
+      "slope": 1.04541,
+      "slope_source": "open_meteo",
+      "blend_weight": 0.95,
+      "cv_auc": 0.83,
+      "cv_brier_skill": 0.293,
+      "n_days": 427,
+      "n_gefs_days": 0
     },
     "5": {
-      "intercept": -1.55441,
-      "slope": 0.64954,
-      "slope_source": "gefs_reforecast",
-      "blend_weight": 0.85,
-      "cv_auc": 0.724,
-      "cv_brier_skill": 0.116,
-      "n_days": 341,
-      "n_gefs_days": 946
+      "intercept": -2.33705,
+      "slope": 0.96057,
+      "slope_source": "open_meteo",
+      "blend_weight": 0.95,
+      "cv_auc": 0.79,
+      "cv_brier_skill": 0.224,
+      "n_days": 427,
+      "n_gefs_days": 0
     },
     "6": {
-      "intercept": -1.2574,
-      "slope": 0.42658,
-      "slope_source": "gefs_reforecast",
+      "intercept": -1.88692,
+      "slope": 0.66973,
+      "slope_source": "open_meteo",
       "blend_weight": 0.95,
-      "cv_auc": 0.663,
-      "cv_brier_skill": 0.078,
-      "n_days": 340,
-      "n_gefs_days": 935
+      "cv_auc": 0.715,
+      "cv_brier_skill": 0.104,
+      "n_days": 427,
+      "n_gefs_days": 0
     }
   },
   "climatology": [
