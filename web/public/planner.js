@@ -309,9 +309,9 @@
     // ─── Map ───
     function initMap() {
         map = L.map('map', { center: [45, 10], zoom: 3, zoomControl: true, attributionControl: true });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-            subdomains: 'abcd', maxZoom: 19,
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Esri, HERE, Garmin, FAO, NOAA, USGS',
+            maxZoom: 16,
         }).addTo(map);
     }
 
