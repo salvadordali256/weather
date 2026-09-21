@@ -13,6 +13,7 @@ import pytest
 
 from snowforecast.engines.nwp_snowfall_forecast import (
     CALIBRATION_PATH,
+    MODELS,
     TARGET_STATIONS,
     NwpSnowfallForecast,
     period_bounds_utc,
@@ -175,11 +176,30 @@ class FakeSession:
 
 def test_fetch_averages_models_and_tolerates_a_model_dropping_out(calibration):
     session = FakeSession(datetime(2026, 1, 9, 0, tzinfo=UTC))
-    times, mm = NwpSnowfallForecast(calibration, session=session).fetch_hourly_snowfall()
+    engine = NwpSnowfallForecast(calibration, session=session)
+    times, per_model = engine.fetch_hourly_snowfall()
     assert all("jma_seamless" in p["models"] for p in session.params)
+    assert set(per_model) == {"best_match", "jma_seamless", "icon_seamless"}
+    assert per_model["best_match"][0] == pytest.approx(1.0)   # 0.1 cm -> mm
+    assert per_model["icon_seamless"][-1] is None            # ICON gone after 7 days
+    mm = engine.lead_input(per_model, list(per_model))
     assert mm[0] == pytest.approx(2.0)          # mean(0.1, 0.3, 0.2) cm -> mm, all three present
     assert mm[-1] == pytest.approx(2.0)         # ICON gone: mean(0.1, 0.3) cm -> mm, still a value
     assert None not in mm
+
+
+def test_lead_uses_only_the_models_its_calibration_covered(calibration):
+    cal = json.loads(calibration.read_text())
+    cal["leads"]["1"]["models"] = ["jma_seamless"]
+    calibration.write_text(json.dumps(cal))
+    session = FakeSession(datetime(2026, 1, 9, 0, tzinfo=UTC))
+    engine = NwpSnowfallForecast(calibration, session=session)
+    assert engine.models_for(1) == ["jma_seamless"]
+    assert engine.models_for(2) == list(MODELS)  # uncalibrated lead: every model
+    out = engine.generate(today=date(2026, 1, 10))
+    assert out["forecasts"][0]["models"] == ["jma_seamless"]
+    assert out["forecasts"][0]["forecast_snowfall_mm"] == pytest.approx(72.0)  # 0.3 cm/h * 24h -> mm
+    assert out["forecasts"][1]["forecast_snowfall_mm"] == pytest.approx(48.0)  # all three models
 
 
 def test_generate_end_to_end_with_fake_session(calibration):

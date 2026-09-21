@@ -110,25 +110,48 @@ def fetch_previous_runs(sid, lat, lon, winter, cache_dir, model="best_match"):
         return json.load(f)["hourly"]
 
 
-def forecast_windows(winters, cache_dir):
-    """DataFrame indexed by period date, one column per lead: 3-station mean forecast mm,
-    where each station's hourly value is the mean over MODELS (as the engine computes it)."""
+def forecast_windows(winters, cache_dir, min_coverage=0.5):
+    """(DataFrame indexed by period date, one column per lead: 3-station mean forecast mm,
+    where each station's hourly value is the mean over the models that cover that lead;
+    {lead: [models]} -- the subset the engine must average at that lead).
+
+    A model covers a lead when its archive has at least `min_coverage` of the
+    best-covered model's non-null hours there (ICON has no day-7 field, and the
+    cached best_match pull predates day 7)."""
     per_station = []
+    coverage = {}
     for sid, (lat, lon) in TARGET_STATIONS.items():
-        per_model = []
+        per_model = {}
         for model in MODELS:
             frames = []
             for w in winters:
                 h = pd.DataFrame(fetch_previous_runs(sid, lat, lon, w, cache_dir, model))
                 h["time"] = pd.to_datetime(h["time"]).dt.tz_localize("UTC")
                 frames.append(h.set_index("time"))
-            per_model.append(pd.concat(frames).groupby(level=0).first())
-        # mean over whichever models have a value that hour (matches the engine)
-        per_station.append(pd.concat(per_model, keys=range(len(per_model))).groupby(level=1).mean())
-    stacked = pd.concat(per_station, keys=range(len(per_station)))
+            per_model[model] = pd.concat(frames).groupby(level=0).first()
+            for col in per_model[model]:
+                coverage[(model, col)] = coverage.get((model, col), 0) + int(per_model[model][col].notna().sum())
+        per_station.append(per_model)
+    lead_models = {}
+    for k in LEADS:
+        col = f"snowfall_previous_day{k}"
+        best = max((coverage.get((m, col), 0) for m in MODELS), default=0)
+        lead_models[k] = [m for m in MODELS if best and coverage.get((m, col), 0) >= min_coverage * best]
+
+    station_means = []
+    for per_model in per_station:
+        cols = {}
+        for k, models in lead_models.items():
+            col = f"snowfall_previous_day{k}"
+            series = [per_model[m][col] for m in models if col in per_model[m]]
+            if series:
+                # mean over whichever of the lead's models have a value that hour (matches the engine)
+                cols[col] = pd.concat(series, axis=1).mean(axis=1)
+        station_means.append(pd.DataFrame(cols))
+    stacked = pd.concat(station_means, keys=range(len(station_means)))
     counts = stacked.groupby(level=1).count()
     hourly = stacked.groupby(level=1).mean() * 10.0  # cm -> mm
-    hourly = hourly.where(counts == len(per_station))  # need every station
+    hourly = hourly.where(counts == len(station_means))  # need every station
 
     times = list(hourly.index.to_pydatetime())
     rows = {}
@@ -136,7 +159,7 @@ def forecast_windows(winters, cache_dir):
         for day in pd.date_range(f"{w}-11-01", f"{w + 1}-03-31").date:
             rows[day] = {k: sum_period(times, hourly[col].tolist(), day)
                          for k in LEADS if (col := f"snowfall_previous_day{k}") in hourly}
-    return pd.DataFrame.from_dict(rows, orient="index")
+    return pd.DataFrame.from_dict(rows, orient="index"), lead_models
 
 
 def gefs_windows(gefs_dir):
@@ -265,7 +288,7 @@ def main():
     label = measured_labels(args.truth)
     clim, clim_start, clim_end = climatology(label)
     enso_shipped, enso_table = enso_factors(label, winter_oni(args.oni or os.path.join(args.cache_dir, "oni.ascii.txt")))
-    om = forecast_windows(winters, args.cache_dir)
+    om, lead_models = forecast_windows(winters, args.cache_dir)
     om.index = pd.to_datetime(om.index)
     gefs = gefs_windows(args.gefs_dir) if args.gefs_dir else {}
 
@@ -300,6 +323,7 @@ def main():
             "intercept": round(float(intercept), 5),
             "slope": round(float(final_slope), 5),
             "slope_source": "gefs_reforecast" if g is not None else "open_meteo",
+            "models": lead_models[k],
             "blend_weight": float(w),
             "cv_auc": round(float(roc_auc_score(cv.y, cv.f)), 3),
             "cv_brier_skill": round(float(skill), 3),
@@ -308,7 +332,7 @@ def main():
         }
         print(f"{k:>4}{len(d):>6}{len(g) if g is not None else 0:>8}"
               f"{'GEFS' if g is not None else 'Open-Meteo':>12}{leads_out[str(k)]['cv_auc']:>8.3f}"
-              f"{w:>9.2f}{skill:>17.1%}")
+              f"{w:>9.2f}{skill:>17.1%}   models: {', '.join(lead_models[k])}")
 
     out = {
         "generated_at": datetime.now(ZoneInfo("America/Chicago")).isoformat(timespec="seconds"),

@@ -56,7 +56,8 @@ Strong El Niño winters have the fewest snow days but the *best* discrimination 
 
 ## Not in scope, worth knowing
 
-- **Day 7 is calibratable from JMA.** The JMA archive carries `snowfall_previous_day7` (best_match does not; ICON is empty there). A fit on the JMA-only archive gives day-7 AUC 0.68, +11.5% skill. It is not shipped because the live day-7 input is the mean of whichever models reach that horizon, which is not what that fit was trained on. Fix: fit lead 7 on the same model subset the engine will actually have at day 7.
+- **Day 7 is now calibrated (shipped 23:15).** The local JMA archive carries `snowfall_previous_day7` (ICON is empty there; the cached best_match pull predates day 7). The calibration file now records the model subset each lead was fit on, and the engine averages only those models at that lead, so the live day-7 input (JMA only) matches its coefficients: AUC 0.68, +11.8% Brier skill, previously published as pure climatology. The live API also serves best_match and GFS at day 7, so a refit after re-pulling the best_match archive with day 7 should lift this further. **Nothing archived exists past day 7** in Open-Meteo's previous-runs API for any model, so days 8+ cannot be calibrated from it.
+- **Beyond day 7 needs the ensemble.** GEFSv12 reforecasts on S3 hold 5 members (c00, p01-p04) to day 16 for 2000-2019, and Open-Meteo's live ensemble API serves 31 GEFS members to 16 days. Calibrating ensemble probability of measurable snow on the reforecast and applying it to the live ensemble is the physically consistent route to days 8-10; it is a multi-hour extraction and a new engine input, not an overnight change.
 - The GEFS extraction now covers only the 3 target stations per init (the earlier every-3rd-day pass covered 19).
 
 ## Iteration log
@@ -65,3 +66,5 @@ Strong El Niño winters have the fewest snow days but the *best* discrimination 
 - **22:38** Shipped calibration reproduced byte-for-byte from the Sept 18 cache (`nwp_cache_calib`) and `coop_truth_targets.csv`; ENSO keys added.
 - **22:40** First full-history run (GEFS every 3rd day, 968 days at lead 1). Results above.
 - **22:43** Candidates A-D scored. None adopted beyond D.
+- **23:00** Probed the archive for longer leads: every model stops at previous_day7; ICON and ECMWF have nothing at day 7. Live GEFS ensemble (31 members, 16 days) confirmed available.
+- **23:15** Lead 7 calibrated on the local JMA archive and shipped with per-lead model subsets (engine + fit script + tests). Leads 1-6 coefficients unchanged.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-20T22:40:01-05:00",
+  "generated_at": "2026-09-20T23:03:22-05:00",
   "description": "Per-lead logistic calibration of 3-station mean NWP snowfall (log1p mm) to P(measured 3-station mean >= 5mm) over the 24h ending 7 AM local, blended with day-of-year climatology. Slope from GEFSv12 reforecast where available, intercept and blend weight from Open-Meteo. Skill is leave-one-winter-out.",
   "nwp_source": "Open-Meteo previous-runs API, mean of best_match, jma_seamless, icon_seamless",
   "models": [
@@ -34,6 +34,11 @@
       "intercept": -3.49012,
       "slope": 1.76689,
       "slope_source": "open_meteo",
+      "models": [
+        "best_match",
+        "jma_seamless",
+        "icon_seamless"
+      ],
       "blend_weight": 1.0,
       "cv_auc": 0.932,
       "cv_brier_skill": 0.575,
@@ -44,6 +49,11 @@
       "intercept": -3.35954,
       "slope": 1.63852,
       "slope_source": "open_meteo",
+      "models": [
+        "best_match",
+        "jma_seamless",
+        "icon_seamless"
+      ],
       "blend_weight": 1.0,
       "cv_auc": 0.912,
       "cv_brier_skill": 0.515,
@@ -54,6 +64,11 @@
       "intercept": -2.94445,
       "slope": 1.38106,
       "slope_source": "open_meteo",
+      "models": [
+        "best_match",
+        "jma_seamless",
+        "icon_seamless"
+      ],
       "blend_weight": 1.0,
       "cv_auc": 0.878,
       "cv_brier_skill": 0.426,
@@ -64,6 +79,11 @@
       "intercept": -2.52668,
       "slope": 1.04541,
       "slope_source": "open_meteo",
+      "models": [
+        "best_match",
+        "jma_seamless",
+        "icon_seamless"
+      ],
       "blend_weight": 0.95,
       "cv_auc": 0.83,
       "cv_brier_skill": 0.293,
@@ -74,6 +94,11 @@
       "intercept": -2.33705,
       "slope": 0.96057,
       "slope_source": "open_meteo",
+      "models": [
+        "best_match",
+        "jma_seamless",
+        "icon_seamless"
+      ],
       "blend_weight": 0.95,
       "cv_auc": 0.79,
       "cv_brier_skill": 0.224,
@@ -84,9 +109,27 @@
       "intercept": -1.88692,
       "slope": 0.66973,
       "slope_source": "open_meteo",
+      "models": [
+        "best_match",
+        "jma_seamless",
+        "icon_seamless"
+      ],
       "blend_weight": 0.95,
       "cv_auc": 0.715,
       "cv_brier_skill": 0.104,
+      "n_days": 427,
+      "n_gefs_days": 0
+    },
+    "7": {
+      "intercept": -1.81047,
+      "slope": 0.55573,
+      "slope_source": "open_meteo",
+      "models": [
+        "jma_seamless"
+      ],
+      "blend_weight": 0.95,
+      "cv_auc": 0.68,
+      "cv_brier_skill": 0.118,
       "n_days": 427,
       "n_gefs_days": 0
     }
