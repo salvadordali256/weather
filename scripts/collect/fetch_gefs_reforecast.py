@@ -36,28 +36,40 @@ import argparse
 import csv
 import os
 import re
+import threading
 import time
-import urllib.request
+import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 
 import eccodes
+import requests
 
 from snowforecast.engines.nwp_snowfall_forecast import TARGET_STATIONS
 
 BASE = "https://noaa-gefs-retrospective.s3.amazonaws.com/GEFSv12/reforecast"
 MAX_HOUR = 168
-DAY_RANGES = (("Days%3A1-10", 0, 240), ("Days%3A10-16", 240, 384))  # (path segment, hours covered]
+# (path segments to try, hours covered]. Wednesday inits run 11 members to day 35
+# and keep days 10+ under Days:10-35 instead of Days:10-16.
+DAY_RANGES = ((("Days%3A1-10",), 0, 240), (("Days%3A10-16", "Days%3A10-35"), 240, 384))
+_local = threading.local()
 
 
 def get(url, byte_range=None, tries=5):
+    """GET (optionally a byte range) over a per-thread keep-alive session; a 404 is
+    raised at once (callers use it to fall back between folder layouts)."""
+    if not hasattr(_local, "session"):
+        _local.session = requests.Session()
+    headers = {"Range": f"bytes={byte_range[0]}-{byte_range[1]}"} if byte_range else {}
     for attempt in range(tries):
         try:
-            req = urllib.request.Request(url)
-            if byte_range:
-                req.add_header("Range", f"bytes={byte_range[0]}-{byte_range[1]}")
-            with urllib.request.urlopen(req, timeout=120) as r:
-                return r.read()
+            r = _local.session.get(url, headers=headers, timeout=120)
+            if r.status_code == 404:
+                raise urllib.error.HTTPError(url, 404, "Not Found", None, None)
+            r.raise_for_status()
+            return r.content
+        except urllib.error.HTTPError:
+            raise
         except Exception:
             if attempt == tries - 1:
                 raise
@@ -111,11 +123,17 @@ def process_init(init, out_dir, members=("c00",), max_hour=MAX_HOUR):
     rows = []
     for member in members:
         for kind, name in (("apcp", "apcp_sfc"), ("tmp", "tmp_2m")):
-            for segment, lo, hi in DAY_RANGES:
+            for segments, lo, hi in DAY_RANGES:
                 if lo >= max_hour:
                     break
-                url = f"{BASE}/{init[:4]}/{init}/{member}/{segment}/{name}_{init}_{member}.grib2"
-                idx = get(url + ".idx").decode()
+                for n, segment in enumerate(segments):
+                    url = f"{BASE}/{init[:4]}/{init}/{member}/{segment}/{name}_{init}_{member}.grib2"
+                    try:
+                        idx = get(url + ".idx").decode()
+                        break
+                    except urllib.error.HTTPError as e:
+                        if e.code != 404 or n == len(segments) - 1:
+                            raise
                 for start, end, hour in wanted_messages(idx, kind, lo, min(hi, max_hour)):
                     end = end if end is not None else start + 5_000_000  # last message: over-read is harmless
                     for sid, v in zip(sids, nearest_values(get(url, (start, end)), points)):
