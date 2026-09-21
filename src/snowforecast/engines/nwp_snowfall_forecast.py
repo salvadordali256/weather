@@ -21,6 +21,12 @@ climatology blend weight w_k from Open-Meteo's own archived forecasts, so leads
 with little NWP skill fall back toward climatology instead of publishing false
 confidence. Outside the calibrated months, and at leads with no archived
 forecasts, the engine publishes climatology and labels it as such.
+
+Climatology is conditioned on the season's ENSO phase (snowforecast.enso).
+Measured strong-El Niño winters at the target stations run at ~79% of the
+day-of-year rate of measurable snow (calibration "enso_climatology_factors");
+the NWP term needs no such adjustment because the forecast atmosphere already
+contains the pattern.
 """
 
 from __future__ import annotations
@@ -32,6 +38,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import requests
+
+from snowforecast.enso import CURRENT_ENSO_PHASE
 
 CALIBRATION_PATH = Path(__file__).with_name("nwp_calibration.json")
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -45,6 +53,9 @@ MEASURABLE_MM = 5.0
 # from 28% to 38%, with the largest gains at days 4-6 (see
 # scripts/backtest/fit_nwp_calibration.py). Models are averaged per hour over
 # whichever are present -- ICON's horizon is ~8 days, so it drops out late.
+# Each calibrated lead lists the models its archive covered ("models" in the
+# calibration file); the engine averages only those at that lead, so the live
+# input matches what the coefficients were fit on.
 MODELS = ("best_match", "jma_seamless", "icon_seamless")
 
 TARGET_STATIONS = {
@@ -72,15 +83,27 @@ def sum_period(hourly_times: list[datetime], hourly_mm: list[float | None], day:
 class NwpSnowfallForecast:
     """7-day snowfall probability from calibrated NWP forecasts."""
 
-    def __init__(self, calibration_path: Path | str = CALIBRATION_PATH, session=None):
+    def __init__(self, calibration_path: Path | str = CALIBRATION_PATH, session=None,
+                 enso_phase: str | None = None):
         with open(calibration_path) as f:
             self.calibration = json.load(f)
         self.session = session or requests
+        self.enso_phase = enso_phase or CURRENT_ENSO_PHASE
+        # Phases with no measured effect at the targets are absent from the file -> 1.0
+        self.enso_factor = float(self.calibration.get("enso_climatology_factors", {}).get(self.enso_phase, 1.0))
 
-    def fetch_hourly_snowfall(self) -> tuple[list[datetime], list[float | None]]:
-        """Hourly snowfall (mm): mean over MODELS per station, then mean across
-        the target stations. UTC timestamps."""
-        per_station = []
+    def climatology(self, day: date) -> float:
+        """Day-of-year rate of measurable snow, scaled for the season's ENSO phase.
+        The factor was measured over the calibrated months only, so it applies only there."""
+        clim = self.calibration["climatology"][day.timetuple().tm_yday - 1]
+        if day.month in self.calibration.get("calibrated_months", range(1, 13)):
+            clim = min(1.0, clim * self.enso_factor)
+        return clim
+
+    def fetch_hourly_snowfall(self) -> tuple[list[datetime], dict[str, list[float | None]]]:
+        """Hourly snowfall (mm) per model: the mean across the target stations
+        (None unless every station has a value). UTC timestamps."""
+        per_station: dict[str, list[dict[datetime, float]]] = {}
         for lat, lon in TARGET_STATIONS.values():
             r = self.session.get(FORECAST_URL, params={
                 "latitude": lat, "longitude": lon, "hourly": "snowfall",
@@ -91,25 +114,41 @@ class NwpSnowfallForecast:
             h = r.json()["hourly"]
             times = [datetime.fromisoformat(t).replace(tzinfo=ZoneInfo("UTC")) for t in h["time"]]
             # Multi-model responses are keyed snowfall_<model>; a single-model
-            # response is keyed plain "snowfall". Average whatever models exist.
-            model_series = [h[k] for k in h if k == "snowfall" or k.startswith("snowfall_")]
-            station = {}
-            for i, t in enumerate(times):
-                vals = [s[i] for s in model_series if s[i] is not None]
-                station[t] = sum(vals) / len(vals) if vals else None
-            per_station.append(station)
+            # response is keyed plain "snowfall".
+            for key, series in h.items():
+                if key == "snowfall" or key.startswith("snowfall_"):
+                    model = key.removeprefix("snowfall_").removeprefix("snowfall") or MODELS[0]
+                    per_station.setdefault(model, []).append(
+                        {t: v for t, v in zip(times, series) if v is not None})
 
-        times = sorted(set().union(*per_station))
-        mean_mm = []
-        for t in times:
-            vals = [s[t] for s in per_station if s.get(t) is not None]
-            # Open-Meteo reports snowfall in cm; require every station for a clean mean
-            mean_mm.append(sum(vals) / len(vals) * 10.0 if len(vals) == len(per_station) else None)
-        return times, mean_mm
+        times = sorted({t for stations in per_station.values() for s in stations for t in s})
+        per_model = {}
+        for model, stations in per_station.items():
+            series = []
+            for t in times:
+                vals = [s[t] for s in stations if t in s]
+                # Open-Meteo reports snowfall in cm; require every station for a clean mean
+                series.append(sum(vals) / len(vals) * 10.0 if len(vals) == len(TARGET_STATIONS) else None)
+            per_model[model] = series
+        return times, per_model
+
+    def models_for(self, lead: int) -> list[str]:
+        """Models whose archive calibrated this lead; every model otherwise."""
+        return list(self.calibration["leads"].get(str(lead), {}).get("models") or MODELS)
+
+    def lead_input(self, per_model: dict[str, list[float | None]], models: list[str]) -> list[float | None]:
+        """Hourly mean over `models`, using whichever of them have a value that
+        hour (the same rule the calibration fit applies to the archive)."""
+        n = len(next(iter(per_model.values()), []))
+        out = []
+        for i in range(n):
+            vals = [per_model[m][i] for m in models if m in per_model and per_model[m][i] is not None]
+            out.append(sum(vals) / len(vals) if vals else None)
+        return out
 
     def probability(self, lead: int, forecast_mm: float | None, day: date) -> tuple[float, str]:
         """Blend calibrated NWP probability with climatology. Returns (p, basis)."""
-        clim = self.calibration["climatology"][day.timetuple().tm_yday - 1]
+        clim = self.climatology(day)
         cal = self.calibration["leads"].get(str(lead))
         # No calibration at this lead means no verified skill: publish the
         # climatological rate rather than borrowing a shorter lead's confidence.
@@ -128,11 +167,12 @@ class NwpSnowfallForecast:
 
     def generate(self, today: date | None = None, days_ahead: int = 7) -> dict:
         today = today or datetime.now(LOCAL_TZ).date()
-        times, mean_mm = self.fetch_hourly_snowfall()
+        times, per_model = self.fetch_hourly_snowfall()
         days = []
         for k in range(1, days_ahead + 1):
             day = today + timedelta(days=k)
-            mm = sum_period(times, mean_mm, day)
+            models = self.models_for(k)
+            mm = sum_period(times, self.lead_input(per_model, models), day)
             p, basis = self.probability(k, mm, day)
             start, end = period_bounds_utc(day)
             cal = self.calibration["leads"].get(str(k), {})
@@ -146,6 +186,7 @@ class NwpSnowfallForecast:
                 "forecast_snowfall_mm": None if mm is None else round(mm, 1),
                 "forecast_snowfall_in": None if mm is None else round(mm / 25.4, 1),
                 "basis": basis,
+                "models": models,
                 "verified_skill_vs_climatology": cal.get("cv_brier_skill"),
             })
         return {
@@ -155,5 +196,7 @@ class NwpSnowfallForecast:
             "measurable_threshold_mm": MEASURABLE_MM,
             "target_stations": list(TARGET_STATIONS),
             "calibration_generated_at": self.calibration.get("generated_at"),
+            "enso_phase": self.enso_phase,
+            "enso_climatology_factor": self.enso_factor,
             "forecasts": days,
         }

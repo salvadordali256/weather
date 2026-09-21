@@ -17,46 +17,68 @@ Resumable: each finished init is written atomically to <out-dir>/<init>.csv and
 skipped on rerun. --every 3 (default) samples every 3rd Nov-Mar day, roughly an
 hour on a home connection; --every 1 densifies later.
 
-Output columns: init, station_id, var (apcp mm | tmp K), lead_hour, value
+--members and --max-hour extend the pull to the perturbed members (p01-p04;
+the reforecast has 5 members every day) and past day 7 (the Days:10-16 files
+carry 240-384 h). Use a separate --out-dir for a different member/hour set:
+existing inits are skipped by file name, not by content.
+
+Output columns: init, member, station_id, var (apcp mm | tmp K), lead_hour, value
+(files from before the member column exist are control-member only).
 
 Usage:
     python scripts/collect/fetch_gefs_reforecast.py --out-dir gefs_reforecast --test
     python scripts/collect/fetch_gefs_reforecast.py --out-dir gefs_reforecast --every 3
+    python scripts/collect/fetch_gefs_reforecast.py --out-dir gefs_ens --every 6 \\
+        --members c00,p01,p02,p03,p04 --max-hour 384
 """
 
 import argparse
 import csv
 import os
 import re
+import threading
 import time
-import urllib.request
+import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 
 import eccodes
+import requests
 
 from snowforecast.engines.nwp_snowfall_forecast import TARGET_STATIONS
 
 BASE = "https://noaa-gefs-retrospective.s3.amazonaws.com/GEFSv12/reforecast"
 MAX_HOUR = 168
+# (path segments to try, hours covered]. Wednesday inits run 11 members to day 35
+# and keep days 10+ under Days:10-35 instead of Days:10-16.
+DAY_RANGES = ((("Days%3A1-10",), 0, 240), (("Days%3A10-16", "Days%3A10-35"), 240, 384))
+_local = threading.local()
 
 
 def get(url, byte_range=None, tries=5):
+    """GET (optionally a byte range) over a per-thread keep-alive session; a 404 is
+    raised at once (callers use it to fall back between folder layouts)."""
+    if not hasattr(_local, "session"):
+        _local.session = requests.Session()
+    headers = {"Range": f"bytes={byte_range[0]}-{byte_range[1]}"} if byte_range else {}
     for attempt in range(tries):
         try:
-            req = urllib.request.Request(url)
-            if byte_range:
-                req.add_header("Range", f"bytes={byte_range[0]}-{byte_range[1]}")
-            with urllib.request.urlopen(req, timeout=120) as r:
-                return r.read()
+            r = _local.session.get(url, headers=headers, timeout=120)
+            if r.status_code == 404:
+                raise urllib.error.HTTPError(url, 404, "Not Found", None, None)
+            r.raise_for_status()
+            return r.content
+        except urllib.error.HTTPError:
+            raise
         except Exception:
             if attempt == tries - 1:
                 raise
             time.sleep(2 ** attempt)
 
 
-def wanted_messages(idx_text, kind):
-    """[(start_byte, end_byte_or_None, lead_hour)] for the messages we keep."""
+def wanted_messages(idx_text, kind, lo=0, hi=MAX_HOUR):
+    """[(start_byte, end_byte_or_None, lead_hour)] for the messages we keep: 6-hourly
+    values with lo < lead_hour <= hi."""
     lines = [line.split(":") for line in idx_text.strip().splitlines()]
     offsets = [int(line[1]) for line in lines]
     keep = []
@@ -65,11 +87,11 @@ def wanted_messages(idx_text, kind):
         if kind == "apcp":
             m = re.match(r"(\d+)-(\d+) hour acc fcst", line[5])
             # only the 6-hour windows, which sum cleanly into days
-            if m and int(m.group(2)) - int(m.group(1)) == 6 and int(m.group(2)) <= MAX_HOUR:
+            if m and int(m.group(2)) - int(m.group(1)) == 6 and lo < int(m.group(2)) <= hi:
                 keep.append((offsets[n], end, int(m.group(2))))
         else:
             m = re.match(r"(\d+) hour fcst", line[5])
-            if m and int(m.group(1)) % 6 == 0 and 0 < int(m.group(1)) <= MAX_HOUR:
+            if m and int(m.group(1)) % 6 == 0 and lo < int(m.group(1)) <= hi:
                 keep.append((offsets[n], end, int(m.group(1))))
     return keep
 
@@ -93,23 +115,33 @@ def nearest_values(msg_bytes, points):
     return out
 
 
-def process_init(init, out_dir):
+def process_init(init, out_dir, members=("c00",), max_hour=MAX_HOUR):
     path = os.path.join(out_dir, f"{init}.csv")
     if os.path.exists(path):
         return init, "skip"
     sids, points = list(TARGET_STATIONS), list(TARGET_STATIONS.values())
     rows = []
-    for kind, name in (("apcp", "apcp_sfc"), ("tmp", "tmp_2m")):
-        url = f"{BASE}/{init[:4]}/{init}/c00/Days%3A1-10/{name}_{init}_c00.grib2"
-        idx = get(url + ".idx").decode()
-        for start, end, hour in wanted_messages(idx, kind):
-            end = end if end is not None else start + 5_000_000  # last message: over-read is harmless
-            for sid, v in zip(sids, nearest_values(get(url, (start, end)), points)):
-                rows.append((init, sid, kind, hour, v))
+    for member in members:
+        for kind, name in (("apcp", "apcp_sfc"), ("tmp", "tmp_2m")):
+            for segments, lo, hi in DAY_RANGES:
+                if lo >= max_hour:
+                    break
+                for n, segment in enumerate(segments):
+                    url = f"{BASE}/{init[:4]}/{init}/{member}/{segment}/{name}_{init}_{member}.grib2"
+                    try:
+                        idx = get(url + ".idx").decode()
+                        break
+                    except urllib.error.HTTPError as e:
+                        if e.code != 404 or n == len(segments) - 1:
+                            raise
+                for start, end, hour in wanted_messages(idx, kind, lo, min(hi, max_hour)):
+                    end = end if end is not None else start + 5_000_000  # last message: over-read is harmless
+                    for sid, v in zip(sids, nearest_values(get(url, (start, end)), points)):
+                        rows.append((init, member, sid, kind, hour, v))
     tmp = path + ".part"
     with open(tmp, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["init", "station_id", "var", "lead_hour", "value"])
+        writer.writerow(["init", "member", "station_id", "var", "lead_hour", "value"])
         writer.writerows(rows)
     os.replace(tmp, path)  # atomic: a crash never leaves a half-written init marked done
     return init, f"ok ({len(rows)} values)"
@@ -129,19 +161,23 @@ def main():
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--every", type=int, default=3)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--members", default="c00", help="comma-separated: c00,p01,p02,p03,p04")
+    parser.add_argument("--max-hour", type=int, default=MAX_HOUR, help="last lead hour to keep (<= 384)")
     parser.add_argument("--test", action="store_true", help="fetch a single init and exit")
     args = parser.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
+    members = tuple(args.members.split(","))
 
     if args.test:
-        print(*process_init("2010010100", args.out_dir))
+        t0 = time.time()
+        print(*process_init("2010010100", args.out_dir, members, args.max_hour), f"in {time.time() - t0:.0f}s")
         return
 
     todo = init_dates(args.every)
     print(f"{len(todo)} inits queued (every {args.every} days, Nov-Mar 2000-2019)", flush=True)
     failed = 0
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(process_init, init, args.out_dir): init for init in todo}
+        futures = {pool.submit(process_init, init, args.out_dir, members, args.max_hour): init for init in todo}
         for n, fut in enumerate(as_completed(futures), 1):
             try:
                 init, status = fut.result()
