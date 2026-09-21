@@ -1,6 +1,6 @@
 # NWP engine: full-history verification and fine-tune review
 
-**Date:** 2026-09-20 (overnight iteration through 2026-09-21; see "Iteration log")
+**Date:** 2026-09-20, finalized 2026-09-21 03:20 CDT (see "Iteration log")
 **Branch:** `feature/enso-conditioning` (PR #85, on top of PR #83)
 **Question:** Over every winter we can grade, does `NwpSnowfallForecast` predict the way it should, and can it be tuned closer?
 
@@ -8,7 +8,7 @@
 
 - **Truth:** NWS COOP / CoCoRaHS via RCC-ACIS (`coop_truth_targets.csv`), 3-station mean over the 24 h ending 7 AM local; event = measurable snow (>= 5 mm).
 - **Sources:**
-  - GEFSv12 reforecast, control member, 2000-2019 (21 winter seasons, every 3rd Nov-Mar day at the start of this review; densified overnight). Snowfall derived from 6-h precipitation and 2 m temperature. Leads 1-6.
+  - GEFSv12 reforecast, control member, 2000-2019, every Nov-Mar day (3025 inits; 2894 graded days at lead 1 across 21 winter seasons). Snowfall derived from 6-h precipitation and 2 m temperature. Leads 1-6. The tables below are from the complete set; the iteration log shows how they moved as the set filled in.
   - Open-Meteo previous-runs archive, 2023-2026 (3 winters), 3-model mean (best_match + JMA + ICON), the exact input the engine uses. Leads 1-6.
 - **Scoring:** leave-one-winter-out. Every coefficient and the climatology blend weight are fit on the other winters only. Skill = 1 - Brier / Brier(day-of-year climatology).
 - **Caveat:** GEFS-derived snowfall is a different quantity from the Open-Meteo model mean, so the GEFS run tests the *method* (per-lead logistic calibration + blend), not the shipped coefficients.
@@ -19,40 +19,43 @@ Yes. Reliability is good at every lead in both sources, overall bias is zero, an
 
 | Lead | GEFS skill | GEFS AUC | GEFS top-10% fcst / obs | Open-Meteo skill | OM AUC | OM top-10% fcst / obs |
 |---|---|---|---|---|---|---|
-| 1 | 38% | 0.86 | 0.92 / 0.93 | 57% | 0.93 | 0.94 / 0.91 |
-| 2 | 33% | 0.84 | 0.88 / 0.88 | 52% | 0.91 | 0.90 / 0.91 |
-| 3 | 27% | 0.82 | 0.82 / 0.79 | 43% | 0.88 | 0.84 / 0.84 |
-| 4 | 12% | 0.73 | 0.71 / 0.67 | 29% | 0.83 | 0.75 / 0.68 |
-| 5 | 14% | 0.73 | 0.73 / 0.72 | 22% | 0.79 | 0.66 / 0.58 |
-| 6 | 5% | 0.67 | 0.59 / 0.51 | 10% | 0.72 | 0.62 / 0.35 |
+| 1 | 41% | 0.88 | 0.93 / 0.94 | 57% | 0.93 | 0.94 / 0.91 |
+| 2 | 34% | 0.84 | 0.88 / 0.87 | 52% | 0.91 | 0.90 / 0.91 |
+| 3 | 27% | 0.81 | 0.83 / 0.82 | 43% | 0.88 | 0.84 / 0.84 |
+| 4 | 18% | 0.76 | 0.76 / 0.74 | 29% | 0.83 | 0.75 / 0.68 |
+| 5 | 13% | 0.73 | 0.71 / 0.70 | 22% | 0.79 | 0.66 / 0.58 |
+| 6 | 8% | 0.69 | 0.63 / 0.64 | 10% | 0.72 | 0.62 / 0.35 |
+| 7 | n/a | n/a | n/a | 12% | 0.68 | (JMA only; shipped 23:04) |
 
-Reliability-bin gaps (observed minus forecast) are within +/- 0.05 for nearly every bin with more than ~50 days at leads 1-3. Two systematic patterns:
+Reliability-bin gaps (observed minus forecast) are within +/- 0.03 for every bin with more than ~100 days on the full GEFS set, and the top decile is on the line at every lead. Two patterns seen in the first (every-3rd-day) pass did not survive the full sample:
 
-1. **Days 4-6 overforecast at the top end.** The highest-probability decile verifies 4-8 points below its stated rate in GEFS and 6-27 points below in Open-Meteo (the Open-Meteo day-6 figure rests on ~43 days). Direction is consistent across both sources, so it is real but small.
-2. **March overforecasts** (GEFS lead 1 bias +0.07, Open-Meteo +0.06): forecast snow in March verifies less often on the snow board than in mid-winter.
+1. **Days 4-6 top-end overforecast: gone in GEFS.** With 2800+ days the top decile verifies within 2 points of its stated rate at every lead. It remains visible in the 3-winter Open-Meteo set (day 6: 0.62 forecast vs 0.35 observed on ~43 days), which the GEFS result says is small-sample noise rather than a defect of the method.
+2. **Strong El Niño overforecast: gone.** Started at +0.06 at day 1 with 101 days; +0.013 with all 301 days. Every ENSO phase now sits within +/- 0.01 of zero bias at day 1.
 
-### By ENSO phase (GEFS, 20 winters)
+One pattern does persist: **March overforecasts** (GEFS day-1 bias +0.06; December and January under-forecast by 0.03-0.04). Forecast snow in March verifies less often on the snow board than in mid-winter, presumably melt before the 7 AM reading.
 
-| Phase | Winters | Lead-1 obs rate | Lead-1 bias (p - y) | Lead-1 skill | Lead-1 AUC |
+### By ENSO phase (GEFS, 21 winter seasons, full set)
+
+| Phase | Days (lead 1) | Obs rate | Bias (p - y) | Skill | AUC |
 |---|---|---|---|---|---|
-| strong La Niña | 3 | 0.34 | +0.05 | 37% | 0.88 |
-| La Niña | 5 | 0.41 | +0.01 | 30% | 0.83 |
-| neutral | 5 | 0.41 | 0.00 | 38% | 0.85 |
-| El Niño | 6 | 0.43 | -0.05 | 43% | 0.88 |
-| **strong El Niño** | 2 | **0.27** | **+0.06** | 43% | 0.91 |
+| strong La Niña | 388 | 0.35 | +0.01 | 48% | 0.91 |
+| La Niña | 694 | 0.40 | 0.00 | 34% | 0.85 |
+| neutral | 708 | 0.40 | 0.00 | 42% | 0.87 |
+| El Niño | 803 | 0.37 | 0.00 | 43% | 0.88 |
+| **strong El Niño** | 301 | **0.29** | +0.01 | 45% | 0.91 |
 
-Strong El Niño winters have the fewest snow days but the *best* discrimination (AUC 0.91): the model still ranks the days correctly, it just runs a few points warm. The same +0.06 to +0.08 bias appears at day 4 and shrinks to +0.02 to +0.04 at days 5-6.
+Strong El Niño winters have the fewest snow days and the best discrimination; the NWP term needs no ENSO adjustment. Only the climatology fallback does (candidate D).
 
 ## Fine-tune candidates (all leave-one-winter-out)
 
 | Candidate | GEFS | Open-Meteo | Verdict |
 |---|---|---|---|
-| A. Seasonal feature: add logit(climatology) to the logistic | +1 pt at every lead; March bias 0.07 -> 0.03 | **-1 to -3 pts at every lead** | Reject. Helps the 20-winter source, hurts the input we ship. |
+| A. Seasonal feature: add logit(climatology) to the logistic | +1 pt at every lead on the full set; March bias 0.06 -> 0.02 | **-1 to -3 pts at every lead** | Reject for now. Consistently helps the 20-winter source and fixes the March pattern, but hurts the input we ship. Re-test when a 4th Open-Meteo winter exists; if it turns positive there, adopt. |
 | B. Shrink the slope at days 4-6 (x0.9 .. x0.7) | monotonically worse | monotonically worse | Reject. Top-decile gap closes only by giving up skill. |
-| C. ENSO-shifted intercept for strong El Niño | removes the bias (+0.06 -> +0.01) but skill in those winters falls 43% -> 40% (d1), 15% -> 11% (d4) | n/a (one such winter) | Reject. With 2 training winters the shift overcorrects on the held-out one. |
+| C. ENSO-shifted intercept for strong El Niño | a wash on the full set (within 0.5 pt at every lead) because the bias it targets vanished with full sampling | n/a (one such winter) | Reject. Nothing left to correct. |
 | D. ENSO factor on climatology (shipped in PR #85) | 3-fold over 2009-10, 2015-16, 2023-24 with the factor from the other two: mean climatology Brier 0.198 -> 0.192; the fixed shipped 0.79 gives 0.188. 2 of 3 winters improve, 2015-16 (obs rate 0.34, near normal) worsens. | | **Keep.** Modest, consistent with NOAA's outlook, and it only touches the fallback. |
 
-**Conclusion:** the shipped calibration is at the out-of-sample optimum of what these data support. The day-4-6 top-end and March overforecasts are documented but not corrected, because every correction tested cost more Brier skill than it recovered. Revisit with more Open-Meteo winters (each new winter adds ~33% to that sample).
+**Conclusion:** the shipped calibration is at the out-of-sample optimum of what these data support. Over 21 winter seasons the method is reliable at every lead and every ENSO phase, with skill 41% at day 1 falling to 8% at day 6 on GEFS and 57% to 12% at days 1-7 on the shipped Open-Meteo input. The March overforecast is documented but not corrected, because the only fix that works on GEFS (the seasonal feature) costs skill on the shipped input. Revisit with the 4th Open-Meteo winter (2026-27), which adds ~33% to that sample.
 
 ## Not in scope, worth knowing
 
@@ -72,3 +75,4 @@ Strong El Niño winters have the fewest snow days but the *best* discrimination 
 - **00:47** Rerun with 1706 GEFS days at lead 1 (winters 2000-2007 now every day; 1786 of 3025 inits). Skill d1-6: 37 / 29 / 25 / 16 / 12 / 6%. Reliability on the line at every lead including the top decile (d6 0.62 forecast vs 0.60 observed). Strong-El Niño overforecast steady at d1 +0.07, d4 +0.09; the ENSO-shifted intercept still loses held-out skill at d1, d3, d4 (43 -> 40%, 21 -> 19%, 15 -> 12%). Seasonal feature +1 pt on GEFS, unchanged loss on Open-Meteo. Slope shrink monotonically worse. No calibration change.
 - **01:39** Rerun with 2113 GEFS days at lead 1 (winters 2000-2011 every day; 2209 of 3025 inits; strong-El Niño 2009-10 now fully sampled, 200 days). Skill d1-6: 40 / 31 / 24 / 17 / 12 / 6%. Top decile on the line at every lead. With the fuller 2009-10 sample the strong-El Niño overforecast at d1 shrank to +0.04 (d4 +0.06, d6 +0.10) and the ENSO-shifted intercept is now a wash on GEFS (d1 -0.3 pt, d2 +1.2, d3 +1.7, d4 -0.2, d5 +1.4, d6 +3.4 in those winters; overall skill unchanged); it still cannot be tested on the shipped input (one such winter), so it stays out. Seasonal feature +1 pt on GEFS, still negative on Open-Meteo. No calibration change.
 - **02:31** Rerun with 2594 GEFS days at lead 1 (winters 2000-2016 every day; 2719 of 3025 inits; both strong-El Niño winters fully sampled, 301 days). Skill d1-6: 41 / 32 / 26 / 17 / 13 / 7%. Top decile on the line at every lead. The strong-El Niño overforecast has shrunk to +0.02 at d1 (+0.05 at d4, +0.06 at d6) now that those winters are fully sampled: the +0.06 seen at 22:40 was mostly the every-3rd-day subsample. The ENSO-shifted intercept is a wash at every lead (within 0.6 pt). Seasonal feature +1 pt on GEFS, unchanged loss on Open-Meteo. No calibration change.
+- **03:13** Fetch complete: 3025 of 3025 inits, 0 failed. Final run with 2894 GEFS days at lead 1. Skill d1-6: 41 / 34 / 27 / 18 / 13 / 8%. Bias 0.000 overall and within +/- 0.01 in every ENSO phase; top decile on the line at every lead. Seasonal feature +1 pt on GEFS (March bias 0.06 -> 0.02), still -1 to -3 on Open-Meteo. Slope shrink and ENSO intercept: no gain. ENSO climatology factor 3-fold: unchanged. Tables above updated to the full set. No calibration change; loop closed.
