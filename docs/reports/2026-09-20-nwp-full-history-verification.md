@@ -76,3 +76,25 @@ Strong El Niño winters have the fewest snow days and the best discrimination; t
 - **01:39** Rerun with 2113 GEFS days at lead 1 (winters 2000-2011 every day; 2209 of 3025 inits; strong-El Niño 2009-10 now fully sampled, 200 days). Skill d1-6: 40 / 31 / 24 / 17 / 12 / 6%. Top decile on the line at every lead. With the fuller 2009-10 sample the strong-El Niño overforecast at d1 shrank to +0.04 (d4 +0.06, d6 +0.10) and the ENSO-shifted intercept is now a wash on GEFS (d1 -0.3 pt, d2 +1.2, d3 +1.7, d4 -0.2, d5 +1.4, d6 +3.4 in those winters; overall skill unchanged); it still cannot be tested on the shipped input (one such winter), so it stays out. Seasonal feature +1 pt on GEFS, still negative on Open-Meteo. No calibration change.
 - **02:31** Rerun with 2594 GEFS days at lead 1 (winters 2000-2016 every day; 2719 of 3025 inits; both strong-El Niño winters fully sampled, 301 days). Skill d1-6: 41 / 32 / 26 / 17 / 13 / 7%. Top decile on the line at every lead. The strong-El Niño overforecast has shrunk to +0.02 at d1 (+0.05 at d4, +0.06 at d6) now that those winters are fully sampled: the +0.06 seen at 22:40 was mostly the every-3rd-day subsample. The ENSO-shifted intercept is a wash at every lead (within 0.6 pt). Seasonal feature +1 pt on GEFS, unchanged loss on Open-Meteo. No calibration change.
 - **03:13** Fetch complete: 3025 of 3025 inits, 0 failed. Final run with 2894 GEFS days at lead 1. Skill d1-6: 41 / 34 / 27 / 18 / 13 / 8%. Bias 0.000 overall and within +/- 0.01 in every ENSO phase; top decile on the line at every lead. Seasonal feature +1 pt on GEFS (March bias 0.06 -> 0.02), still -1 to -3 on Open-Meteo. Slope shrink and ENSO intercept: no gain. ENSO climatology factor 3-fold: unchanged. Tables above updated to the full set. No calibration change; loop closed.
+
+## GEFS ensemble: skill beyond day 7
+
+**Question:** does the 5-member GEFSv12 reforecast ensemble (c00 + p01-p04, 6-hourly to 384 h) carry skill past day 7, and does it beat the control member at days 4-7? Every 6th winter day 2000-2019 (505 inits), same derived-snow rule and COOP truth, leave-one-winter-out logistic + climatology blend. Three predictors: control member, ensemble mean, ensemble mean + fraction of members >= 5 mm.
+
+### Interim, 17:35 (241 of 505 inits; winters 2000-01 through 2008-09, ~225 days per lead)
+
+| Lead | Control skill | Ens-mean skill | Ens-mean + fraction | Control AUC | Ens-mean AUC |
+|---|---|---|---|---|---|
+| 1 | 33% | 31% | 31% | 0.84 | 0.83 |
+| 2 | 30% | 30% | 30% | 0.83 | 0.83 |
+| 3 | 9% | 10% | 10% | 0.71 | 0.73 |
+| 4 | 3% | 4% | 5% | 0.65 | 0.66 |
+| 5 | 10% | **17%** | 17% | 0.70 | 0.75 |
+| 6 | 9% | **13%** | 13% | 0.67 | 0.69 |
+| 7 | 5% | **13%** | 14% | 0.63 | 0.72 |
+| 8 | -2% | -1% | 0% | 0.54 | 0.57 |
+| 9 | -1% | 0% | -1% | 0.57 | 0.53 |
+| 10 | -2% | -2% | -3% | 0.55 | 0.48 |
+| 11-15 | -0 to +6% | -1 to +5% | -1 to +5% | 0.53-0.66 | 0.50-0.65 |
+
+Read at half sample: the ensemble mean adds 4-8 points at days 5-7 and nothing at days 1-2; past day 7 nothing has skill (AUC ~0.55, blend weights collapse toward climatology). The scattered positives at days 11-12 are noise at this sample size (a day-11 forecast cannot outscore day 8). Final numbers on the full 505 inits follow.
