@@ -92,6 +92,43 @@ def test_more_forecast_snow_never_lowers_probability(calibration):
     assert probs == sorted(probs)
 
 
+def test_enso_factor_scales_climatology_fallback_in_calibrated_months(calibration):
+    cal = json.loads(calibration.read_text())
+    cal["enso_climatology_factors"] = {"strong_el_nino": 0.8}
+    calibration.write_text(json.dumps(cal))
+    engine = NwpSnowfallForecast(calibration, enso_phase="strong_el_nino")
+    assert engine.probability(7, 50.0, date(2026, 1, 15)) == (pytest.approx(0.24), "climatology")
+    # the factor was measured over the calibrated months only
+    assert engine.probability(7, 0.0, date(2026, 9, 17))[0] == pytest.approx(0.3)
+    # it scales the climatology share of a blended lead too, never the NWP share
+    p_model = 1 / (1 + math.exp(2.0))
+    assert engine.probability(1, 0.0, date(2026, 1, 15))[0] == pytest.approx(0.8 * p_model + 0.2 * 0.24)
+
+
+def test_phase_without_a_measured_factor_uses_plain_climatology(calibration):
+    cal = json.loads(calibration.read_text())
+    cal["enso_climatology_factors"] = {"strong_el_nino": 0.8}
+    calibration.write_text(json.dumps(cal))
+    for phase in ("neutral", "la_nina"):
+        engine = NwpSnowfallForecast(calibration, enso_phase=phase)
+        assert engine.enso_factor == 1.0
+        assert engine.probability(7, 50.0, date(2026, 1, 15)) == (0.3, "climatology")
+
+
+def test_engine_defaults_to_the_shared_season_phase(calibration):
+    from snowforecast.enso import CURRENT_ENSO_PHASE, PHASES
+    assert CURRENT_ENSO_PHASE in PHASES
+    assert NwpSnowfallForecast(calibration).enso_phase == CURRENT_ENSO_PHASE
+
+
+def test_oni_bins_and_basic_phase():
+    from snowforecast.enso import basic_phase, phase_from_oni
+    assert [phase_from_oni(x) for x in (-1.5, -0.7, 0.0, 0.7, 1.8)] == [
+        "strong_la_nina", "la_nina", "neutral", "el_nino", "strong_el_nino"]
+    assert basic_phase("strong_el_nino") == "el_nino"
+    assert basic_phase("neutral") == "neutral"
+
+
 def test_shipped_calibration_file_is_well_formed():
     cal = json.loads(CALIBRATION_PATH.read_text())
     assert len(cal["climatology"]) == 366

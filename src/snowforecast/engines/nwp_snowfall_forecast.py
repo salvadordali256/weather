@@ -21,6 +21,12 @@ climatology blend weight w_k from Open-Meteo's own archived forecasts, so leads
 with little NWP skill fall back toward climatology instead of publishing false
 confidence. Outside the calibrated months, and at leads with no archived
 forecasts, the engine publishes climatology and labels it as such.
+
+Climatology is conditioned on the season's ENSO phase (snowforecast.enso).
+Measured strong-El Niño winters at the target stations run at ~79% of the
+day-of-year rate of measurable snow (calibration "enso_climatology_factors");
+the NWP term needs no such adjustment because the forecast atmosphere already
+contains the pattern.
 """
 
 from __future__ import annotations
@@ -32,6 +38,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import requests
+
+from snowforecast.enso import CURRENT_ENSO_PHASE
 
 CALIBRATION_PATH = Path(__file__).with_name("nwp_calibration.json")
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -72,10 +80,22 @@ def sum_period(hourly_times: list[datetime], hourly_mm: list[float | None], day:
 class NwpSnowfallForecast:
     """7-day snowfall probability from calibrated NWP forecasts."""
 
-    def __init__(self, calibration_path: Path | str = CALIBRATION_PATH, session=None):
+    def __init__(self, calibration_path: Path | str = CALIBRATION_PATH, session=None,
+                 enso_phase: str | None = None):
         with open(calibration_path) as f:
             self.calibration = json.load(f)
         self.session = session or requests
+        self.enso_phase = enso_phase or CURRENT_ENSO_PHASE
+        # Phases with no measured effect at the targets are absent from the file -> 1.0
+        self.enso_factor = float(self.calibration.get("enso_climatology_factors", {}).get(self.enso_phase, 1.0))
+
+    def climatology(self, day: date) -> float:
+        """Day-of-year rate of measurable snow, scaled for the season's ENSO phase.
+        The factor was measured over the calibrated months only, so it applies only there."""
+        clim = self.calibration["climatology"][day.timetuple().tm_yday - 1]
+        if day.month in self.calibration.get("calibrated_months", range(1, 13)):
+            clim = min(1.0, clim * self.enso_factor)
+        return clim
 
     def fetch_hourly_snowfall(self) -> tuple[list[datetime], list[float | None]]:
         """Hourly snowfall (mm): mean over MODELS per station, then mean across
@@ -109,7 +129,7 @@ class NwpSnowfallForecast:
 
     def probability(self, lead: int, forecast_mm: float | None, day: date) -> tuple[float, str]:
         """Blend calibrated NWP probability with climatology. Returns (p, basis)."""
-        clim = self.calibration["climatology"][day.timetuple().tm_yday - 1]
+        clim = self.climatology(day)
         cal = self.calibration["leads"].get(str(lead))
         # No calibration at this lead means no verified skill: publish the
         # climatological rate rather than borrowing a shorter lead's confidence.
@@ -155,5 +175,7 @@ class NwpSnowfallForecast:
             "measurable_threshold_mm": MEASURABLE_MM,
             "target_stations": list(TARGET_STATIONS),
             "calibration_generated_at": self.calibration.get("generated_at"),
+            "enso_phase": self.enso_phase,
+            "enso_climatology_factor": self.enso_factor,
             "forecasts": days,
         }

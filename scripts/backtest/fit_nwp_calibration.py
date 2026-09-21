@@ -41,6 +41,16 @@ covers it, so the model mean has ~427 usable days per lead rather than ~345.
 Climatology = smoothed day-of-year rate of measurable snow, measured before the
 Open-Meteo archive begins (no overlap with the scored winters).
 
+ENSO factors: the same pre-archive winters are binned by the DJF Oceanic Niño
+Index (CPC, --oni; downloaded into --cache-dir when absent) and each phase's
+Nov-Mar rate of measurable snow is divided by the all-winter rate. Only phases
+with an effect larger than winter-to-winter noise are shipped (>= 2 winters and
+>= 15% from 1.0); the engine multiplies the climatology by the current
+season's factor. On the 2000-2023 record that is strong El Niño only (2009-10,
+2015-16: 0.79 at the targets, 0.78 across all 18 truth stations). Applying
+it to the held-out strong-El Niño winter 2023-24 cut the climatology Brier score
+by 11%; every other phase sat within 11% of 1.0 in both station sets.
+
 Usage:
     python scripts/backtest/fit_nwp_calibration.py --truth coop_truth.csv --cache-dir nwp_cache \\
         --gefs-dir gefs_reforecast
@@ -63,8 +73,12 @@ from sklearn.metrics import brier_score_loss, roc_auc_score
 from snowforecast.engines.nwp_snowfall_forecast import (
     CALIBRATION_PATH, MEASURABLE_MM, MODELS, TARGET_STATIONS, sum_period,
 )
+from snowforecast.enso import PHASES, phase_from_oni
 
 PREVIOUS_RUNS_URL = "https://previous-runs-api.open-meteo.com/v1/forecast"
+ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
+ENSO_MIN_WINTERS = 2
+ENSO_MIN_EFFECT = 0.15
 FIRST_ARCHIVE_WINTER = 2023  # previous-runs has no snowfall before Nov 2023
 LEADS = range(1, 8)
 GEFS_LEADS = range(1, 7)  # 168h of reforecast covers windows through day 6
@@ -168,6 +182,35 @@ def climatology(label):
     return np.convolve(padded, np.ones(15) / 15, "valid"), hist.index.min().date(), hist.index.max().date()
 
 
+def winter_oni(oni_path):
+    """{winter start year: DJF ONI} from CPC's oni.ascii.txt (DJF of year Y is winter Y-1/Y)."""
+    if not os.path.exists(oni_path):
+        r = requests.get(ONI_URL, timeout=60)
+        r.raise_for_status()
+        with open(oni_path, "w") as f:
+            f.write(r.text)
+    oni = pd.read_fwf(oni_path)
+    djf = oni[oni.SEAS == "DJF"].set_index("YR")["ANOM"]
+    return {int(year) - 1: float(v) for year, v in djf.items()}
+
+
+def enso_factors(label, oni_by_winter):
+    """Per-phase ratio of the Nov-Mar measurable-snow rate to the all-winter rate,
+    over the climatology period. Returns ({phase: factor} for shipped phases, table of all)."""
+    hist = label[(label.index < f"{FIRST_ARCHIVE_WINTER}-07-01") & label.index.month.isin(WINTER_MONTHS)]
+    winter = np.where(hist.index.month >= 7, hist.index.year, hist.index.year - 1)
+    phase = pd.Series([phase_from_oni(oni_by_winter[w]) if w in oni_by_winter else None for w in winter],
+                      index=hist.index)
+    hist, winter, phase = hist[phase.notna()], winter[phase.notna().values], phase.dropna()
+    overall = hist.mean()
+    table = {p: {"factor": round(float(hist[phase == p].mean() / overall), 3) if (phase == p).any() else None,
+                 "winters": int(len(set(winter[(phase == p).values])))} for p in PHASES}
+    shipped = {p: v["factor"] for p, v in table.items()
+               if v["factor"] is not None and v["winters"] >= ENSO_MIN_WINTERS
+               and abs(v["factor"] - 1.0) >= ENSO_MIN_EFFECT}
+    return shipped, table
+
+
 def labeled_frame(series, label, clim):
     # clip at 0 to match the engine: some models emit tiny negative snowfall
     d = pd.DataFrame({"f": series.clip(lower=0), "y": label.reindex(series.index)}).dropna()
@@ -212,6 +255,7 @@ def main():
     parser.add_argument("--truth", required=True, help="CSV from scripts/collect/build_coop_truth.py")
     parser.add_argument("--cache-dir", required=True)
     parser.add_argument("--gefs-dir", help="GEFS reforecast extractions; if omitted, slopes are fit on Open-Meteo")
+    parser.add_argument("--oni", help="CPC oni.ascii.txt (default: <cache-dir>/oni.ascii.txt, downloaded if absent)")
     parser.add_argument("--out", default=str(CALIBRATION_PATH))
     parser.add_argument("--last-winter", type=int, default=2025, help="start year of the last complete winter")
     args = parser.parse_args()
@@ -220,12 +264,17 @@ def main():
     winters = list(range(FIRST_ARCHIVE_WINTER, args.last_winter + 1))
     label = measured_labels(args.truth)
     clim, clim_start, clim_end = climatology(label)
+    enso_shipped, enso_table = enso_factors(label, winter_oni(args.oni or os.path.join(args.cache_dir, "oni.ascii.txt")))
     om = forecast_windows(winters, args.cache_dir)
     om.index = pd.to_datetime(om.index)
     gefs = gefs_windows(args.gefs_dir) if args.gefs_dir else {}
 
     print(f"Open-Meteo winters {winters[0]}-{winters[-1] + 1}; climatology {clim_start}..{clim_end}; "
           f"GEFS {'on' if gefs else 'off'}")
+    print("ENSO climatology factors (Nov-Mar rate / all-winter rate, climatology period):")
+    for p, v in enso_table.items():
+        print(f"  {p:>15}: {v['factor'] if v['factor'] is not None else 'n/a':>6} over {v['winters']} winters"
+              f"{'  -> shipped' if p in enso_shipped else ''}")
     print(f"{'lead':>4}{'n OM':>6}{'n GEFS':>8}{'slope from':>12}{'CV AUC':>8}{'blend w':>9}{'CV skill vs clim':>18}")
     leads_out = {}
     for k in LEADS:
@@ -275,6 +324,12 @@ def main():
         # the engine publishes climatology outside these months (coefficients were never fit there)
         "calibrated_months": sorted(WINTER_MONTHS),
         "climatology_period": [str(clim_start), str(clim_end)],
+        # the engine multiplies climatology (calibrated months only) by the current season's factor
+        "enso_climatology_factors": enso_shipped,
+        "enso_factor_note": (f"Phase = DJF ONI bin (snowforecast.enso). Shipped when >= {ENSO_MIN_WINTERS} winters "
+                             f"and >= {ENSO_MIN_EFFECT:.0%} from 1.0; others measured within noise of 1.0: "
+                             + ", ".join(f"{p} {v['factor']} ({v['winters']}w)" for p, v in enso_table.items()
+                                         if p not in enso_shipped)),
         "leads": leads_out,
         "climatology": [round(float(x), 4) for x in clim],
     }

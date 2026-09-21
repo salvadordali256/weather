@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T22:41:58-05:00",
+  "generated_at": "2026-09-20T22:40:01-05:00",
   "description": "Per-lead logistic calibration of 3-station mean NWP snowfall (log1p mm) to P(measured 3-station mean >= 5mm) over the 24h ending 7 AM local, blended with day-of-year climatology. Slope from GEFSv12 reforecast where available, intercept and blend weight from Open-Meteo. Skill is leave-one-winter-out.",
   "nwp_source": "Open-Meteo previous-runs API, mean of best_match, jma_seamless, icon_seamless",
   "models": [
@@ -25,6 +25,10 @@
     "2000-01-01",
     "2023-06-30"
   ],
+  "enso_climatology_factors": {
+    "strong_el_nino": 0.788
+  },
+  "enso_factor_note": "Phase = DJF ONI bin (snowforecast.enso). Shipped when >= 2 winters and >= 15% from 1.0; others measured within noise of 1.0: strong_la_nina 0.962 (3w), la_nina 1.02 (8w), neutral 1.1 (5w), el_nino 0.983 (6w)",
   "leads": {
     "1": {
       "intercept": -3.49012,

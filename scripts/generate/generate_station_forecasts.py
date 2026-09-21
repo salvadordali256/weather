@@ -21,13 +21,15 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=Path(__file__).parent / '.env')
 
 from scripts.pipeline.collect_world_data import WORLD_STATIONS
+from snowforecast.enso import CURRENT_ENSO_PHASE as SEASON_ENSO_PHASE, basic_phase
 
 DB_PATH = os.environ.get('DB_PATH', 'global_snowfall.db')
 OUTPUT_DIR = os.environ.get('FORECAST_OUTPUT_DIR', 'forecast_output')
 
-# Current ENSO phase for the 2025-2026 winter season
-# Update annually based on NOAA ONI data
-CURRENT_ENSO_PHASE = 'la_nina'
+# Season's ENSO phase comes from snowforecast.enso (one place, updated per
+# season from NOAA CPC). The planner only knows la_nina / el_nino / neutral, so
+# strength is dropped here; the NWP engine keeps it.
+CURRENT_ENSO_PHASE = basic_phase(SEASON_ENSO_PHASE)
 
 FORECAST_API_URL = "https://api.open-meteo.com/v1/forecast"
 FORECAST_VARIABLES = (
