@@ -19,6 +19,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import os
 from contextlib import contextmanager
 from typing import Iterator
@@ -48,11 +49,16 @@ def database_url() -> str:
     return f"sqlite:///{db_path}"
 
 
-def get_engine() -> Engine:
-    """Return the process-wide SQLAlchemy Engine (created once, cached)."""
+def get_engine(db_path: str | None = None) -> Engine:
+    """Return the process-wide SQLAlchemy Engine (created once, cached).
+
+    Pass db_path to force a SQLite engine at that file, bypassing
+    DATABASE_URL/DB_PATH -- e.g. so a diagnostic or backtest script can be
+    pointed at a copy of the database instead of the live NAS target.
+    """
     global _engine, _SessionFactory
     if _engine is None:
-        url = database_url()
+        url = f"sqlite:///{db_path}" if db_path else database_url()
         kwargs: dict = {"future": True}
         if url.startswith("sqlite"):
             # Match the old per-connection timeout=30 behaviour.
@@ -89,6 +95,22 @@ def session_scope() -> Iterator[Session]:
         raise
     finally:
         session.close()
+
+
+def add_db_path_arg(parser: argparse.ArgumentParser) -> None:
+    """Add --db-path to a script's parser: point at a copy of the database
+    instead of the live DATABASE_URL/DB_PATH target (e.g. the NAS Postgres
+    instance). Use with get_engine(args.db_path)."""
+    parser.add_argument(
+        "--db-path",
+        help="SQLite file to use instead of the configured DATABASE_URL/DB_PATH "
+        "-- point this at a copy, not the live database, when testing",
+    )
+
+
+def describe_engine(engine: Engine) -> str:
+    """Human-readable, credential-safe description of what an engine targets."""
+    return engine.url.render_as_string(hide_password=True)
 
 
 def reset_engine() -> None:
