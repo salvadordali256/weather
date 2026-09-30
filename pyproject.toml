@@ -12,5 +12,8 @@ dynamic = ["dependencies"]
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"snowforecast.engines" = ["*.json"]  # nwp_calibration.json ships with the engine
+
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
