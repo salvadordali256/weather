@@ -3,6 +3,18 @@ Check Data Completeness
 ========================
 
 Find out if we're missing data or if the units are wrong
+
+CORRECTION (see scripts/collect/validate_against_noaa_external.py and
+validate_era5_bias.py): this script's "~65% low bias, apply a 2.8-3.0x
+correction factor" conclusion below was based on a single hand-typed
+comparison against remembered NOAA figures for one station (Ironwood,
+MI), not a query. Rigorous same-day comparisons against fresh NOAA pulls
+for several other stations found no such stable bias -- the same station
+(duluth_mn) came back within 8% of NOAA one winter and 34% off (in the
+overstating direction, the opposite of what this script claims) a
+different winter. The discrepancy varies by season and station rather
+than following a fixed factor. Do not apply the correction factor
+recommended below.
 """
 
 import sqlite3
